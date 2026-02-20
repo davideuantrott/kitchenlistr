@@ -1,0 +1,39 @@
+{
+  "name": "KitchenListr - Meal Planner",
+  "short_name": "KitchenListr",
+  "description": "Plan your meals, build your shopping list automatically",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#F4F9F7",
+  "theme_color": "#4FB286",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'><rect width='512' height='512' rx='96' fill='%234FB286'/><text x='256' y='340' font-size='280' text-anchor='middle' fill='white'>🍽</text></svg>",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'><rect width='512' height='512' rx='96' fill='%234FB286'/><text x='256' y='340' font-size='280' text-anchor='middle' fill='white'>🍽</text></svg>",
+      "sizes": "192x192",
+      "type": "image/svg+xml",
+      "purpose": "maskable"
+    }
+  ],
+  "categories": ["food", "lifestyle", "utilities"],
+  "shortcuts": [
+    {
+      "name": "Add Recipe",
+      "short_name": "Add Recipe",
+      "description": "Add a new recipe",
+      "url": "/?action=add-recipe"
+    },
+    {
+      "name": "Shopping List",
+      "short_name": "Shopping",
+      "description": "View your shopping list",
+      "url": "/?view=shopping"
+    }
+  ]
+}
