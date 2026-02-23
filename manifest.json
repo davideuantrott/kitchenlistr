@@ -2,7 +2,7 @@
   "name": "KitchenListr - Meal Planner",
   "short_name": "KitchenListr",
   "description": "Plan your meals, build your shopping list automatically",
-  "start_url": "/",
+  "start_url": "/kitchenlistr/",
   "display": "standalone",
   "background_color": "#F4F9F7",
   "theme_color": "#4FB286",
