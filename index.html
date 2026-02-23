@@ -1603,6 +1603,19 @@
             margin-bottom: 1.5rem;
         }
 
+        .add-item-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.75rem;
+        }
+
+        .add-item-header h4 {
+            font-size: 0.95rem;
+            color: var(--text-primary);
+            margin: 0;
+        }
+
         .add-item-section h4 {
             font-size: 0.95rem;
             margin-bottom: 0.75rem;
@@ -1612,11 +1625,15 @@
         .add-item-row {
             display: flex;
             gap: 0.5rem;
+        }
+
+        .add-item-input-wrapper {
+            flex: 1;
             position: relative;
         }
 
         .add-item-input {
-            flex: 1;
+            width: 100%;
             padding: 0.6rem 0.75rem;
             border: 1px solid var(--border-medium);
             border-radius: var(--radius-sm);
@@ -1807,6 +1824,22 @@
 
         .shop-action-btn.danger:hover {
             color: #DC3545;
+        }
+
+        .shop-collapse-btn {
+            background: none;
+            border: 1px solid var(--border-light);
+            border-radius: var(--radius-sm);
+            padding: 0.2rem 0.5rem;
+            font-size: 0.8rem;
+            cursor: pointer;
+            color: var(--text-secondary);
+            white-space: nowrap;
+        }
+
+        .shop-collapse-btn:hover {
+            background: var(--bg-cream);
+            color: var(--text-primary);
         }
 
         /* Aisle List */
@@ -2807,9 +2840,14 @@
                 
                 <!-- Add Item Section -->
                 <div class="add-item-section">
-                    <h4>➕ Add extra item</h4>
+                    <div class="add-item-header">
+                        <h4>➕ Add extra item</h4>
+                        <button class="btn btn-secondary btn-small" onclick="clearCheckedAdhocItems()">Remove checked extras</button>
+                    </div>
                     <div class="add-item-row">
-                        <input type="text" class="add-item-input" id="add-item-input" placeholder="e.g., Kitchen roll, Bin bags..." onkeypress="handleAddItemKeypress(event)">
+                        <div class="add-item-input-wrapper">
+                            <input type="text" class="add-item-input" id="add-item-input" placeholder="e.g., Kitchen roll, Bin bags..." onkeypress="handleAddItemKeypress(event)" oninput="showAdHocAutocomplete(this)" onblur="hideAdHocAutocomplete(this)" autocomplete="off">
+                        </div>
                         <button class="btn btn-primary btn-small" onclick="addAdHocItem()">Add</button>
                     </div>
                 </div>
@@ -2830,7 +2868,7 @@
                         <select class="sort-select" id="sort-select" onchange="renderShoppingList()">
                             <option value="alpha">A-Z (Alphabetical)</option>
                             <option value="aisle">Aisle order</option>
-                            <option value="day">Day of week</option>
+                            <option value="day">Date order</option>
                             <option value="recipe">Recipe</option>
                         </select>
                     </div>
@@ -2843,9 +2881,10 @@
                         </div>
                     </div>
                     <div class="shopping-controls-group">
-                        <button class="date-preset-btn active" data-preset="week" onclick="setDatePreset('week')">This week</button>
-                        <button class="date-preset-btn" data-preset="3days" onclick="setDatePreset('3days')">3 days</button>
                         <button class="date-preset-btn" data-preset="today" onclick="setDatePreset('today')">Today</button>
+                        <button class="date-preset-btn" data-preset="3days" onclick="setDatePreset('3days')">3 days</button>
+                        <button class="date-preset-btn active" data-preset="7days" onclick="setDatePreset('7days')">7 days</button>
+                        <button class="date-preset-btn" data-preset="week" onclick="setDatePreset('week')">This week</button>
                         <button class="date-preset-btn" data-preset="all" onclick="setDatePreset('all')">All</button>
                     </div>
                 </div>
@@ -3099,17 +3138,37 @@ oregano"></textarea>
             <div class="modal-body">
                 <input type="hidden" id="select-recipe-date">
                 <input type="hidden" id="select-recipe-meal">
-                
+
+                <!-- Quick Add Recipe (inline) -->
+                <div id="quick-add-recipe-form" style="display: none; border: 1px solid var(--border-light); border-radius: var(--radius-md); padding: 1rem; margin-bottom: 1rem; background: var(--bg-cream);">
+                    <h4 style="font-size: 0.95rem; margin-bottom: 0.75rem; font-family: 'Fraunces', serif;">Quick Add Recipe</h4>
+                    <div class="form-group" style="margin-bottom: 0.75rem;">
+                        <input type="text" class="form-input" id="quick-recipe-name" placeholder="Recipe name..." style="width: 100%;">
+                    </div>
+                    <div class="form-group" style="margin-bottom: 0.75rem;">
+                        <label class="form-checkbox">
+                            <input type="checkbox" id="quick-recipe-title-only">
+                            <span>Title only (no ingredients needed)</span>
+                        </label>
+                    </div>
+                    <p class="form-hint" style="margin-bottom: 0.75rem;">You can add ingredients and details later on the Recipes page.</p>
+                    <div style="display: flex; gap: 0.5rem; justify-content: flex-end;">
+                        <button type="button" class="btn btn-secondary btn-small" onclick="toggleQuickAddRecipeForm()">Cancel</button>
+                        <button type="button" class="btn btn-primary btn-small" onclick="saveQuickRecipeForMeal()">Save & Select</button>
+                    </div>
+                </div>
+
                 <div class="search-box">
                     <input type="text" class="search-input" id="select-recipe-search" placeholder="Search recipes..." oninput="filterRecipeSelect()">
                 </div>
-                
+
                 <div class="recipe-select-list" id="recipe-select-list">
                     <!-- Recipes will be listed here -->
                 </div>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" onclick="closeSelectRecipeModal()">Cancel</button>
+                <button type="button" class="btn btn-secondary" onclick="toggleQuickAddRecipeForm()">+ New Recipe</button>
             </div>
         </div>
     </div>
@@ -3293,7 +3352,7 @@ oregano"></textarea>
                 
                 <div class="help-section">
                     <h3 class="help-section-title">📅 Meal Planning</h3>
-                    
+
                     <div class="help-item">
                         <div class="help-question" onclick="toggleHelpItem(this)">
                             How do I plan a meal?
@@ -3303,7 +3362,17 @@ oregano"></textarea>
                             Go to the <strong>Meal Plan</strong> page and click the <strong>➕</strong> button on any meal slot. Select a recipe from your list and it will be added to that day.
                         </div>
                     </div>
-                    
+
+                    <div class="help-item">
+                        <div class="help-question" onclick="toggleHelpItem(this)">
+                            Can I add a new recipe while planning a meal?
+                            <span class="help-question-icon">▼</span>
+                        </div>
+                        <div class="help-answer">
+                            Yes! When the recipe selection dialog opens, click <strong>"+ New Recipe"</strong> to quickly add a recipe on the fly. Just enter the name (and optionally tick "Title only") and click <strong>"Save &amp; Select"</strong> — it will be saved and immediately assigned to that meal slot. You can go back and add ingredients later on the Recipes page.
+                        </div>
+                    </div>
+
                     <div class="help-item">
                         <div class="help-question" onclick="toggleHelpItem(this)">
                             Can I add custom meal categories?
@@ -3313,7 +3382,7 @@ oregano"></textarea>
                             Yes! Go to <strong>Settings → Meal Categories</strong> to add new categories like "Kids' Dinner" or "Snack". You can also rename, reorder, or delete existing categories.
                         </div>
                     </div>
-                    
+
                     <div class="help-item">
                         <div class="help-question" onclick="toggleHelpItem(this)">
                             What are day notes?
@@ -3324,45 +3393,99 @@ oregano"></textarea>
                         </div>
                     </div>
                 </div>
-                
+
                 <div class="help-section">
                     <h3 class="help-section-title">🛒 Shopping List</h3>
-                    
+
                     <div class="help-item">
                         <div class="help-question" onclick="toggleHelpItem(this)">
                             How does the shopping list work?
                             <span class="help-question-icon">▼</span>
                         </div>
                         <div class="help-answer">
-                            Your shopping list is built automatically from all recipes in your meal plan for the selected date range. Tick items off as you shop. Use the filter to adjust which dates are included.
+                            Your shopping list is built automatically from all recipes in your meal plan for the selected date range. Tick items off as you shop. Use the date range filter or quick presets (Today, 3 days, 7 days, This week, All) to adjust which dates are included.
                         </div>
                     </div>
-                    
+
+                    <div class="help-item">
+                        <div class="help-question" onclick="toggleHelpItem(this)">
+                            What do the date range presets mean?
+                            <span class="help-question-icon">▼</span>
+                        </div>
+                        <div class="help-answer">
+                            <strong>Today</strong> — only today's meals.<br>
+                            <strong>3 days</strong> — today plus the next 2 days.<br>
+                            <strong>7 days</strong> — today plus the next 6 days (rolling week). This is the default.<br>
+                            <strong>This week</strong> — the current calendar week (Monday to Sunday).<br>
+                            <strong>All</strong> — everything from this week up to 30 days ahead.
+                        </div>
+                    </div>
+
+                    <div class="help-item">
+                        <div class="help-question" onclick="toggleHelpItem(this)">
+                            Why does the shopping list show a date instead of a day name?
+                            <span class="help-question-icon">▼</span>
+                        </div>
+                        <div class="help-answer">
+                            Each item shows the full calendar date (e.g. "12 April 2026") rather than just the day name. This helps you know the target best-before date you need when shopping for perishable items.
+                        </div>
+                    </div>
+
                     <div class="help-item">
                         <div class="help-question" onclick="toggleHelpItem(this)">
                             Can I add items that aren't in recipes?
                             <span class="help-question-icon">▼</span>
                         </div>
                         <div class="help-answer">
-                            Yes! Use <strong>"Add extra item"</strong> at the bottom of the shopping list to add things like toilet roll or cleaning supplies. These stay until you delete them.
+                            Yes! Use <strong>"Add extra item"</strong> at the top of the shopping list to add things like toilet roll or cleaning supplies. As you type, suggestions appear from your recipe ingredients and items you've added before — making it easy to re-add frequent items with their aisle already set. Extra items stay until you delete them with the <strong>✕</strong> button.
                         </div>
                     </div>
-                    
+
+                    <div class="help-item">
+                        <div class="help-question" onclick="toggleHelpItem(this)">
+                            How do I remove extra items I no longer need?
+                            <span class="help-question-icon">▼</span>
+                        </div>
+                        <div class="help-answer">
+                            Tick the extra items as <strong>"Already Have"</strong>, then click <strong>"Remove checked extras"</strong> in the extra items section. This permanently deletes all checked extra items in one go. You can also delete individual items using the <strong>✕</strong> button next to each one.
+                        </div>
+                    </div>
+
+                    <div class="help-item">
+                        <div class="help-question" onclick="toggleHelpItem(this)">
+                            What does the Export option include?
+                            <span class="help-question-icon">▼</span>
+                        </div>
+                        <div class="help-answer">
+                            The <strong>Copy as Text</strong> and <strong>Download CSV</strong> exports only include items you still need to buy — items marked as "Already Have" and meals from past dates are excluded. Each item shows the full calendar date so you know what best-before date to look for.
+                        </div>
+                    </div>
+
                     <div class="help-item">
                         <div class="help-question" onclick="toggleHelpItem(this)">
                             How do I organise items by aisle?
                             <span class="help-question-icon">▼</span>
                         </div>
                         <div class="help-answer">
-                            Go to <strong>Settings → Shops & Aisles</strong> to create your shop layout. Then in <strong>Ingredient Dictionary</strong>, assign each ingredient to an aisle. Your shopping list will then sort items by aisle order.
+                            Go to <strong>Settings → Shops &amp; Aisles</strong> to create your shop layout. Then in <strong>Ingredient Dictionary</strong>, assign each ingredient to an aisle. Your shopping list will then sort items by aisle order.
                             <div class="help-tip"><strong>Tip:</strong> Share your shop layout with family members so everyone has the same aisle order!</div>
                         </div>
                     </div>
                 </div>
-                
+
                 <div class="help-section">
-                    <h3 class="help-section-title">⚙️ Settings & Data</h3>
-                    
+                    <h3 class="help-section-title">⚙️ Settings &amp; Data</h3>
+
+                    <div class="help-item">
+                        <div class="help-question" onclick="toggleHelpItem(this)">
+                            How do I manage my shops and aisles?
+                            <span class="help-question-icon">▼</span>
+                        </div>
+                        <div class="help-answer">
+                            Go to <strong>Settings → Shops &amp; Aisles</strong>. Click <strong>"▼ Aisles"</strong> next to any shop to expand or collapse its aisle list — useful when you have multiple shops. Use the <strong>▲ ▼</strong> buttons to reorder aisles to match the order you walk through the store.
+                        </div>
+                    </div>
+
                     <div class="help-item">
                         <div class="help-question" onclick="toggleHelpItem(this)">
                             Is my data saved securely?
@@ -3372,7 +3495,7 @@ oregano"></textarea>
                             Yes! Your data is stored securely in the cloud and syncs automatically across all your devices. Sign in with the same account to access your recipes and meal plans anywhere.
                         </div>
                     </div>
-                    
+
                     <div class="help-item">
                         <div class="help-question" onclick="toggleHelpItem(this)">
                             Can I install this as an app?
@@ -3537,6 +3660,9 @@ oregano"></textarea>
         let mealCategories = ['Breakfast', 'Lunch', 'Dinner']; // Default categories
         let dayNotes = {}; // { "YYYY-MM-DD": "note text" }
         let unsubscribeSettings = null;
+
+        // UI State
+        let collapsedShops = {}; // { shopId: true } for collapsed aisle lists
 
         // =====================
         // Auth UI Functions
@@ -3995,6 +4121,10 @@ oregano"></textarea>
 
         function formatDisplayDate(date) {
             return date.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' });
+        }
+
+        function formatUKLongDate(date) {
+            return date.toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
         }
 
         function formatWeekDisplay(weekStart) {
@@ -4636,7 +4766,10 @@ oregano"></textarea>
             document.getElementById('select-recipe-date').value = date;
             document.getElementById('select-recipe-meal').value = meal;
             document.getElementById('select-recipe-search').value = '';
-            
+            document.getElementById('quick-add-recipe-form').style.display = 'none';
+            document.getElementById('quick-recipe-name').value = '';
+            document.getElementById('quick-recipe-title-only').checked = false;
+
             renderRecipeSelectList();
             document.getElementById('select-recipe-modal').classList.add('active');
         }
@@ -4677,16 +4810,46 @@ oregano"></textarea>
         async function selectRecipeForMeal(recipeId) {
             const date = document.getElementById('select-recipe-date').value;
             const meal = document.getElementById('select-recipe-meal').value;
-            
+
             if (!mealPlan[date]) {
                 mealPlan[date] = {};
             }
             mealPlan[date][meal] = recipeId;
-            
+
             await saveMealPlanToFirebase(date, mealPlan[date]);
             closeSelectRecipeModal();
         }
         window.selectRecipeForMeal = selectRecipeForMeal;
+
+        function toggleQuickAddRecipeForm() {
+            const form = document.getElementById('quick-add-recipe-form');
+            const isVisible = form.style.display !== 'none';
+            form.style.display = isVisible ? 'none' : 'block';
+            if (!isVisible) {
+                setTimeout(() => document.getElementById('quick-recipe-name').focus(), 50);
+            }
+        }
+        window.toggleQuickAddRecipeForm = toggleQuickAddRecipeForm;
+
+        async function saveQuickRecipeForMeal() {
+            const nameInput = document.getElementById('quick-recipe-name');
+            const name = nameInput.value.trim();
+            if (!name) {
+                nameInput.focus();
+                return;
+            }
+
+            const titleOnly = document.getElementById('quick-recipe-title-only').checked;
+            const id = generateId();
+            const recipe = { id, name, titleOnly, ingredients: [], notes: '' };
+
+            await saveRecipeToFirebase(recipe);
+
+            // Hide form and auto-select the new recipe
+            document.getElementById('quick-add-recipe-form').style.display = 'none';
+            await selectRecipeForMeal(id);
+        }
+        window.saveQuickRecipeForMeal = saveQuickRecipeForMeal;
 
         async function removeMeal(date, meal) {
             if (mealPlan[date] && mealPlan[date][meal]) {
@@ -4751,6 +4914,7 @@ oregano"></textarea>
                             quantity: quantity,
                             recipeName: recipe.name,
                             dayName: dayName,
+                            dateDisplay: formatUKLongDate(date),
                             meal: mealKey,
                             dateStr: dateStr,
                             dayIndex: dayIndex,
@@ -4927,7 +5091,7 @@ oregano"></textarea>
             const escapedKey = ing.key.replace(/'/g, "\\'").replace(/"/g, '&quot;');
             const isAdhoc = ing.isAdhoc;
             const adhocClass = isAdhoc ? 'adhoc' : '';
-            const contextText = isAdhoc ? 'Extra item' : `${escapeHtml(ing.dayName)} · ${escapeHtml(ing.recipeName)}`;
+            const contextText = isAdhoc ? 'Extra item' : `${escapeHtml(ing.dateDisplay || ing.dayName)} · ${escapeHtml(ing.recipeName)}`;
             
             // Show set aisle button if sorting by aisle and item has no aisle
             const showSetAisle = sortMethod === 'aisle' && !ing.aisle && currentShopId && shops.find(s => s.id === currentShopId)?.aisles?.length > 0;
@@ -5019,7 +5183,7 @@ oregano"></textarea>
                         
                         items.push({
                             text: displayText,
-                            context: `${dayName} · ${recipe.name}`,
+                            context: `${formatUKLongDate(date)} · ${recipe.name}`,
                             aisle: aisle,
                             aisleOrder: aisleOrder === -1 ? 9999 : aisleOrder,
                             have: !!shoppingHave[uniqueKey]
@@ -5076,13 +5240,13 @@ oregano"></textarea>
                         aisleItems.forEach(item => {
                             html += `<div class="print-item">
                                 <div class="print-checkbox"></div>
-                                <div class="print-item-text">${item.text}</div>
+                                <div class="print-item-text">${item.text}<div class="print-item-context">${item.context}</div></div>
                             </div>`;
                         });
                         html += `</div>`;
                     }
                 });
-                
+
                 // Uncategorised at end
                 const uncategorised = aisleGroups['__uncategorised__'];
                 if (uncategorised && uncategorised.length > 0) {
@@ -5091,7 +5255,7 @@ oregano"></textarea>
                     uncategorised.forEach(item => {
                         html += `<div class="print-item">
                             <div class="print-checkbox"></div>
-                            <div class="print-item-text">${item.text}</div>
+                            <div class="print-item-text">${item.text}<div class="print-item-context">${item.context}</div></div>
                         </div>`;
                     });
                     html += `</div>`;
@@ -5101,7 +5265,7 @@ oregano"></textarea>
                 items.forEach(item => {
                     html += `<div class="print-item">
                         <div class="print-checkbox"></div>
-                        <div class="print-item-text">${item.text}</div>
+                        <div class="print-item-text">${item.text}<div class="print-item-context">${item.context}</div></div>
                     </div>`;
                 });
             }
@@ -5194,19 +5358,23 @@ oregano"></textarea>
                             text: ingredientName,
                             recipeName: recipe.name,
                             dayName: dayName,
+                            dateDisplay: formatUKLongDate(date),
+                            dateStr: dateStr,
                             have: !!shoppingHave[uniqueKey],
                             isAdhoc: false
                         });
                     });
                 }
             });
-            
+
             // Add ad-hoc items
             adhocItems.forEach(item => {
                 ingredients.push({
                     text: item.text,
                     recipeName: 'Extra item',
                     dayName: '',
+                    dateDisplay: '',
+                    dateStr: '',
                     have: !!shoppingHave[`adhoc_${item.id}`],
                     isAdhoc: true
                 });
@@ -5217,27 +5385,22 @@ oregano"></textarea>
 
         function exportAsText() {
             const items = getShoppingListData();
-            const needItems = items.filter(i => !i.have);
-            const haveItems = items.filter(i => i.have);
-            
+            const today = getToday();
+            // Export only items still needed to buy, excluding past meal dates
+            const needItems = items.filter(i => !i.have && (!i.dateStr || new Date(i.dateStr) >= today));
+
             let text = '🍽 SHOPPING LIST\n';
-            text += `Week of ${formatDisplayDate(currentWeekStart)}\n`;
+            text += `${formatDisplayDate(shoppingDateFrom)} – ${formatDisplayDate(shoppingDateTo)}\n`;
             text += '─'.repeat(30) + '\n\n';
-            
+
             if (needItems.length > 0) {
                 text += '🛒 NEED TO BUY:\n';
                 needItems.forEach(item => {
-                    const context = item.dayName ? `${item.dayName} · ${item.recipeName}` : item.recipeName;
+                    const context = item.dateDisplay ? `${item.dateDisplay} · ${item.recipeName}` : item.recipeName;
                     text += `☐ ${item.text} (${context})\n`;
                 });
-                text += '\n';
-            }
-            
-            if (haveItems.length > 0) {
-                text += '✓ ALREADY HAVE:\n';
-                haveItems.forEach(item => {
-                    text += `☑ ${item.text}\n`;
-                });
+            } else {
+                text += 'Nothing left to buy!\n';
             }
             
             // Copy to clipboard
@@ -5254,18 +5417,21 @@ oregano"></textarea>
 
         function exportAsCSV() {
             const items = getShoppingListData();
-            
+            const today = getToday();
+            // Export only items still needed to buy, excluding past meal dates
+            const needItems = items.filter(i => !i.have && (!i.dateStr || new Date(i.dateStr) >= today));
+
             // CSV header
-            let csv = 'Item,Day,Recipe,Status\n';
-            
-            items.forEach(item => {
-                const status = item.have ? 'Have' : 'Need';
-                const day = item.dayName || '';
+            let csv = 'Item,Date,Recipe\n';
+
+            needItems.forEach(item => {
+                const date = item.dateDisplay || '';
                 const recipe = item.recipeName || '';
                 // Escape quotes in CSV
                 const escapedItem = item.text.replace(/"/g, '""');
+                const escapedDate = date.replace(/"/g, '""');
                 const escapedRecipe = recipe.replace(/"/g, '""');
-                csv += `"${escapedItem}","${day}","${escapedRecipe}","${status}"\n`;
+                csv += `"${escapedItem}","${escapedDate}","${escapedRecipe}"\n`;
             });
             
             // Create and download file
@@ -5321,7 +5487,7 @@ oregano"></textarea>
 
         async function removeAdhocItem(itemId) {
             if (!currentUser) return;
-            
+
             showSyncStatus('syncing', 'Removing...');
             try {
                 await deleteDoc(doc(db, "users", currentUser.uid, "adhocItems", itemId));
@@ -5335,6 +5501,99 @@ oregano"></textarea>
             }
         }
         window.removeAdhocItem = removeAdhocItem;
+
+        function getAllAdHocSuggestions() {
+            const items = new Set();
+            // Add all ingredient names from recipes
+            recipes.forEach(recipe => {
+                if (recipe.ingredients) {
+                    recipe.ingredients.forEach(ing => {
+                        const name = typeof ing === 'string' ? ing : (ing && ing.name ? ing.name : null);
+                        if (name) items.add(name.trim());
+                    });
+                }
+            });
+            // Add all previous adhoc item texts
+            adhocItems.forEach(item => {
+                if (item.text) items.add(item.text.trim());
+            });
+            return Array.from(items).sort((a, b) => a.localeCompare(b));
+        }
+
+        function showAdHocAutocomplete(input) {
+            const value = input.value.toLowerCase().trim();
+            const wrapper = input.parentElement;
+
+            // Remove existing dropdown
+            const existing = wrapper.querySelector('.autocomplete-dropdown');
+            if (existing) existing.remove();
+
+            if (value.length < 1) return;
+
+            const allSuggestions = getAllAdHocSuggestions();
+            const matches = allSuggestions.filter(name =>
+                name.toLowerCase().includes(value) && name.toLowerCase() !== value
+            ).slice(0, 8);
+
+            if (matches.length === 0) return;
+
+            const dropdown = document.createElement('div');
+            dropdown.className = 'autocomplete-dropdown';
+
+            matches.forEach(name => {
+                const aisle = getIngredientAisle(name, currentShopId);
+                const item = document.createElement('div');
+                item.className = 'autocomplete-item';
+                item.innerHTML = `${escapeHtml(name)}${aisle ? `<span class="autocomplete-aisle">(${escapeHtml(aisle)})</span>` : ''}`;
+                item.onmousedown = (e) => {
+                    e.preventDefault();
+                    input.value = name;
+                    wrapper.querySelector('.autocomplete-dropdown')?.remove();
+                };
+                dropdown.appendChild(item);
+            });
+
+            wrapper.appendChild(dropdown);
+        }
+        window.showAdHocAutocomplete = showAdHocAutocomplete;
+
+        function hideAdHocAutocomplete(input) {
+            setTimeout(() => {
+                const wrapper = input.parentElement;
+                const dropdown = wrapper.querySelector('.autocomplete-dropdown');
+                if (dropdown) dropdown.remove();
+            }, 150);
+        }
+        window.hideAdHocAutocomplete = hideAdHocAutocomplete;
+
+        async function clearCheckedAdhocItems() {
+            if (!currentUser) return;
+
+            const checkedIds = adhocItems
+                .filter(item => shoppingHave[`adhoc_${item.id}`])
+                .map(item => item.id);
+
+            if (checkedIds.length === 0) {
+                showSyncStatus('success', 'No checked extra items to remove');
+                return;
+            }
+
+            if (!confirm(`Remove ${checkedIds.length} checked extra item(s)? They will be permanently deleted.`)) return;
+
+            showSyncStatus('syncing', 'Removing...');
+            try {
+                for (const id of checkedIds) {
+                    await deleteDoc(doc(db, "users", currentUser.uid, "adhocItems", id));
+                    delete shoppingHave[`adhoc_${id}`];
+                }
+                await saveShoppingHaveToFirebase();
+                showSyncStatus('success', 'Removed');
+            } catch (error) {
+                console.error("Error removing checked ad-hoc items:", error);
+                showSyncStatus('error', 'Failed to remove');
+            }
+        }
+        window.clearCheckedAdhocItems = clearCheckedAdhocItems;
 
         // =====================
         // Date Filtering Helper
@@ -5363,12 +5622,17 @@ oregano"></textarea>
             const today = getToday();
             const weekEnd = new Date(today);
             weekEnd.setDate(weekEnd.getDate() + 6);
-            
+
             shoppingDateFrom = today;
             shoppingDateTo = weekEnd;
-            
+
             document.getElementById('date-from').value = formatDate(today);
             document.getElementById('date-to').value = formatDate(weekEnd);
+
+            // Ensure the 7-day preset button is shown as active on init
+            document.querySelectorAll('.date-preset-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.preset === '7days');
+            });
         }
 
         function onDateRangeChange() {
@@ -5399,9 +5663,20 @@ oregano"></textarea>
                 case '3days':
                     to.setDate(to.getDate() + 2);
                     break;
-                case 'week':
+                case '7days':
+                    // Rolling 7 days from today
                     to.setDate(to.getDate() + 6);
                     break;
+                case 'week': {
+                    // Current calendar week: Monday to Sunday
+                    const dayOfWeek = today.getDay(); // 0=Sun, 1=Mon...
+                    const daysToMonday = dayOfWeek === 0 ? 6 : dayOfWeek - 1;
+                    from = new Date(today);
+                    from.setDate(from.getDate() - daysToMonday);
+                    to = new Date(from);
+                    to.setDate(to.getDate() + 6);
+                    break;
+                }
                 case 'all':
                     // Get earliest date from current week start
                     from = new Date(currentWeekStart);
@@ -5444,7 +5719,9 @@ oregano"></textarea>
             
             empty.style.display = 'none';
             
-            container.innerHTML = shops.map(shop => `
+            container.innerHTML = shops.map(shop => {
+                const isCollapsed = !!collapsedShops[shop.id];
+                return `
                 <div class="shop-card ${shop.isDefault ? 'default' : ''}">
                     <div class="shop-card-header">
                         <div class="shop-name">
@@ -5452,13 +5729,14 @@ oregano"></textarea>
                             ${shop.isDefault ? '<span class="shop-default-badge">Default</span>' : ''}
                         </div>
                         <div class="shop-actions">
+                            <button class="shop-collapse-btn" onclick="toggleAisleCollapse('${shop.id}')" title="${isCollapsed ? 'Show aisles' : 'Hide aisles'}">${isCollapsed ? '▶ Aisles' : '▼ Aisles'}</button>
                             <button class="share-shop-btn" onclick="shareShop('${shop.id}')">Share Shop</button>
                             ${!shop.isDefault ? `<button class="shop-action-btn" onclick="setDefaultShop('${shop.id}')" title="Set as default">⭐</button>` : ''}
                             <button class="shop-action-btn" onclick="editShop('${shop.id}')" title="Edit name">✏️</button>
                             <button class="shop-action-btn danger" onclick="deleteShop('${shop.id}')" title="Delete shop">🗑️</button>
                         </div>
                     </div>
-                    <div class="aisle-list">
+                    <div class="aisle-list" ${isCollapsed ? 'style="display: none;"' : ''}>
                         ${(shop.aisles || []).map((aisle, index) => `
                             <div class="aisle-item">
                                 <span class="aisle-order">${index + 1}</span>
@@ -5476,12 +5754,18 @@ oregano"></textarea>
                         </div>
                     </div>
                 </div>
-            `).join('');
+            `}).join('');
             
             // Also update the ingredient dictionary if visible
             renderIngredientDictionary();
         }
         window.renderShopsSettings = renderShopsSettings;
+
+        function toggleAisleCollapse(shopId) {
+            collapsedShops[shopId] = !collapsedShops[shopId];
+            renderShopsSettings();
+        }
+        window.toggleAisleCollapse = toggleAisleCollapse;
 
         function updateShopSelector() {
             const selector = document.getElementById('shop-selector');
