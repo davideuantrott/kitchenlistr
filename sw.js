@@ -1,12 +1,12 @@
 // KitchenListr Service Worker
 const CACHE_NAME = 'kitchenlistr-v1';
-const OFFLINE_URL = '/offline.html';
+const OFFLINE_URL = '/kitchenlistr/offline.html';
 
 // Assets to cache immediately on install
 const PRECACHE_ASSETS = [
-  '/',
-  '/index.html',
-  '/manifest.json',
+  '/kitchenlistr/',
+  '/kitchenlistr/index.html',
+  '/kitchenlistr/manifest.json',
   'https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Source+Sans+3:wght@400;500;600&display=swap'
 ];
 
