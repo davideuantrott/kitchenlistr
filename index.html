@@ -1435,7 +1435,7 @@
 
         .month-day {
             background: var(--bg-white);
-            min-height: 100px;
+            min-height: 120px;
             padding: 0.5rem;
             display: flex;
             flex-direction: column;
@@ -1480,12 +1480,18 @@
         }
 
         .month-meal-pill {
-            font-size: 0.7rem;
-            padding: 2px 4px;
+            font-size: 0.72rem;
+            padding: 2px 5px;
             border-radius: 3px;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
+            line-height: 1.4;
+        }
+
+        .pill-initial {
+            font-weight: 700;
+            opacity: 0.75;
         }
 
         .month-meal-pill.breakfast {
@@ -2251,9 +2257,16 @@
             /* Show only print-specific elements */
             .print-header,
             .print-date,
-            .print-shopping-content {
+            .print-shopping-content,
+            .print-planner-content {
                 display: block !important;
             }
+
+            /* Hide planner-specific print divs when printing shopping list, and vice versa */
+            body.printing-shopping .print-planner-content { display: none !important; }
+            body.printing-planner .print-shopping-content { display: none !important; }
+            body.printing-planner .print-header { display: none !important; }
+            body.printing-planner .print-date:not(#print-planner-date) { display: none !important; }
             
             /* Print header styling */
             .print-header {
@@ -2320,9 +2333,124 @@
                 font-size: 8pt;
                 color: #666;
             }
+
+            /* ── Meal Plan Print Layouts ── */
+            .print-planner-content {
+                font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+            }
+
+            /* Week view grid */
+            .print-week-grid {
+                display: grid;
+                grid-template-columns: repeat(7, 1fr);
+                gap: 4px;
+                width: 100%;
+            }
+
+            .print-day-card {
+                border: 1px solid #bbb;
+                page-break-inside: avoid;
+                font-size: 8pt;
+            }
+
+            .print-day-header {
+                background: #d4eedd;
+                padding: 4px 6px;
+                font-weight: 700;
+                font-size: 8.5pt;
+                border-bottom: 1px solid #bbb;
+            }
+
+            .print-day-header .print-day-date {
+                font-weight: 400;
+                font-size: 7pt;
+                color: #555;
+            }
+
+            .print-meal-slot {
+                padding: 3px 5px;
+                border-bottom: 1px dotted #ddd;
+            }
+
+            .print-meal-slot:last-child {
+                border-bottom: none;
+            }
+
+            .print-meal-label {
+                font-size: 6.5pt;
+                color: #888;
+                text-transform: uppercase;
+                letter-spacing: 0.3px;
+            }
+
+            .print-meal-name {
+                font-size: 8pt;
+                color: #111;
+                line-height: 1.3;
+            }
+
+            .print-day-note {
+                padding: 3px 5px;
+                font-size: 7pt;
+                color: #555;
+                font-style: italic;
+                border-top: 1px solid #eee;
+            }
+
+            /* Month view grid */
+            .print-month-grid {
+                display: grid;
+                grid-template-columns: repeat(7, 1fr);
+                gap: 2px;
+                width: 100%;
+            }
+
+            .print-month-header-cell {
+                background: #d4eedd;
+                padding: 4px;
+                text-align: center;
+                font-weight: 700;
+                font-size: 8.5pt;
+                border: 1px solid #bbb;
+            }
+
+            .print-month-day {
+                border: 1px solid #bbb;
+                min-height: 75px;
+                padding: 3px 4px;
+                vertical-align: top;
+                font-size: 7.5pt;
+                page-break-inside: avoid;
+            }
+
+            .print-month-day.other-month {
+                background: #f0f0f0;
+                color: #aaa;
+            }
+
+            .print-month-day-number {
+                font-weight: 700;
+                font-size: 8.5pt;
+                margin-bottom: 2px;
+                color: #222;
+            }
+
+            .print-month-meal {
+                padding: 1px 0;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                font-size: 7pt;
+                line-height: 1.3;
+            }
+
+            .print-month-meal .print-month-meal-label {
+                font-weight: 700;
+                color: #444;
+            }
         }
         
-        .print-header, .print-date, .print-shopping-content {
+        .print-header, .print-date, .print-shopping-content, .print-planner-content {
             display: none;
         }
 
@@ -2782,6 +2910,7 @@
             <section id="planner-view" class="view">
                 <div class="page-header">
                     <h1 class="page-title">Meal Plan</h1>
+                    <button class="btn btn-secondary" onclick="openPlannerPrintModal()">Print Plan</button>
                 </div>
                 
                 <!-- View Toggle -->
@@ -3365,6 +3494,27 @@ oregano"></textarea>
 
                     <div class="help-item">
                         <div class="help-question" onclick="toggleHelpItem(this)">
+                            Can I print or save the meal plan as a PDF?
+                            <span class="help-question-icon">▼</span>
+                        </div>
+                        <div class="help-answer">
+                            Yes! Click <strong>"Print Plan"</strong> at the top of the Meal Plan page. Choose <strong>Week view</strong> (current week) or <strong>Month view</strong> (current month), then click Print. In your browser's print dialog, select <strong>"Save as PDF"</strong> to save a file you can email or share, or choose a printer to print a physical copy.
+                            <div class="help-tip"><strong>Tip:</strong> Landscape orientation usually works best for the week view — you can change this in the print dialog.</div>
+                        </div>
+                    </div>
+
+                    <div class="help-item">
+                        <div class="help-question" onclick="toggleHelpItem(this)">
+                            What does the month view show?
+                            <span class="help-question-icon">▼</span>
+                        </div>
+                        <div class="help-answer">
+                            The month view shows a full calendar with each meal displayed inside its day cell. Each pill shows the meal category initial (e.g. <strong>B</strong> for Breakfast, <strong>L</strong> for Lunch, <strong>D</strong> for Dinner) followed by the recipe name. Click any day to jump to that week in the week view.
+                        </div>
+                    </div>
+
+                    <div class="help-item">
+                        <div class="help-question" onclick="toggleHelpItem(this)">
                             Can I add a new recipe while planning a meal?
                             <span class="help-question-icon">▼</span>
                         </div>
@@ -3591,6 +3741,38 @@ oregano"></textarea>
         </div>
     </div>
 
+    <!-- Meal Plan Print Modal -->
+    <div class="modal-overlay" id="planner-print-modal">
+        <div class="modal" style="max-width: 420px;">
+            <div class="modal-header">
+                <h2 class="modal-title">Print Meal Plan</h2>
+                <button class="modal-close" onclick="closePlannerPrintModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p class="text-muted mb-2">Choose the layout to print:</p>
+                <div class="print-options">
+                    <div class="print-option-row">
+                        <label class="form-checkbox">
+                            <input type="radio" name="planner-print-view" value="week" checked>
+                            <span><strong>Week view</strong> — current week (Mon–Sun)</span>
+                        </label>
+                    </div>
+                    <div class="print-option-row" style="margin-top: 0.5rem;">
+                        <label class="form-checkbox">
+                            <input type="radio" name="planner-print-view" value="month">
+                            <span><strong>Month view</strong> — current month</span>
+                        </label>
+                    </div>
+                </div>
+                <p class="text-muted" style="font-size: 0.85rem; margin-top: 0.75rem;">💡 Choose <strong>Landscape</strong> orientation in your browser's print dialog for the best result — especially for the week view. Select "Save as PDF" to email or share the plan.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="closePlannerPrintModal()">Cancel</button>
+                <button type="button" class="btn btn-primary" onclick="printMealPlan()">Print</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Print-only content (hidden on screen, shown when printing) -->
     <div class="print-header">
         <h1>🍽 Shopping List</h1>
@@ -3598,6 +3780,13 @@ oregano"></textarea>
     <div class="print-date" id="print-date"></div>
     <div class="print-shopping-content" id="print-shopping-content">
         <!-- Generated by JS for printing -->
+    </div>
+
+    <!-- Meal plan print-only content -->
+    <div class="print-planner-content" id="print-planner-content">
+        <div class="print-header"><h1>🍽 Meal Plan</h1></div>
+        <div class="print-date" id="print-planner-date"></div>
+        <div id="print-planner-body"></div>
     </div>
 
 
@@ -4722,24 +4911,25 @@ oregano"></textarea>
                 if (isPast && !isOtherMonth) classes += ' past';
                 if (isToday) classes += ' today';
                 
-                // Get meals for this day
+                // Get meals for this day (use same key lookup as renderPlanner for compatibility)
                 const meals = [];
                 getMealTypes().forEach(mealType => {
-                    const recipeId = dayMeals[mealType];
+                    const mealKey = mealType.toLowerCase().replace(/[^a-z0-9]/g, '_');
+                    const recipeId = dayMeals[mealKey] || dayMeals[mealType] || dayMeals[mealType.toLowerCase()];
                     if (recipeId) {
                         const recipe = recipes.find(r => r.id === recipeId);
                         if (recipe) {
-                            meals.push({ type: mealType, name: recipe.name });
+                            meals.push({ type: mealKey, label: mealType, name: recipe.name });
                         }
                     }
                 });
-                
+
                 html += `
                     <div class="${classes}" onclick="jumpToDate('${dateStr}')">
                         <div class="month-day-number">${currentDate.getDate()}</div>
                         <div class="month-day-meals">
                             ${meals.slice(0, 3).map(m => `
-                                <div class="month-meal-pill ${m.type}">${escapeHtml(m.name)}</div>
+                                <div class="month-meal-pill ${m.type}"><span class="pill-initial">${escapeHtml(m.label[0])}</span> ${escapeHtml(m.name)}</div>
                             `).join('')}
                             ${meals.length > 3 ? `<div class="month-day-more">+${meals.length - 3} more</div>` : ''}
                         </div>
@@ -5276,10 +5466,14 @@ oregano"></textarea>
             printDateEl.textContent = `${formatDisplayDate(shoppingDateFrom)} – ${formatDisplayDate(shoppingDateTo)} • ${items.length} items`;
             
             closePrintModal();
-            
-            // Small delay then print
+
+            // Tag body so only shopping content shows
+            document.body.classList.add('printing-shopping');
+            document.body.classList.remove('printing-planner');
+
             setTimeout(() => {
                 window.print();
+                setTimeout(() => document.body.classList.remove('printing-shopping'), 500);
             }, 100);
         }
         window.printShoppingList = printShoppingList;
@@ -5293,6 +5487,120 @@ oregano"></textarea>
             document.getElementById('print-modal').classList.remove('active');
         }
         window.closePrintModal = closePrintModal;
+
+        function openPlannerPrintModal() {
+            document.getElementById('planner-print-modal').classList.add('active');
+        }
+        window.openPlannerPrintModal = openPlannerPrintModal;
+
+        function closePlannerPrintModal() {
+            document.getElementById('planner-print-modal').classList.remove('active');
+        }
+        window.closePlannerPrintModal = closePlannerPrintModal;
+
+        function printMealPlan() {
+            const view = document.querySelector('input[name="planner-print-view"]:checked')?.value || 'week';
+            const printBody = document.getElementById('print-planner-body');
+            const printDateEl = document.getElementById('print-planner-date');
+
+            if (view === 'week') {
+                printDateEl.textContent = formatWeekDisplay(currentWeekStart) + ' • Printed ' + new Date().toLocaleDateString('en-GB');
+                printBody.innerHTML = generateWeekPrintHtml();
+            } else {
+                const monthName = currentMonth.toLocaleDateString('en-GB', { month: 'long', year: 'numeric' });
+                printDateEl.textContent = monthName + ' • Printed ' + new Date().toLocaleDateString('en-GB');
+                printBody.innerHTML = generateMonthPrintHtml();
+            }
+
+            closePlannerPrintModal();
+
+            document.body.classList.add('printing-planner');
+            document.body.classList.remove('printing-shopping');
+
+            setTimeout(() => {
+                window.print();
+                setTimeout(() => document.body.classList.remove('printing-planner'), 500);
+            }, 100);
+        }
+        window.printMealPlan = printMealPlan;
+
+        function generateWeekPrintHtml() {
+            let html = '<div class="print-week-grid">';
+
+            for (let i = 0; i < 7; i++) {
+                const date = new Date(currentWeekStart);
+                date.setDate(date.getDate() + i);
+                const dateStr = formatDate(date);
+                const dayMeals = mealPlan[dateStr] || {};
+                const note = dayNotes[dateStr] || '';
+
+                html += `<div class="print-day-card">`;
+                html += `<div class="print-day-header">${getDayName(date)}<div class="print-day-date">${formatUKLongDate(date)}</div></div>`;
+
+                getMealTypes().forEach(meal => {
+                    const mealKey = meal.toLowerCase().replace(/[^a-z0-9]/g, '_');
+                    const recipeId = dayMeals[mealKey] || dayMeals[meal] || dayMeals[meal.toLowerCase()];
+                    const recipe = recipeId ? recipes.find(r => r.id === recipeId) : null;
+
+                    html += `<div class="print-meal-slot">`;
+                    html += `<div class="print-meal-label">${escapeHtml(meal)}</div>`;
+                    html += `<div class="print-meal-name">${recipe ? escapeHtml(recipe.name) : '—'}</div>`;
+                    html += `</div>`;
+                });
+
+                if (note) {
+                    html += `<div class="print-day-note">📝 ${escapeHtml(note)}</div>`;
+                }
+
+                html += `</div>`;
+            }
+
+            html += '</div>';
+            return html;
+        }
+
+        function generateMonthPrintHtml() {
+            const year = currentMonth.getFullYear();
+            const month = currentMonth.getMonth();
+            const firstDay = new Date(year, month, 1);
+
+            const startDate = new Date(firstDay);
+            const dow = firstDay.getDay();
+            startDate.setDate(startDate.getDate() - (dow === 0 ? 6 : dow - 1));
+
+            let html = '<div class="print-month-grid">';
+
+            // Header row
+            ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].forEach(day => {
+                html += `<div class="print-month-header-cell">${day}</div>`;
+            });
+
+            // Day cells (6 weeks)
+            const cur = new Date(startDate);
+            for (let i = 0; i < 42; i++) {
+                const dateStr = formatDate(cur);
+                const dayMeals = mealPlan[dateStr] || {};
+                const isOtherMonth = cur.getMonth() !== month;
+
+                html += `<div class="print-month-day${isOtherMonth ? ' other-month' : ''}">`;
+                html += `<div class="print-month-day-number">${cur.getDate()}</div>`;
+
+                getMealTypes().forEach(meal => {
+                    const mealKey = meal.toLowerCase().replace(/[^a-z0-9]/g, '_');
+                    const recipeId = dayMeals[mealKey] || dayMeals[meal] || dayMeals[meal.toLowerCase()];
+                    const recipe = recipeId ? recipes.find(r => r.id === recipeId) : null;
+                    if (recipe) {
+                        html += `<div class="print-month-meal"><span class="print-month-meal-label">${escapeHtml(meal[0])}</span> ${escapeHtml(recipe.name)}</div>`;
+                    }
+                });
+
+                html += `</div>`;
+                cur.setDate(cur.getDate() + 1);
+            }
+
+            html += '</div>';
+            return html;
+        }
 
         // =====================
         // Export Functions
