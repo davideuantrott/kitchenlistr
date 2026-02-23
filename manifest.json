@@ -3,6 +3,7 @@
   "short_name": "KitchenListr",
   "description": "Plan your meals, build your shopping list automatically",
   "start_url": "/kitchenlistr/",
+  "scope": "/kitchenlistr/",
   "display": "standalone",
   "background_color": "#F4F9F7",
   "theme_color": "#4FB286",
@@ -27,13 +28,13 @@
       "name": "Add Recipe",
       "short_name": "Add Recipe",
       "description": "Add a new recipe",
-      "url": "/?action=add-recipe"
+      "url": "/kitchenlistr/?action=add-recipe"
     },
     {
       "name": "Shopping List",
       "short_name": "Shopping",
       "description": "View your shopping list",
-      "url": "/?view=shopping"
+      "url": "/kitchenlistr/?view=shopping"
     }
   ]
 }
