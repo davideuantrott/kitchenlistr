@@ -2,7 +2,11 @@
   "permissions": {
     "allow": [
       "Bash(cd:*)",
-      "Bash(cat:*)"
+      "Bash(cat:*)",
+      "Bash(grep:*)",
+      "Bash(python3:*)",
+      "Bash(node:*)",
+      "Bash(powershell:*)"
     ]
   }
 }
