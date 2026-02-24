@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -17,7 +17,7 @@
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Source+Sans+3:wght@400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=DM+Sans:wght@400;500;600&family=DM+Serif+Display&family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Lato:wght@400;700&family=Libre+Baskerville:wght@400;700&family=Nunito:wght@400;600;700&family=Playfair+Display:wght@400;600;700&family=Sora:wght@400;600;700&family=Source+Sans+3:wght@400;500;600&family=Source+Serif+4:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
             /* Coolors palette: 50FFB1-4FB286-3C896D-546D64-4D685A */
@@ -38,6 +38,8 @@
             --radius-sm: 6px;
             --radius-md: 10px;
             --radius-lg: 16px;
+            --font-heading: 'Fraunces', Georgia, serif;
+            --font-body: 'Source Sans 3', -apple-system, BlinkMacSystemFont, sans-serif;
         }
 
         * {
@@ -47,7 +49,7 @@
         }
 
         body {
-            font-family: 'Source Sans 3', -apple-system, BlinkMacSystemFont, sans-serif;
+            font-family: var(--font-body);
             background: var(--bg-cream);
             color: var(--text-primary);
             line-height: 1.6;
@@ -55,7 +57,7 @@
         }
 
         h1, h2, h3, h4 {
-            font-family: 'Fraunces', Georgia, serif;
+            font-family: var(--font-heading);
             font-weight: 600;
             line-height: 1.3;
         }
@@ -126,7 +128,7 @@
         }
 
         .auth-logo-text {
-            font-family: 'Fraunces', Georgia, serif;
+            font-family: var(--font-heading);
             font-size: 2rem;
             font-weight: 700;
             color: var(--text-primary);
@@ -170,7 +172,7 @@
             padding: 0.6rem;
             border: none;
             background: transparent;
-            font-family: 'Source Sans 3', sans-serif;
+            font-family: var(--font-body);
             font-size: 0.95rem;
             font-weight: 500;
             color: var(--text-secondary);
@@ -219,7 +221,7 @@
             border: 1px solid var(--border-medium);
             border-radius: var(--radius-sm);
             background: var(--bg-white);
-            font-family: 'Source Sans 3', sans-serif;
+            font-family: var(--font-body);
             font-size: 1rem;
             font-weight: 500;
             color: var(--text-primary);
@@ -321,7 +323,7 @@
         }
 
         .logo-text {
-            font-family: 'Fraunces', Georgia, serif;
+            font-family: var(--font-heading);
             font-size: 1.4rem;
             font-weight: 700;
             color: var(--text-primary);
@@ -364,7 +366,7 @@
             border: 1px solid var(--border-medium);
             border-radius: var(--radius-sm);
             background: var(--bg-white);
-            font-family: 'Source Sans 3', sans-serif;
+            font-family: var(--font-body);
             font-size: 0.85rem;
             color: var(--text-secondary);
             cursor: pointer;
@@ -390,7 +392,7 @@
             border: none;
             background: transparent;
             color: var(--text-secondary);
-            font-family: 'Source Sans 3', sans-serif;
+            font-family: var(--font-body);
             font-size: 0.95rem;
             font-weight: 500;
             cursor: pointer;
@@ -454,7 +456,7 @@
             padding: 0.7rem 1.25rem;
             border: none;
             border-radius: var(--radius-sm);
-            font-family: 'Source Sans 3', sans-serif;
+            font-family: var(--font-body);
             font-size: 0.95rem;
             font-weight: 500;
             cursor: pointer;
@@ -587,7 +589,7 @@
             padding: 0.75rem 1rem;
             border: 1px solid var(--border-medium);
             border-radius: var(--radius-sm);
-            font-family: 'Source Sans 3', sans-serif;
+            font-family: var(--font-body);
             font-size: 1rem;
             color: var(--text-primary);
             background: var(--bg-white);
@@ -640,7 +642,7 @@
             border: none;
             background: transparent;
             color: var(--text-secondary);
-            font-family: 'Source Sans 3', sans-serif;
+            font-family: var(--font-body);
             font-size: 0.9rem;
             font-weight: 500;
             cursor: pointer;
@@ -882,7 +884,7 @@
             border: 1px solid var(--border-light);
             border-radius: var(--radius-sm);
             font-size: 0.8rem;
-            font-family: 'Source Sans 3', sans-serif;
+            font-family: var(--font-body);
             resize: vertical;
             min-height: 50px;
         }
@@ -1325,7 +1327,7 @@
         }
 
         .shopping-summary-number {
-            font-family: 'Fraunces', Georgia, serif;
+            font-family: var(--font-heading);
             font-size: 1.75rem;
             font-weight: 700;
             color: var(--accent-green-dark);
@@ -1354,7 +1356,7 @@
             padding: 0.4rem 0.75rem;
             border: 1px solid var(--border-medium);
             border-radius: var(--radius-sm);
-            font-family: 'Source Sans 3', sans-serif;
+            font-family: var(--font-body);
             font-size: 0.9rem;
             background: var(--bg-white);
             color: var(--text-primary);
@@ -1381,7 +1383,7 @@
             border: none;
             background: transparent;
             color: var(--text-secondary);
-            font-family: 'Source Sans 3', sans-serif;
+            font-family: var(--font-body);
             font-size: 0.9rem;
             font-weight: 500;
             cursor: pointer;
@@ -1544,7 +1546,7 @@
             padding: 0.4rem 0.6rem;
             border: 1px solid var(--border-medium);
             border-radius: var(--radius-sm);
-            font-family: 'Source Sans 3', sans-serif;
+            font-family: var(--font-body);
             font-size: 0.85rem;
             background: var(--bg-white);
             color: var(--text-primary);
@@ -1567,7 +1569,7 @@
             border: 1px solid var(--border-light);
             border-radius: var(--radius-sm);
             background: var(--bg-white);
-            font-family: 'Source Sans 3', sans-serif;
+            font-family: var(--font-body);
             font-size: 0.8rem;
             color: var(--text-secondary);
             cursor: pointer;
@@ -1644,7 +1646,7 @@
             padding: 0.6rem 0.75rem;
             border: 1px solid var(--border-medium);
             border-radius: var(--radius-sm);
-            font-family: 'Source Sans 3', sans-serif;
+            font-family: var(--font-body);
             font-size: 0.95rem;
         }
 
@@ -1706,7 +1708,7 @@
             border: none;
             background: none;
             text-align: left;
-            font-family: 'Source Sans 3', sans-serif;
+            font-family: var(--font-body);
             font-size: 0.9rem;
             color: var(--text-primary);
             cursor: pointer;
@@ -2151,7 +2153,7 @@
             padding: 0.4rem 0.75rem;
             border: 1px solid var(--border-medium);
             border-radius: var(--radius-sm);
-            font-family: 'Source Sans 3', sans-serif;
+            font-family: var(--font-body);
             font-size: 0.9rem;
             background: var(--bg-white);
             color: var(--text-primary);
@@ -2778,6 +2780,164 @@
         .mb-2 { margin-bottom: 1rem; }
         .text-center { text-align: center; }
         .text-muted { color: var(--text-secondary); }
+
+        /* =====================
+           Theme Overrides
+           ===================== */
+
+        [data-theme="terracotta"] {
+            --bg-cream: #FDF5F0;
+            --bg-white: #FFFFFF;
+            --text-primary: #3A2217;
+            --text-secondary: #7A4A30;
+            --accent-green: #C1693A;
+            --accent-green-light: #F5DDD1;
+            --accent-green-dark: #A0552D;
+            --accent-mint: #F0A070;
+            --accent-sage: #8B5A3A;
+            --border-light: #E8CFC0;
+            --border-medium: #8B5A3A;
+            --shadow-sm: 0 1px 3px rgba(193, 105, 58, 0.1);
+            --shadow-md: 0 4px 12px rgba(193, 105, 58, 0.15);
+            --shadow-lg: 0 8px 24px rgba(193, 105, 58, 0.18);
+            --font-heading: 'Playfair Display', Georgia, serif;
+            --font-body: 'Lato', -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+
+        [data-theme="nordic"] {
+            --bg-cream: #F0F4F8;
+            --bg-white: #FFFFFF;
+            --text-primary: #1A2B3A;
+            --text-secondary: #3A5570;
+            --accent-green: #4A80A5;
+            --accent-green-light: #C8DCEA;
+            --accent-green-dark: #366080;
+            --accent-mint: #7AABC5;
+            --accent-sage: #3A5570;
+            --border-light: #C5D5E5;
+            --border-medium: #3A5570;
+            --shadow-sm: 0 1px 3px rgba(74, 128, 165, 0.1);
+            --shadow-md: 0 4px 12px rgba(74, 128, 165, 0.15);
+            --shadow-lg: 0 8px 24px rgba(74, 128, 165, 0.18);
+            --font-heading: 'DM Serif Display', Georgia, serif;
+            --font-body: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+
+        [data-theme="berry"] {
+            --bg-cream: #F7F0FC;
+            --bg-white: #FFFFFF;
+            --text-primary: #2A1040;
+            --text-secondary: #6A3A8A;
+            --accent-green: #8B4FC8;
+            --accent-green-light: #E5CEFC;
+            --accent-green-dark: #6A3AA0;
+            --accent-mint: #B07AE0;
+            --accent-sage: #6A3A8A;
+            --border-light: #DCCAEE;
+            --border-medium: #6A3A8A;
+            --shadow-sm: 0 1px 3px rgba(139, 79, 200, 0.1);
+            --shadow-md: 0 4px 12px rgba(139, 79, 200, 0.15);
+            --shadow-lg: 0 8px 24px rgba(139, 79, 200, 0.18);
+            --font-heading: 'Cormorant Garamond', Georgia, serif;
+            --font-body: 'Nunito', -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+
+        [data-theme="amber"] {
+            --bg-cream: #FDF8EE;
+            --bg-white: #FFFFFF;
+            --text-primary: #3A2800;
+            --text-secondary: #7A5800;
+            --accent-green: #D4972A;
+            --accent-green-light: #F5E5BC;
+            --accent-green-dark: #A87420;
+            --accent-mint: #F0C060;
+            --accent-sage: #7A5800;
+            --border-light: #E8D8A0;
+            --border-medium: #7A5800;
+            --shadow-sm: 0 1px 3px rgba(212, 151, 42, 0.1);
+            --shadow-md: 0 4px 12px rgba(212, 151, 42, 0.15);
+            --shadow-lg: 0 8px 24px rgba(212, 151, 42, 0.18);
+            --font-heading: 'Sora', -apple-system, BlinkMacSystemFont, sans-serif;
+            --font-body: 'Sora', -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+
+        [data-theme="ink"] {
+            --bg-cream: #F8F3F4;
+            --bg-white: #FFFFFF;
+            --text-primary: #2A0A10;
+            --text-secondary: #6A2030;
+            --accent-green: #8B1A2B;
+            --accent-green-light: #F0C8CC;
+            --accent-green-dark: #6A1020;
+            --accent-mint: #C04060;
+            --accent-sage: #6A2030;
+            --border-light: #E0C0C5;
+            --border-medium: #6A2030;
+            --shadow-sm: 0 1px 3px rgba(139, 26, 43, 0.1);
+            --shadow-md: 0 4px 12px rgba(139, 26, 43, 0.15);
+            --shadow-lg: 0 8px 24px rgba(139, 26, 43, 0.18);
+            --font-heading: 'Libre Baskerville', Georgia, serif;
+            --font-body: 'Source Serif 4', Georgia, serif;
+        }
+
+        /* =====================
+           Theme Selector UI
+           ===================== */
+
+        .theme-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 1rem;
+        }
+
+        .theme-card {
+            border: 2px solid var(--border-light);
+            border-radius: var(--radius-md);
+            overflow: hidden;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .theme-card:hover {
+            border-color: var(--accent-sage);
+            transform: translateY(-2px);
+        }
+
+        .theme-card.active {
+            border-color: var(--accent-green);
+            box-shadow: 0 0 0 2px var(--accent-green);
+        }
+
+        .theme-swatch {
+            height: 64px;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .theme-check {
+            font-size: 1.5rem;
+            color: white;
+            text-shadow: 0 1px 3px rgba(0,0,0,0.4);
+        }
+
+        .theme-info {
+            padding: 0.6rem 0.75rem;
+            background: var(--bg-white);
+        }
+
+        .theme-name {
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: var(--text-primary);
+        }
+
+        .theme-fonts {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            margin-top: 0.15rem;
+        }
     </style>
 </head>
 <body>
@@ -3036,6 +3196,17 @@
                     <h1 class="page-title">Settings</h1>
                 </div>
                 
+                <!-- Appearance Section -->
+                <div class="settings-section">
+                    <div class="settings-section-header">
+                        <h2 class="settings-section-title">ðŸŽ¨ Appearance</h2>
+                    </div>
+                    <div class="settings-section-body">
+                        <p class="text-muted mb-2">Choose a colour theme for KitchenListr.</p>
+                        <div class="theme-grid" id="theme-grid"></div>
+                    </div>
+                </div>
+
                 <!-- Shops & Aisles Section -->
                 <div class="settings-section">
                     <div class="settings-section-header">
@@ -3271,7 +3442,7 @@ oregano"></textarea>
 
                 <!-- Quick Add Recipe (inline) -->
                 <div id="quick-add-recipe-form" style="display: none; border: 1px solid var(--border-light); border-radius: var(--radius-md); padding: 1rem; margin-bottom: 1rem; background: var(--bg-cream);">
-                    <h4 style="font-size: 0.95rem; margin-bottom: 0.75rem; font-family: 'Fraunces', serif;">Quick Add Recipe</h4>
+                    <h4 style="font-size: 0.95rem; margin-bottom: 0.75rem; font-family: var(--font-heading);">Quick Add Recipe</h4>
                     <div class="form-group" style="margin-bottom: 0.75rem;">
                         <input type="text" class="form-input" id="quick-recipe-name" placeholder="Recipe name..." style="width: 100%;">
                     </div>
@@ -3791,6 +3962,13 @@ oregano"></textarea>
     </div>
 
 
+    <script>
+        (function() {
+            var t = localStorage.getItem('kitchenlistr-theme');
+            if (t && t !== 'garden') document.documentElement.setAttribute('data-theme', t);
+        })();
+    </script>
+
     <!-- Firebase SDK -->
     <script type="module">
         // =====================
@@ -3853,6 +4031,107 @@ oregano"></textarea>
 
         // UI State
         let collapsedShops = {}; // { shopId: true } for collapsed aisle lists
+        let currentTheme = 'garden';
+
+
+        // =====================
+        // Theme Management
+        // =====================
+
+        const themes = {
+            garden: {
+                name: 'Garden',
+                accent: '#4FB286',
+                bg: '#F4F9F7',
+                text: '#2A3B35',
+                headingFont: 'Fraunces',
+                bodyFont: 'Source Sans 3',
+                shadowRgb: '60, 137, 109'
+            },
+            terracotta: {
+                name: 'Terracotta',
+                accent: '#C1693A',
+                bg: '#FDF5F0',
+                text: '#3A2217',
+                headingFont: 'Playfair Display',
+                bodyFont: 'Lato',
+                shadowRgb: '193, 105, 58'
+            },
+            nordic: {
+                name: 'Nordic',
+                accent: '#4A80A5',
+                bg: '#F0F4F8',
+                text: '#1A2B3A',
+                headingFont: 'DM Serif Display',
+                bodyFont: 'DM Sans',
+                shadowRgb: '74, 128, 165'
+            },
+            berry: {
+                name: 'Berry',
+                accent: '#8B4FC8',
+                bg: '#F7F0FC',
+                text: '#2A1040',
+                headingFont: 'Cormorant Garamond',
+                bodyFont: 'Nunito',
+                shadowRgb: '139, 79, 200'
+            },
+            amber: {
+                name: 'Amber',
+                accent: '#D4972A',
+                bg: '#FDF8EE',
+                text: '#3A2800',
+                headingFont: 'Sora',
+                bodyFont: 'Sora',
+                shadowRgb: '212, 151, 42'
+            },
+            ink: {
+                name: 'Ink',
+                accent: '#8B1A2B',
+                bg: '#F8F3F4',
+                text: '#2A0A10',
+                headingFont: 'Libre Baskerville',
+                bodyFont: 'Source Serif 4',
+                shadowRgb: '139, 26, 43'
+            }
+        };
+
+        function applyTheme(themeId) {
+            if (!themes[themeId]) themeId = 'garden';
+            currentTheme = themeId;
+            if (themeId === 'garden') {
+                document.documentElement.removeAttribute('data-theme');
+            } else {
+                document.documentElement.setAttribute('data-theme', themeId);
+            }
+            const themeColorMeta = document.querySelector('meta[name="theme-color"]');
+            if (themeColorMeta) themeColorMeta.setAttribute('content', themes[themeId].accent);
+            localStorage.setItem('kitchenlistr-theme', themeId);
+            renderThemeSelector();
+        }
+
+        function renderThemeSelector() {
+            const grid = document.getElementById('theme-grid');
+            if (!grid) return;
+            grid.innerHTML = Object.entries(themes).map(([id, t]) => {
+                const isActive = id === currentTheme;
+                const swatch = `linear-gradient(135deg, ${t.bg} 50%, ${t.accent} 50%)`;
+                return `<div class="theme-card${isActive ? ' active' : ''}" onclick="selectTheme('${id}')">
+                    <div class="theme-swatch" style="background: ${swatch};">
+                        ${isActive ? '<span class="theme-check">âœ“</span>' : ''}
+                    </div>
+                    <div class="theme-info">
+                        <div class="theme-name">${t.name}</div>
+                        <div class="theme-fonts">${t.headingFont}</div>
+                    </div>
+                </div>`;
+            }).join('');
+        }
+
+        async function selectTheme(themeId) {
+            applyTheme(themeId);
+            await saveUserPrefs();
+        }
+        window.selectTheme = selectTheme;
 
         // =====================
         // Auth UI Functions
@@ -4159,6 +4438,7 @@ oregano"></textarea>
                         const data = snapshot.data();
                         mealCategories = data.mealCategories || ['Breakfast', 'Lunch', 'Dinner'];
                         dayNotes = data.dayNotes || {};
+                        if (data.theme) applyTheme(data.theme);
                     } else {
                         mealCategories = ['Breakfast', 'Lunch', 'Dinner'];
                         dayNotes = {};
@@ -6743,6 +7023,7 @@ oregano"></textarea>
             
             // Render settings components when switching to settings
             if (viewName === 'settings') {
+                renderThemeSelector();
                 renderIngredientDictionary();
                 renderIngredientManager();
                 renderMealCategories();
@@ -7312,7 +7593,8 @@ oregano"></textarea>
             try {
                 await setDoc(doc(db, "users", currentUser.uid, "settings", "userPrefs"), {
                     mealCategories: mealCategories,
-                    dayNotes: dayNotes
+                    dayNotes: dayNotes,
+                    theme: currentTheme
                 });
             } catch (error) {
                 console.error("Error saving user prefs:", error);
