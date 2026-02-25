@@ -4205,11 +4205,14 @@ oregano"></textarea>
         // Returns the Firestore path segments for the currently active data context.
         // Usage: collection(db, ...getDataPath(), "recipes")
         //        doc(db, ...getDataPath(), "settings", "shoppingHave")
+        // NOTE: Firestore paths must alternate collection/document (even segments for
+        // doc(), odd for collection()). Household: ['households', hid] = 2 segments.
+        // Personal: ['users', uid] = 2 segments. Both are correct.
         function getDataPath() {
             if (currentDataMode === 'household' && currentHouseholdId) {
                 return ['households', currentHouseholdId];
             }
-            return ['users', currentUser.uid, 'personal'];
+            return ['users', currentUser.uid];
         }
 
         let unsubscribeRecipes = null;
@@ -4543,7 +4546,7 @@ oregano"></textarea>
 
         async function loadUserProfile() {
             try {
-                const profileSnap = await getDoc(doc(db, "users", currentUser.uid, "profile"));
+                const profileSnap = await getDoc(doc(db, "users", currentUser.uid, "settings", "profile"));
                 if (profileSnap.exists()) {
                     const p = profileSnap.data();
                     currentHouseholdId   = p.householdId   || null;
@@ -4561,45 +4564,12 @@ oregano"></textarea>
             renderHouseholdSettings();
         }
 
-        // Copies legacy data (users/{uid}/recipes, etc.) into users/{uid}/personal/
-        // on first login after the update. Old data is left in place.
+        // No data migration needed: personal data stays at its original users/{uid}/
+        // paths. The personal/ sub-path design was abandoned because Firestore requires
+        // strictly alternating collection/document path segments, and the extra 'personal'
+        // segment would have broken all path depths.
         async function runMigrationIfNeeded() {
-            try {
-                const profileSnap = await getDoc(doc(db, "users", currentUser.uid, "profile"));
-                if (profileSnap.exists() && profileSnap.data().migrationComplete) return;
-
-                const oldCollections = ['recipes', 'mealPlan', 'adhocItems', 'shops'];
-                for (const collName of oldCollections) {
-                    const snap = await getDocs(collection(db, "users", currentUser.uid, collName));
-                    for (const docSnap of snap.docs) {
-                        await setDoc(
-                            doc(db, "users", currentUser.uid, "personal", collName, docSnap.id),
-                            docSnap.data()
-                        );
-                    }
-                }
-
-                const settingsDocs = ['shoppingHave', 'ingredientAisles', 'userPrefs'];
-                for (const name of settingsDocs) {
-                    const snap = await getDoc(doc(db, "users", currentUser.uid, "settings", name));
-                    if (snap.exists()) {
-                        await setDoc(
-                            doc(db, "users", currentUser.uid, "personal", "settings", name),
-                            snap.data()
-                        );
-                    }
-                }
-
-                // Write / update the profile doc to record completion
-                const existingProfile = profileSnap.exists() ? profileSnap.data() : {};
-                await setDoc(doc(db, "users", currentUser.uid, "profile"), {
-                    ...existingProfile,
-                    migrationComplete: true,
-                    migratedAt: new Date().toISOString()
-                });
-            } catch (e) {
-                console.error('Migration error (will retry next login):', e);
-            }
+            // No-op: kept for future use if a migration is ever required.
         }
 
         // Updates the Personal / Household toggle in the header
@@ -8045,8 +8015,8 @@ oregano"></textarea>
                 });
 
                 // Update user profile
-                const existingProfile = await getDoc(doc(db, "users", currentUser.uid, "profile"));
-                await setDoc(doc(db, "users", currentUser.uid, "profile"), {
+                const existingProfile = await getDoc(doc(db, "users", currentUser.uid, "settings", "profile"));
+                await setDoc(doc(db, "users", currentUser.uid, "settings", "profile"), {
                     ...(existingProfile.exists() ? existingProfile.data() : {}),
                     householdId: hid,
                     householdName: name,
@@ -8078,7 +8048,7 @@ oregano"></textarea>
             if (!currentHouseholdId || !currentUser) return;
             try {
                 await updateDoc(doc(db, "households", currentHouseholdId), { name: newName });
-                await updateDoc(doc(db, "users", currentUser.uid, "profile"), { householdName: newName });
+                await updateDoc(doc(db, "users", currentUser.uid, "settings", "profile"), { householdName: newName });
                 currentHouseholdName = newName;
                 updateContextSwitcher();
                 renderHouseholdSettings();
@@ -8176,8 +8146,8 @@ oregano"></textarea>
                 });
 
                 // Update user profile
-                const existingProfile = await getDoc(doc(db, "users", currentUser.uid, "profile"));
-                await setDoc(doc(db, "users", currentUser.uid, "profile"), {
+                const existingProfile = await getDoc(doc(db, "users", currentUser.uid, "settings", "profile"));
+                await setDoc(doc(db, "users", currentUser.uid, "settings", "profile"), {
                     ...(existingProfile.exists() ? existingProfile.data() : {}),
                     householdId: hid,
                     householdName,
@@ -8268,8 +8238,8 @@ oregano"></textarea>
                 }
 
                 // Clear household from user profile
-                const profileSnap = await getDoc(doc(db, "users", currentUser.uid, "profile"));
-                await setDoc(doc(db, "users", currentUser.uid, "profile"), {
+                const profileSnap = await getDoc(doc(db, "users", currentUser.uid, "settings", "profile"));
+                await setDoc(doc(db, "users", currentUser.uid, "settings", "profile"), {
                     ...(profileSnap.exists() ? profileSnap.data() : {}),
                     householdId: null,
                     householdName: null,
