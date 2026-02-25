@@ -1755,6 +1755,40 @@
             border-radius: var(--radius-md) var(--radius-md) 0 0;
         }
 
+        /* When a section is collapsed: remove the bottom border on the header
+           (it becomes the bottom edge of the card) and hide the body */
+        .settings-section.section-collapsed .settings-section-header {
+            border-bottom: none;
+            border-radius: var(--radius-md);
+        }
+
+        .settings-section.section-collapsed .settings-section-body {
+            display: none;
+        }
+
+        .section-header-actions {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .section-toggle-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: var(--text-secondary);
+            font-size: 0.78rem;
+            padding: 0.25rem 0.4rem;
+            border-radius: var(--radius-sm);
+            line-height: 1;
+            transition: color 0.15s, background 0.15s;
+        }
+
+        .section-toggle-btn:hover {
+            color: var(--text-primary);
+            background: var(--border-light);
+        }
+
         .settings-section-title {
             font-size: 1.1rem;
             font-weight: 600;
@@ -3379,9 +3413,10 @@
                 </div>
                 
                 <!-- Appearance Section -->
-                <div class="settings-section">
+                <div class="settings-section" id="settings-section-appearance">
                     <div class="settings-section-header">
                         <h2 class="settings-section-title">&#127912; Appearance</h2>
+                        <button class="section-toggle-btn" id="toggle-btn-appearance" onclick="toggleSettingsSection('appearance')" title="Collapse">▼</button>
                     </div>
                     <div class="settings-section-body">
                         <p class="text-muted mb-2">Choose a colour theme for KitchenListr.</p>
@@ -3390,10 +3425,13 @@
                 </div>
 
                 <!-- Shops & Aisles Section -->
-                <div class="settings-section">
+                <div class="settings-section" id="settings-section-shops">
                     <div class="settings-section-header">
                         <h2 class="settings-section-title">🏪 Shops & Aisles</h2>
-                        <button class="btn btn-primary btn-small" onclick="openAddShopModal()">+ Add Shop</button>
+                        <div class="section-header-actions">
+                            <button class="section-toggle-btn" id="toggle-btn-shops" onclick="toggleSettingsSection('shops')" title="Collapse">▼</button>
+                            <button class="btn btn-primary btn-small" onclick="openAddShopModal()">+ Add Shop</button>
+                        </div>
                     </div>
                     <div class="settings-section-body">
                         <p class="text-muted mb-2">Set up your shops and their aisle layouts. When sorting your shopping list by aisle, items will appear in the order you walk through the store.</p>
@@ -3410,9 +3448,10 @@
                 </div>
                 
                 <!-- Ingredient Dictionary Section -->
-                <div class="settings-section">
+                <div class="settings-section" id="settings-section-dictionary">
                     <div class="settings-section-header">
                         <h2 class="settings-section-title">📖 Ingredient Dictionary</h2>
+                        <button class="section-toggle-btn" id="toggle-btn-dictionary" onclick="toggleSettingsSection('dictionary')" title="Collapse">▼</button>
                     </div>
                     <div class="settings-section-body">
                         <p class="text-muted mb-2">Manage which aisle each ingredient belongs to. Ingredients are remembered per shop, so "milk" can be in different aisles at different stores.</p>
@@ -3479,9 +3518,10 @@
                 </div>
                 
                 <!-- Ingredient Manager Section -->
-                <div class="settings-section">
+                <div class="settings-section" id="settings-section-ingredient-manager">
                     <div class="settings-section-header">
                         <h2 class="settings-section-title">🥕 Ingredient Manager</h2>
+                        <button class="section-toggle-btn" id="toggle-btn-ingredient-manager" onclick="toggleSettingsSection('ingredient-manager')" title="Collapse">▼</button>
                     </div>
                     <div class="settings-section-body">
                         <p class="text-muted mb-2">Edit, rename, or merge ingredients across all your recipes. Changes here will update every recipe that uses the ingredient.</p>
@@ -3501,9 +3541,10 @@
                 </div>
                 
                 <!-- Meal Categories Section -->
-                <div class="settings-section">
+                <div class="settings-section" id="settings-section-meal-categories">
                     <div class="settings-section-header">
                         <h2 class="settings-section-title">🍽️ Meal Categories</h2>
+                        <button class="section-toggle-btn" id="toggle-btn-meal-categories" onclick="toggleSettingsSection('meal-categories')" title="Collapse">▼</button>
                     </div>
                     <div class="settings-section-body">
                         <p class="text-muted mb-2">Customise the meal categories shown in your meal planner. Add categories like "Kids' Dinner" or "Snack".</p>
@@ -3520,9 +3561,10 @@
                 </div>
 
                 <!-- Household Section -->
-                <div class="settings-section">
+                <div class="settings-section" id="settings-section-household">
                     <div class="settings-section-header">
                         <h2 class="settings-section-title">👨‍👩‍👧 Household</h2>
+                        <button class="section-toggle-btn" id="toggle-btn-household" onclick="toggleSettingsSection('household')" title="Collapse">▼</button>
                     </div>
                     <div class="settings-section-body" id="household-settings-body">
                         <!-- Rendered by renderHouseholdSettings() -->
@@ -4243,6 +4285,7 @@ oregano"></textarea>
 
         // UI State
         let collapsedShops = {}; // { shopId: true } for collapsed aisle lists
+        let collapsedSections = JSON.parse(localStorage.getItem('kl_collapsedSections') || '{}');
         let currentTheme = 'garden';
 
 
@@ -7301,14 +7344,43 @@ oregano"></textarea>
         }
         window.bulkAssignAisle = bulkAssignAisle;
 
-        // Helper to show settings view
+        // =====================
+        // Collapsible Settings Sections
+        // =====================
+
+        const SETTINGS_SECTION_KEYS = [
+            'appearance', 'shops', 'dictionary',
+            'ingredient-manager', 'meal-categories', 'household'
+        ];
+
+        function toggleSettingsSection(key) {
+            collapsedSections[key] = !collapsedSections[key];
+            localStorage.setItem('kl_collapsedSections', JSON.stringify(collapsedSections));
+            applyCollapsedSections();
+        }
+        window.toggleSettingsSection = toggleSettingsSection;
+
+        function applyCollapsedSections() {
+            for (const key of SETTINGS_SECTION_KEYS) {
+                const section = document.getElementById(`settings-section-${key}`);
+                const btn     = document.getElementById(`toggle-btn-${key}`);
+                const isCollapsed = !!collapsedSections[key];
+                if (section) section.classList.toggle('section-collapsed', isCollapsed);
+                if (btn) btn.textContent = isCollapsed ? '▶' : '▼';
+            }
+        }
+
+        // =====================
+        // View Navigation
+        // =====================
+
         function showView(viewName) {
             document.querySelectorAll('.nav-btn').forEach(b => {
                 b.classList.toggle('active', b.dataset.view === viewName);
             });
             document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
             document.getElementById(`${viewName}-view`).classList.add('active');
-            
+
             // Render settings components when switching to settings
             if (viewName === 'settings') {
                 renderThemeSelector();
@@ -7316,8 +7388,9 @@ oregano"></textarea>
                 renderIngredientManager();
                 renderMealCategories();
                 renderHouseholdSettings();
+                applyCollapsedSections();
             }
-            
+
             // Setup adhoc autocomplete when switching to shopping
             if (viewName === 'shopping') {
                 setTimeout(setupAdhocAutocomplete, 100);
@@ -7953,6 +8026,7 @@ oregano"></textarea>
                 </div>`;
 
             loadHouseholdMembers();
+            applyCollapsedSections();
         }
         window.renderHouseholdSettings = renderHouseholdSettings;
 
