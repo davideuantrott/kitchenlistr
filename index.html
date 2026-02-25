@@ -7938,16 +7938,16 @@ oregano"></textarea>
 
                 <hr style="margin: 1.25rem 0; border: none; border-top: 1px solid var(--border-light);">
                 <h3 style="font-size:0.95rem; font-weight:600; margin-bottom:0.5rem;">Share Data</h3>
-                <p class="text-muted mb-2" style="font-size:0.82rem;">Copy all your personal recipes and shop layouts into the household, or pull the household data into your personal space.</p>
+                <p class="text-muted mb-2" style="font-size:0.82rem;">Copy your full personal profile to the household, or pull everything from the household into your personal space. Covers recipes, meal plan, shops &amp; aisle layouts, ingredient mappings, and meal categories.</p>
                 <div class="share-direction-row">
                     <div class="share-direction-item">
                         <div class="share-direction-title">Personal → Household</div>
-                        <div class="share-direction-desc">Copies your personal recipes and shops into the household so everyone can see them.</div>
+                        <div class="share-direction-desc">Copies your personal recipes, meal plan, shops, ingredient mappings, and meal categories to the household so all members can see them.</div>
                         <button class="btn btn-secondary btn-small" onclick="shareDataToHousehold()">Copy to Household</button>
                     </div>
                     <div class="share-direction-item">
                         <div class="share-direction-title">Household → Personal</div>
-                        <div class="share-direction-desc">Copies all household recipes and shops into your personal space.</div>
+                        <div class="share-direction-desc">Copies all household recipes, meal plan, shops, ingredient mappings, and meal categories into your personal space.</div>
                         <button class="btn btn-secondary btn-small" onclick="shareDataToPersonal()">Copy to Personal</button>
                     </div>
                 </div>`;
@@ -8269,27 +8269,51 @@ oregano"></textarea>
 
         async function shareDataToHousehold() {
             if (!currentHouseholdId || !currentUser) return;
-            if (!confirm('Copy all your personal recipes and shop layouts into the household? Existing household data with the same name will not be overwritten — new copies will be added.')) return;
+            if (!confirm(
+                'Copy everything from your personal profile to the household?\n\n' +
+                'This includes: recipes, meal plan, shops & aisle layouts, ingredient mappings, and meal categories.\n\n' +
+                'Existing household items with the same ID will be overwritten. This action cannot be undone.'
+            )) return;
+
             showSyncStatus('syncing', 'Copying…');
             try {
-                const personalPath = ['users', currentUser.uid, 'personal'];
-                const householdPath = ['households', currentHouseholdId];
+                const src  = ['users', currentUser.uid];
+                const dest = ['households', currentHouseholdId];
 
-                const recipeSnap = await getDocs(collection(db, ...personalPath, 'recipes'));
+                // Recipes — preserve original IDs so re-running this is idempotent
+                const recipeSnap = await getDocs(collection(db, ...src, 'recipes'));
                 for (const d of recipeSnap.docs) {
-                    await setDoc(doc(db, ...householdPath, 'recipes', generateId()), d.data());
+                    await setDoc(doc(db, ...dest, 'recipes', d.id), d.data());
                 }
 
-                const shopSnap = await getDocs(collection(db, ...personalPath, 'shops'));
+                // Meal plan — copy all date entries
+                const mealPlanSnap = await getDocs(collection(db, ...src, 'mealPlan'));
+                for (const d of mealPlanSnap.docs) {
+                    await setDoc(doc(db, ...dest, 'mealPlan', d.id), d.data());
+                }
+
+                // Shops — preserve original IDs so ingredient aisle mappings (which
+                // reference shop IDs as keys) remain valid in the household
+                const shopSnap = await getDocs(collection(db, ...src, 'shops'));
                 for (const d of shopSnap.docs) {
-                    await setDoc(doc(db, ...householdPath, 'shops', generateId()), d.data());
+                    await setDoc(doc(db, ...dest, 'shops', d.id), d.data());
                 }
 
-                const aislesSnap = await getDoc(doc(db, ...personalPath, 'settings', 'ingredientAisles'));
+                // Ingredient-to-aisle mappings (shop IDs are preserved above, so valid)
+                const aislesSnap = await getDoc(doc(db, ...src, 'settings', 'ingredientAisles'));
                 if (aislesSnap.exists()) {
-                    const existing = await getDoc(doc(db, ...householdPath, 'settings', 'ingredientAisles'));
-                    const merged = { ...(existing.exists() ? existing.data() : {}), ...aislesSnap.data() };
-                    await setDoc(doc(db, ...householdPath, 'settings', 'ingredientAisles'), merged);
+                    await setDoc(doc(db, ...dest, 'settings', 'ingredientAisles'), aislesSnap.data());
+                }
+
+                // Meal categories (stored inside userPrefs — merge to avoid wiping
+                // other household prefs like theme)
+                const prefsSnap = await getDoc(doc(db, ...src, 'settings', 'userPrefs'));
+                if (prefsSnap.exists() && prefsSnap.data().mealCategories) {
+                    const householdPrefsSnap = await getDoc(doc(db, ...dest, 'settings', 'userPrefs'));
+                    await setDoc(doc(db, ...dest, 'settings', 'userPrefs'), {
+                        ...(householdPrefsSnap.exists() ? householdPrefsSnap.data() : {}),
+                        mealCategories: prefsSnap.data().mealCategories
+                    });
                 }
 
                 showSyncStatus('success', 'Copied to household!');
@@ -8302,27 +8326,49 @@ oregano"></textarea>
 
         async function shareDataToPersonal() {
             if (!currentHouseholdId || !currentUser) return;
-            if (!confirm('Copy all household recipes and shop layouts into your personal space? New copies will be added.')) return;
+            if (!confirm(
+                'Copy everything from the household to your personal profile?\n\n' +
+                'This includes: recipes, meal plan, shops & aisle layouts, ingredient mappings, and meal categories.\n\n' +
+                'Existing personal items with the same ID will be overwritten. This action cannot be undone.'
+            )) return;
+
             showSyncStatus('syncing', 'Copying…');
             try {
-                const householdPath = ['households', currentHouseholdId];
-                const personalPath  = ['users', currentUser.uid, 'personal'];
+                const src  = ['households', currentHouseholdId];
+                const dest = ['users', currentUser.uid];
 
-                const recipeSnap = await getDocs(collection(db, ...householdPath, 'recipes'));
+                // Recipes
+                const recipeSnap = await getDocs(collection(db, ...src, 'recipes'));
                 for (const d of recipeSnap.docs) {
-                    await setDoc(doc(db, ...personalPath, 'recipes', generateId()), d.data());
+                    await setDoc(doc(db, ...dest, 'recipes', d.id), d.data());
                 }
 
-                const shopSnap = await getDocs(collection(db, ...householdPath, 'shops'));
+                // Meal plan
+                const mealPlanSnap = await getDocs(collection(db, ...src, 'mealPlan'));
+                for (const d of mealPlanSnap.docs) {
+                    await setDoc(doc(db, ...dest, 'mealPlan', d.id), d.data());
+                }
+
+                // Shops (preserve original IDs)
+                const shopSnap = await getDocs(collection(db, ...src, 'shops'));
                 for (const d of shopSnap.docs) {
-                    await setDoc(doc(db, ...personalPath, 'shops', generateId()), d.data());
+                    await setDoc(doc(db, ...dest, 'shops', d.id), d.data());
                 }
 
-                const aislesSnap = await getDoc(doc(db, ...householdPath, 'settings', 'ingredientAisles'));
+                // Ingredient-to-aisle mappings
+                const aislesSnap = await getDoc(doc(db, ...src, 'settings', 'ingredientAisles'));
                 if (aislesSnap.exists()) {
-                    const existing = await getDoc(doc(db, ...personalPath, 'settings', 'ingredientAisles'));
-                    const merged = { ...(existing.exists() ? existing.data() : {}), ...aislesSnap.data() };
-                    await setDoc(doc(db, ...personalPath, 'settings', 'ingredientAisles'), merged);
+                    await setDoc(doc(db, ...dest, 'settings', 'ingredientAisles'), aislesSnap.data());
+                }
+
+                // Meal categories
+                const prefsSnap = await getDoc(doc(db, ...src, 'settings', 'userPrefs'));
+                if (prefsSnap.exists() && prefsSnap.data().mealCategories) {
+                    const personalPrefsSnap = await getDoc(doc(db, ...dest, 'settings', 'userPrefs'));
+                    await setDoc(doc(db, ...dest, 'settings', 'userPrefs'), {
+                        ...(personalPrefsSnap.exists() ? personalPrefsSnap.data() : {}),
+                        mealCategories: prefsSnap.data().mealCategories
+                    });
                 }
 
                 showSyncStatus('success', 'Copied to personal!');
