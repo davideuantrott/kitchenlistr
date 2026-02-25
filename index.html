@@ -2938,6 +2938,181 @@
             color: var(--text-secondary);
             margin-top: 0.15rem;
         }
+
+        /* ── Context Switcher (Personal / Household toggle in header) ── */
+        .context-switcher {
+            display: none; /* shown by JS when user is in a household */
+            align-items: center;
+            background: var(--bg-cream);
+            border: 1px solid var(--border-medium);
+            border-radius: 999px;
+            padding: 3px;
+            gap: 2px;
+        }
+
+        .ctx-btn {
+            padding: 0.3rem 0.85rem;
+            border: none;
+            border-radius: 999px;
+            background: transparent;
+            color: var(--text-secondary);
+            font-size: 0.8rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background 0.15s, color 0.15s;
+            white-space: nowrap;
+        }
+
+        .ctx-btn:hover {
+            background: var(--bg-white);
+        }
+
+        .ctx-btn.active {
+            background: var(--accent-green);
+            color: white;
+        }
+
+        /* ── Household Settings UI ── */
+        .household-member-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .household-member-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.6rem 0.75rem;
+            background: var(--bg-cream);
+            border: 1px solid var(--border-light);
+            border-radius: var(--radius-sm);
+        }
+
+        .member-avatar {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: var(--accent-green-light);
+            color: var(--accent-green-dark);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 0.8rem;
+            flex-shrink: 0;
+        }
+
+        .member-email {
+            flex: 1;
+            font-size: 0.9rem;
+            color: var(--text-primary);
+        }
+
+        .member-role-badge {
+            font-size: 0.72rem;
+            font-weight: 600;
+            padding: 0.2rem 0.55rem;
+            border-radius: 999px;
+            text-transform: uppercase;
+            letter-spacing: 0.03em;
+        }
+
+        .member-role-badge.owner {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .member-role-badge.admin {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
+        .member-role-badge.member {
+            background: var(--bg-cream);
+            color: var(--text-secondary);
+            border: 1px solid var(--border-medium);
+        }
+
+        .member-remove-btn {
+            padding: 0.2rem 0.5rem;
+            font-size: 0.78rem;
+            border: 1px solid var(--border-medium);
+            border-radius: var(--radius-sm);
+            background: transparent;
+            color: var(--text-secondary);
+            cursor: pointer;
+        }
+
+        .member-remove-btn:hover {
+            background: #fee2e2;
+            color: #b91c1c;
+            border-color: #fca5a5;
+        }
+
+        .invite-link-box {
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+            margin-top: 0.75rem;
+        }
+
+        .invite-link-input {
+            flex: 1;
+            padding: 0.5rem 0.75rem;
+            border: 1px solid var(--border-medium);
+            border-radius: var(--radius-sm);
+            font-size: 0.82rem;
+            background: var(--bg-cream);
+            color: var(--text-secondary);
+            font-family: monospace;
+        }
+
+        .household-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        .household-name-display {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 0.25rem;
+        }
+
+        .household-meta {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin-bottom: 1rem;
+        }
+
+        .share-direction-row {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .share-direction-item {
+            padding: 0.75rem;
+            border: 1px solid var(--border-light);
+            border-radius: var(--radius-sm);
+            background: var(--bg-cream);
+        }
+
+        .share-direction-title {
+            font-weight: 600;
+            font-size: 0.9rem;
+            margin-bottom: 0.35rem;
+        }
+
+        .share-direction-desc {
+            font-size: 0.82rem;
+            color: var(--text-secondary);
+            margin-bottom: 0.5rem;
+        }
     </style>
 </head>
 <body>
@@ -3025,6 +3200,13 @@
                     <button class="nav-btn" data-view="shopping">Shopping List</button>
                     <button class="nav-btn" data-view="settings">Settings</button>
                 </nav>
+
+                <!-- Context switcher: only visible when user belongs to a household -->
+                <div id="context-switcher" class="context-switcher">
+                    <button id="ctx-personal-btn" class="ctx-btn active" onclick="switchDataMode('personal')">Personal</button>
+                    <button id="ctx-household-btn" class="ctx-btn" onclick="switchDataMode('household')">Household</button>
+                </div>
+
                 <div class="header-right">
                     <button class="help-btn" onclick="openHelpModal()" title="Help">?</button>
                     <div class="user-info">
@@ -3325,15 +3507,25 @@
                     </div>
                     <div class="settings-section-body">
                         <p class="text-muted mb-2">Customise the meal categories shown in your meal planner. Add categories like "Kids' Dinner" or "Snack".</p>
-                        
+
                         <div id="meal-categories-list">
                             <!-- Rendered by JS -->
                         </div>
-                        
+
                         <div style="margin-top: 0.75rem; display: flex; gap: 0.5rem;">
                             <input type="text" class="form-input" id="new-meal-category" placeholder="New category name..." style="flex: 1;">
                             <button class="btn btn-primary btn-small" onclick="addMealCategory()">Add Category</button>
                         </div>
+                    </div>
+                </div>
+
+                <!-- Household Section -->
+                <div class="settings-section">
+                    <div class="settings-section-header">
+                        <h2 class="settings-section-title">👨‍👩‍👧 Household</h2>
+                    </div>
+                    <div class="settings-section-body" id="household-settings-body">
+                        <!-- Rendered by renderHouseholdSettings() -->
                     </div>
                 </div>
             </section>
@@ -3975,7 +4167,7 @@ oregano"></textarea>
         // Firebase Setup
         // =====================
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getFirestore, collection, doc, setDoc, getDoc, deleteDoc, onSnapshot, query } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getFirestore, collection, doc, setDoc, getDoc, getDocs, deleteDoc, onSnapshot, query, updateDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
         import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signInWithPopup, signInWithRedirect, getRedirectResult, GoogleAuthProvider, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
 		// Your Firebase configuration
@@ -4003,6 +4195,23 @@ oregano"></textarea>
         let shoppingHave = {};
         let adhocItems = [];
         let currentUser = null;
+
+        // Household / personal mode
+        let currentDataMode = 'personal'; // 'personal' | 'household'
+        let currentHouseholdId = null;
+        let currentHouseholdName = null;
+        let currentHouseholdRole = null; // 'owner' | 'admin' | 'member'
+
+        // Returns the Firestore path segments for the currently active data context.
+        // Usage: collection(db, ...getDataPath(), "recipes")
+        //        doc(db, ...getDataPath(), "settings", "shoppingHave")
+        function getDataPath() {
+            if (currentDataMode === 'household' && currentHouseholdId) {
+                return ['households', currentHouseholdId];
+            }
+            return ['users', currentUser.uid, 'personal'];
+        }
+
         let unsubscribeRecipes = null;
         let unsubscribeMealPlan = null;
         let unsubscribeShoppingHave = null;
@@ -4273,21 +4482,32 @@ oregano"></textarea>
         // Auth State Listener
         // =====================
 
-        onAuthStateChanged(auth, (user) => {
+        onAuthStateChanged(auth, async (user) => {
             document.getElementById('loading-overlay').classList.add('hidden');
-            
+
             if (user) {
                 currentUser = user;
                 showApp(user);
-                setupDataListeners(user.uid);
-                
-                // Check for import link after a short delay to ensure data is loaded
+
+                // Load household membership from profile, then migrate legacy data if needed
+                await loadUserProfile();
+                await runMigrationIfNeeded();
+
+                // Start real-time listeners for the active data context
+                setupDataListeners(getDataPath());
+
+                // Check for a household join link or a recipe/shop import link
+                setTimeout(() => checkForJoin(), 300);
                 setTimeout(() => checkForImport(), 500);
-                
+
                 // Show welcome modal for new users
                 setTimeout(() => checkShowWelcome(), 800);
             } else {
                 currentUser = null;
+                currentDataMode = 'personal';
+                currentHouseholdId = null;
+                currentHouseholdName = null;
+                currentHouseholdRole = null;
                 showAuthScreen();
                 cleanupDataListeners();
             }
@@ -4318,16 +4538,108 @@ oregano"></textarea>
         }
 
         // =====================
+        // Profile, Migration & Context
+        // =====================
+
+        async function loadUserProfile() {
+            try {
+                const profileSnap = await getDoc(doc(db, "users", currentUser.uid, "profile"));
+                if (profileSnap.exists()) {
+                    const p = profileSnap.data();
+                    currentHouseholdId   = p.householdId   || null;
+                    currentHouseholdName = p.householdName || null;
+                    currentHouseholdRole = p.householdRole || null;
+                } else {
+                    currentHouseholdId = currentHouseholdName = currentHouseholdRole = null;
+                }
+            } catch (e) {
+                console.error('Error loading user profile:', e);
+            }
+            // Always start in personal mode on login; user may switch via header toggle
+            currentDataMode = 'personal';
+            updateContextSwitcher();
+            renderHouseholdSettings();
+        }
+
+        // Copies legacy data (users/{uid}/recipes, etc.) into users/{uid}/personal/
+        // on first login after the update. Old data is left in place.
+        async function runMigrationIfNeeded() {
+            try {
+                const profileSnap = await getDoc(doc(db, "users", currentUser.uid, "profile"));
+                if (profileSnap.exists() && profileSnap.data().migrationComplete) return;
+
+                const oldCollections = ['recipes', 'mealPlan', 'adhocItems', 'shops'];
+                for (const collName of oldCollections) {
+                    const snap = await getDocs(collection(db, "users", currentUser.uid, collName));
+                    for (const docSnap of snap.docs) {
+                        await setDoc(
+                            doc(db, "users", currentUser.uid, "personal", collName, docSnap.id),
+                            docSnap.data()
+                        );
+                    }
+                }
+
+                const settingsDocs = ['shoppingHave', 'ingredientAisles', 'userPrefs'];
+                for (const name of settingsDocs) {
+                    const snap = await getDoc(doc(db, "users", currentUser.uid, "settings", name));
+                    if (snap.exists()) {
+                        await setDoc(
+                            doc(db, "users", currentUser.uid, "personal", "settings", name),
+                            snap.data()
+                        );
+                    }
+                }
+
+                // Write / update the profile doc to record completion
+                const existingProfile = profileSnap.exists() ? profileSnap.data() : {};
+                await setDoc(doc(db, "users", currentUser.uid, "profile"), {
+                    ...existingProfile,
+                    migrationComplete: true,
+                    migratedAt: new Date().toISOString()
+                });
+            } catch (e) {
+                console.error('Migration error (will retry next login):', e);
+            }
+        }
+
+        // Updates the Personal / Household toggle in the header
+        function updateContextSwitcher() {
+            const switcher = document.getElementById('context-switcher');
+            const personalBtn = document.getElementById('ctx-personal-btn');
+            const householdBtn = document.getElementById('ctx-household-btn');
+            if (!switcher) return;
+
+            if (!currentHouseholdId) {
+                switcher.style.display = 'none';
+                return;
+            }
+            switcher.style.display = 'flex';
+            personalBtn.classList.toggle('active', currentDataMode === 'personal');
+            householdBtn.classList.toggle('active', currentDataMode === 'household');
+            householdBtn.textContent = currentHouseholdName || 'Household';
+        }
+
+        // Switches between personal and household data contexts and restarts listeners
+        async function switchDataMode(mode) {
+            if (mode === currentDataMode) return;
+            currentDataMode = mode;
+            currentShopId = null; // reset so the correct default shop is picked
+            updateContextSwitcher();
+            setupDataListeners(getDataPath());
+        }
+        window.switchDataMode = switchDataMode;
+
+        // =====================
         // Data Listeners
         // =====================
 
-        function setupDataListeners(userId) {
+        function setupDataListeners(dataPath) {
             // Clean up any existing listeners
             cleanupDataListeners();
 
             // Recipes listener
             unsubscribeRecipes = onSnapshot(
-                collection(db, "users", userId, "recipes"),
+                collection(db, ...dataPath, "recipes"),
                 (snapshot) => {
                     recipes = [];
                     snapshot.forEach((doc) => {
@@ -4345,7 +4657,7 @@ oregano"></textarea>
 
             // Meal plan listener
             unsubscribeMealPlan = onSnapshot(
-                collection(db, "users", userId, "mealPlan"),
+                collection(db, ...dataPath, "mealPlan"),
                 (snapshot) => {
                     mealPlan = {};
                     snapshot.forEach((doc) => {
@@ -4362,7 +4674,7 @@ oregano"></textarea>
 
             // Shopping "have" listener
             unsubscribeShoppingHave = onSnapshot(
-                doc(db, "users", userId, "settings", "shoppingHave"),
+                doc(db, ...dataPath, "settings", "shoppingHave"),
                 (snapshot) => {
                     if (snapshot.exists()) {
                         shoppingHave = snapshot.data();
@@ -4378,7 +4690,7 @@ oregano"></textarea>
 
             // Ad-hoc items listener
             unsubscribeAdhocItems = onSnapshot(
-                collection(db, "users", userId, "adhocItems"),
+                collection(db, ...dataPath, "adhocItems"),
                 (snapshot) => {
                     adhocItems = [];
                     snapshot.forEach((doc) => {
@@ -4393,7 +4705,7 @@ oregano"></textarea>
 
             // Shops listener
             unsubscribeShops = onSnapshot(
-                collection(db, "users", userId, "shops"),
+                collection(db, ...dataPath, "shops"),
                 (snapshot) => {
                     shops = [];
                     snapshot.forEach((doc) => {
@@ -4415,7 +4727,7 @@ oregano"></textarea>
 
             // Ingredient aisles listener
             unsubscribeIngredientAisles = onSnapshot(
-                doc(db, "users", userId, "settings", "ingredientAisles"),
+                doc(db, ...dataPath, "settings", "ingredientAisles"),
                 (snapshot) => {
                     if (snapshot.exists()) {
                         ingredientAisles = snapshot.data();
@@ -4429,10 +4741,10 @@ oregano"></textarea>
                     console.error("Error listening to ingredient aisles:", error);
                 }
             );
-            
+
             // User settings listener (meal categories, day notes)
             unsubscribeSettings = onSnapshot(
-                doc(db, "users", userId, "settings", "userPrefs"),
+                doc(db, ...dataPath, "settings", "userPrefs"),
                 (snapshot) => {
                     if (snapshot.exists()) {
                         const data = snapshot.data();
@@ -4460,7 +4772,7 @@ oregano"></textarea>
             if (unsubscribeShops) unsubscribeShops();
             if (unsubscribeIngredientAisles) unsubscribeIngredientAisles();
             if (unsubscribeSettings) unsubscribeSettings();
-            
+
             recipes = [];
             mealPlan = {};
             shoppingHave = {};
@@ -4508,7 +4820,7 @@ oregano"></textarea>
             if (!currentUser) return;
             showSyncStatus('syncing', 'Saving...');
             try {
-                await setDoc(doc(db, "users", currentUser.uid, "recipes", recipe.id), {
+                await setDoc(doc(db, ...getDataPath(), "recipes", recipe.id), {
                     name: recipe.name,
                     titleOnly: recipe.titleOnly,
                     ingredients: recipe.ingredients,
@@ -4525,7 +4837,7 @@ oregano"></textarea>
             if (!currentUser) return;
             showSyncStatus('syncing', 'Deleting...');
             try {
-                await deleteDoc(doc(db, "users", currentUser.uid, "recipes", recipeId));
+                await deleteDoc(doc(db, ...getDataPath(), "recipes", recipeId));
                 showSyncStatus('success', 'Deleted');
             } catch (error) {
                 console.error("Error deleting recipe:", error);
@@ -4538,9 +4850,9 @@ oregano"></textarea>
             showSyncStatus('syncing', 'Saving...');
             try {
                 if (Object.keys(meals).length === 0) {
-                    await deleteDoc(doc(db, "users", currentUser.uid, "mealPlan", date));
+                    await deleteDoc(doc(db, ...getDataPath(), "mealPlan", date));
                 } else {
-                    await setDoc(doc(db, "users", currentUser.uid, "mealPlan", date), meals);
+                    await setDoc(doc(db, ...getDataPath(), "mealPlan", date), meals);
                 }
                 showSyncStatus('success', 'Saved');
             } catch (error) {
@@ -4552,7 +4864,7 @@ oregano"></textarea>
         async function saveShoppingHaveToFirebase() {
             if (!currentUser) return;
             try {
-                await setDoc(doc(db, "users", currentUser.uid, "settings", "shoppingHave"), shoppingHave);
+                await setDoc(doc(db, ...getDataPath(), "settings", "shoppingHave"), shoppingHave);
             } catch (error) {
                 console.error("Error saving shopping have:", error);
             }
@@ -6067,7 +6379,7 @@ oregano"></textarea>
             
             showSyncStatus('syncing', 'Adding...');
             try {
-                await setDoc(doc(db, "users", currentUser.uid, "adhocItems", id), {
+                await setDoc(doc(db, ...getDataPath(), "adhocItems", id), {
                     text: text,
                     createdAt: new Date().toISOString()
                 });
@@ -6085,7 +6397,7 @@ oregano"></textarea>
 
             showSyncStatus('syncing', 'Removing...');
             try {
-                await deleteDoc(doc(db, "users", currentUser.uid, "adhocItems", itemId));
+                await deleteDoc(doc(db, ...getDataPath(), "adhocItems", itemId));
                 // Also remove from shoppingHave
                 delete shoppingHave[`adhoc_${itemId}`];
                 await saveShoppingHaveToFirebase();
@@ -6178,7 +6490,7 @@ oregano"></textarea>
             showSyncStatus('syncing', 'Removing...');
             try {
                 for (const id of checkedIds) {
-                    await deleteDoc(doc(db, "users", currentUser.uid, "adhocItems", id));
+                    await deleteDoc(doc(db, ...getDataPath(), "adhocItems", id));
                     delete shoppingHave[`adhoc_${id}`];
                 }
                 await saveShoppingHaveToFirebase();
@@ -6438,15 +6750,15 @@ oregano"></textarea>
                 if (isDefault) {
                     for (const shop of shops) {
                         if (shop.id !== id && shop.isDefault) {
-                            await setDoc(doc(db, "users", currentUser.uid, "shops", shop.id), {
+                            await setDoc(doc(db, ...getDataPath(), "shops", shop.id), {
                                 ...shop,
                                 isDefault: false
                             });
                         }
                     }
                 }
-                
-                await setDoc(doc(db, "users", currentUser.uid, "shops", id), {
+
+                await setDoc(doc(db, ...getDataPath(), "shops", id), {
                     name,
                     isDefault,
                     aisles
@@ -6470,7 +6782,7 @@ oregano"></textarea>
                 // Unset current defaults and set new default
                 for (const shop of shops) {
                     if (shop.isDefault || shop.id === shopId) {
-                        await setDoc(doc(db, "users", currentUser.uid, "shops", shop.id), {
+                        await setDoc(doc(db, ...getDataPath(), "shops", shop.id), {
                             ...shop,
                             isDefault: shop.id === shopId
                         });
@@ -6493,8 +6805,8 @@ oregano"></textarea>
             showSyncStatus('syncing', 'Deleting...');
             
             try {
-                await deleteDoc(doc(db, "users", currentUser.uid, "shops", shopId));
-                
+                await deleteDoc(doc(db, ...getDataPath(), "shops", shopId));
+
                 // If we deleted the current shop, switch to another
                 if (currentShopId === shopId) {
                     const remaining = shops.filter(s => s.id !== shopId);
@@ -6532,11 +6844,11 @@ oregano"></textarea>
             showSyncStatus('syncing', 'Adding...');
             
             try {
-                await setDoc(doc(db, "users", currentUser.uid, "shops", shopId), {
+                await setDoc(doc(db, ...getDataPath(), "shops", shopId), {
                     ...shop,
                     aisles
                 });
-                
+
                 input.value = '';
                 showSyncStatus('success', 'Added!');
             } catch (error) {
@@ -6561,7 +6873,7 @@ oregano"></textarea>
             showSyncStatus('syncing', 'Moving...');
             
             try {
-                await setDoc(doc(db, "users", currentUser.uid, "shops", shopId), {
+                await setDoc(doc(db, ...getDataPath(), "shops", shopId), {
                     ...shop,
                     aisles
                 });
@@ -6585,7 +6897,7 @@ oregano"></textarea>
             showSyncStatus('syncing', 'Deleting...');
             
             try {
-                await setDoc(doc(db, "users", currentUser.uid, "shops", shopId), {
+                await setDoc(doc(db, ...getDataPath(), "shops", shopId), {
                     ...shop,
                     aisles
                 });
@@ -6628,7 +6940,7 @@ oregano"></textarea>
             showSyncStatus('syncing', 'Saving...');
             
             try {
-                await setDoc(doc(db, "users", currentUser.uid, "settings", "ingredientAisles"), ingredientAisles);
+                await setDoc(doc(db, ...getDataPath(), "settings", "ingredientAisles"), ingredientAisles);
                 showSyncStatus('success', 'Saved!');
             } catch (error) {
                 console.error("Error saving ingredient aisle:", error);
@@ -6970,7 +7282,7 @@ oregano"></textarea>
                 showSyncStatus('syncing', 'Saving...');
                 
                 try {
-                    await setDoc(doc(db, "users", currentUser.uid, "settings", "ingredientAisles"), ingredientAisles);
+                    await setDoc(doc(db, ...getDataPath(), "settings", "ingredientAisles"), ingredientAisles);
                     showSyncStatus('success', 'Saved!');
                 } catch (error) {
                     console.error("Error removing ingredient aisle:", error);
@@ -7004,8 +7316,8 @@ oregano"></textarea>
                     ingredientAisles[normalized][dictionaryShopId] = aisleName;
                 }
                 
-                await setDoc(doc(db, "users", currentUser.uid, "settings", "ingredientAisles"), ingredientAisles);
-                
+                await setDoc(doc(db, ...getDataPath(), "settings", "ingredientAisles"), ingredientAisles);
+
                 showSyncStatus('success', `Updated ${selectedIngredients.size} ingredients!`);
                 selectedIngredients.clear();
                 document.getElementById('dictionary-select-all').checked = false;
@@ -7033,6 +7345,7 @@ oregano"></textarea>
                 renderIngredientDictionary();
                 renderIngredientManager();
                 renderMealCategories();
+                renderHouseholdSettings();
             }
             
             // Setup adhoc autocomplete when switching to shopping
@@ -7258,7 +7571,7 @@ oregano"></textarea>
                 if (pendingImportData.type === 'recipe') {
                     // Import single recipe
                     const newId = generateId();
-                    await setDoc(doc(db, "users", currentUser.uid, "recipes", newId), {
+                    await setDoc(doc(db, ...getDataPath(), "recipes", newId), {
                         name: pendingImportData.data.name,
                         ingredients: pendingImportData.data.ingredients || [],
                         titleOnly: pendingImportData.data.titleOnly || false,
@@ -7277,7 +7590,7 @@ oregano"></textarea>
                     
                     for (const recipe of recipesToImport) {
                         const newId = generateId();
-                        await setDoc(doc(db, "users", currentUser.uid, "recipes", newId), {
+                        await setDoc(doc(db, ...getDataPath(), "recipes", newId), {
                             name: recipe.name,
                             ingredients: recipe.ingredients || [],
                             titleOnly: recipe.titleOnly || false,
@@ -7294,7 +7607,7 @@ oregano"></textarea>
                 } else if (pendingImportData.type === 'shop') {
                     // Import shop
                     const newShopId = generateId();
-                    await setDoc(doc(db, "users", currentUser.uid, "shops", newShopId), {
+                    await setDoc(doc(db, ...getDataPath(), "shops", newShopId), {
                         name: pendingImportData.data.name,
                         aisles: pendingImportData.data.aisles || [],
                         isDefault: shops.length === 0 // Make default if first shop
@@ -7313,7 +7626,7 @@ oregano"></textarea>
                             updatedAisles[ingredient][newShopId] = mappings[ingredient];
                         });
                         
-                        await setDoc(doc(db, "users", currentUser.uid, "settings", "ingredientAisles"), updatedAisles);
+                        await setDoc(doc(db, ...getDataPath(), "settings", "ingredientAisles"), updatedAisles);
                     }
                     
                     showSyncStatus('success', 'Shop layout imported!');
@@ -7477,24 +7790,24 @@ oregano"></textarea>
                     });
                     
                     if (changed) {
-                        await setDoc(doc(db, "users", currentUser.uid, "recipes", recipe.id), {
+                        await setDoc(doc(db, ...getDataPath(), "recipes", recipe.id), {
                             ...recipe,
                             ingredients: updatedIngredients
                         });
                     }
                 }
-                
+
                 // Update ingredient aisles if renamed (not merged)
                 if (!mergeWith && newName !== originalName && ingredientAisles[originalName]) {
                     ingredientAisles[newName] = ingredientAisles[originalName];
                     delete ingredientAisles[originalName];
-                    await setDoc(doc(db, "users", currentUser.uid, "settings", "ingredientAisles"), ingredientAisles);
+                    await setDoc(doc(db, ...getDataPath(), "settings", "ingredientAisles"), ingredientAisles);
                 }
-                
+
                 // If merging, remove the old ingredient's aisle data
                 if (mergeWith && ingredientAisles[originalName]) {
                     delete ingredientAisles[originalName];
-                    await setDoc(doc(db, "users", currentUser.uid, "settings", "ingredientAisles"), ingredientAisles);
+                    await setDoc(doc(db, ...getDataPath(), "settings", "ingredientAisles"), ingredientAisles);
                 }
                 
                 showSyncStatus('success', 'Updated!');
@@ -7537,17 +7850,17 @@ oregano"></textarea>
                     });
                     
                     if (updatedIngredients.length !== originalLength) {
-                        await setDoc(doc(db, "users", currentUser.uid, "recipes", recipe.id), {
+                        await setDoc(doc(db, ...getDataPath(), "recipes", recipe.id), {
                             ...recipe,
                             ingredients: updatedIngredients
                         });
                     }
                 }
-                
+
                 // Remove from ingredient aisles
                 if (ingredientAisles[originalName]) {
                     delete ingredientAisles[originalName];
-                    await setDoc(doc(db, "users", currentUser.uid, "settings", "ingredientAisles"), ingredientAisles);
+                    await setDoc(doc(db, ...getDataPath(), "settings", "ingredientAisles"), ingredientAisles);
                 }
                 
                 showSyncStatus('success', 'Deleted!');
@@ -7597,7 +7910,7 @@ oregano"></textarea>
             if (!currentUser) return;
             
             try {
-                await setDoc(doc(db, "users", currentUser.uid, "settings", "userPrefs"), {
+                await setDoc(doc(db, ...getDataPath(), "settings", "userPrefs"), {
                     mealCategories: mealCategories,
                     dayNotes: dayNotes,
                     theme: currentTheme
@@ -7606,6 +7919,449 @@ oregano"></textarea>
                 console.error("Error saving user prefs:", error);
             }
         }
+
+        // =====================
+        // Household Functions
+        // =====================
+
+        function renderHouseholdSettings() {
+            const body = document.getElementById('household-settings-body');
+            if (!body) return;
+
+            if (!currentHouseholdId) {
+                // No household yet — offer create or join
+                body.innerHTML = `
+                    <p class="text-muted mb-2">
+                        Create a household to share meal plans, recipes, shops, and shopping lists
+                        with family members. You can also keep your own personal data separate.
+                    </p>
+                    <div class="household-actions">
+                        <button class="btn btn-primary" onclick="openCreateHouseholdModal()">Create a Household</button>
+                        <button class="btn btn-secondary" onclick="openJoinHouseholdModal()">Join with a Code</button>
+                    </div>`;
+                return;
+            }
+
+            // User belongs to a household
+            const isAdmin = currentHouseholdRole === 'owner' || currentHouseholdRole === 'admin';
+
+            body.innerHTML = `
+                <div class="household-name-display">${escapeHtml(currentHouseholdName || 'Household')}</div>
+                <div class="household-meta">Your role: <strong>${escapeHtml(currentHouseholdRole || 'member')}</strong></div>
+
+                <div id="household-members-list" class="household-member-list">
+                    <p class="text-muted" style="font-size:0.85rem;">Loading members…</p>
+                </div>
+
+                ${isAdmin ? `
+                <p class="text-muted mb-2" style="font-size:0.85rem;">Share this link to invite someone to join your household. Links expire after 7 days.</p>
+                <div class="invite-link-box">
+                    <input type="text" class="invite-link-input" id="invite-link-display" readonly placeholder="Generate a link…">
+                    <button class="btn btn-secondary btn-small" onclick="generateInviteLink()">Generate Link</button>
+                    <button class="btn btn-secondary btn-small" id="copy-invite-btn" onclick="copyInviteLink()" style="display:none;">Copy</button>
+                </div>` : ''}
+
+                <div class="household-actions" style="margin-top:1.25rem;">
+                    ${isAdmin ? `<button class="btn btn-secondary" onclick="openRenameHouseholdModal()">Rename Household</button>` : ''}
+                    <button class="btn btn-secondary" onclick="confirmLeaveHousehold()" style="color:#b91c1c;">Leave Household</button>
+                </div>
+
+                <hr style="margin: 1.25rem 0; border: none; border-top: 1px solid var(--border-light);">
+                <h3 style="font-size:0.95rem; font-weight:600; margin-bottom:0.5rem;">Share Data</h3>
+                <p class="text-muted mb-2" style="font-size:0.82rem;">Copy all your personal recipes and shop layouts into the household, or pull the household data into your personal space.</p>
+                <div class="share-direction-row">
+                    <div class="share-direction-item">
+                        <div class="share-direction-title">Personal → Household</div>
+                        <div class="share-direction-desc">Copies your personal recipes and shops into the household so everyone can see them.</div>
+                        <button class="btn btn-secondary btn-small" onclick="shareDataToHousehold()">Copy to Household</button>
+                    </div>
+                    <div class="share-direction-item">
+                        <div class="share-direction-title">Household → Personal</div>
+                        <div class="share-direction-desc">Copies all household recipes and shops into your personal space.</div>
+                        <button class="btn btn-secondary btn-small" onclick="shareDataToPersonal()">Copy to Personal</button>
+                    </div>
+                </div>`;
+
+            loadHouseholdMembers();
+        }
+        window.renderHouseholdSettings = renderHouseholdSettings;
+
+        async function loadHouseholdMembers() {
+            if (!currentHouseholdId) return;
+            try {
+                const snap = await getDoc(doc(db, "households", currentHouseholdId));
+                if (!snap.exists()) return;
+                const members = snap.data().members || {};
+                const isOwnerAdmin = currentHouseholdRole === 'owner' || currentHouseholdRole === 'admin';
+                const container = document.getElementById('household-members-list');
+                if (!container) return;
+
+                if (Object.keys(members).length === 0) {
+                    container.innerHTML = '<p class="text-muted" style="font-size:0.85rem;">No members yet.</p>';
+                    return;
+                }
+
+                container.innerHTML = Object.entries(members).map(([uid, info]) => {
+                    const isSelf = uid === currentUser.uid;
+                    const canRemove = isOwnerAdmin && !isSelf && info.role !== 'owner';
+                    return `
+                    <div class="household-member-item">
+                        <div class="member-avatar">${escapeHtml((info.email || '?').charAt(0).toUpperCase())}</div>
+                        <div class="member-email">${escapeHtml(info.email || uid)}${isSelf ? ' (you)' : ''}</div>
+                        <span class="member-role-badge ${info.role}">${escapeHtml(info.role)}</span>
+                        ${canRemove ? `<button class="member-remove-btn" onclick="removeMember('${uid}')">Remove</button>` : ''}
+                    </div>`;
+                }).join('');
+            } catch (e) {
+                console.error('Error loading household members:', e);
+            }
+        }
+
+        // ── Create household ───────────────────────────────────────────────
+
+        function openCreateHouseholdModal() {
+            const name = prompt('Enter a name for your household (e.g. "Smith Family"):');
+            if (!name || !name.trim()) return;
+            createHousehold(name.trim());
+        }
+        window.openCreateHouseholdModal = openCreateHouseholdModal;
+
+        async function createHousehold(name) {
+            if (!currentUser) return;
+            showSyncStatus('syncing', 'Creating household…');
+            try {
+                const hid = generateId();
+                await setDoc(doc(db, "households", hid), {
+                    name,
+                    createdBy: currentUser.uid,
+                    createdAt: new Date().toISOString(),
+                    members: {
+                        [currentUser.uid]: {
+                            email: currentUser.email,
+                            role: 'owner',
+                            joinedAt: new Date().toISOString()
+                        }
+                    }
+                });
+
+                // Update user profile
+                const existingProfile = await getDoc(doc(db, "users", currentUser.uid, "profile"));
+                await setDoc(doc(db, "users", currentUser.uid, "profile"), {
+                    ...(existingProfile.exists() ? existingProfile.data() : {}),
+                    householdId: hid,
+                    householdName: name,
+                    householdRole: 'owner'
+                });
+
+                currentHouseholdId   = hid;
+                currentHouseholdName = name;
+                currentHouseholdRole = 'owner';
+                updateContextSwitcher();
+                renderHouseholdSettings();
+                showSyncStatus('success', 'Household created!');
+            } catch (e) {
+                console.error('Error creating household:', e);
+                showSyncStatus('error', 'Failed to create household');
+            }
+        }
+
+        // ── Rename household ───────────────────────────────────────────────
+
+        function openRenameHouseholdModal() {
+            const newName = prompt('Enter a new name for your household:', currentHouseholdName || '');
+            if (!newName || !newName.trim()) return;
+            renameHousehold(newName.trim());
+        }
+        window.openRenameHouseholdModal = openRenameHouseholdModal;
+
+        async function renameHousehold(newName) {
+            if (!currentHouseholdId || !currentUser) return;
+            try {
+                await updateDoc(doc(db, "households", currentHouseholdId), { name: newName });
+                await updateDoc(doc(db, "users", currentUser.uid, "profile"), { householdName: newName });
+                currentHouseholdName = newName;
+                updateContextSwitcher();
+                renderHouseholdSettings();
+                showSyncStatus('success', 'Household renamed!');
+            } catch (e) {
+                console.error('Error renaming household:', e);
+                showSyncStatus('error', 'Rename failed');
+            }
+        }
+
+        // ── Invite link ────────────────────────────────────────────────────
+
+        async function generateInviteLink() {
+            if (!currentHouseholdId || !currentUser) return;
+            try {
+                const token = generateId();
+                const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString();
+                await setDoc(doc(db, "households", currentHouseholdId, "invites", token), {
+                    createdBy: currentUser.uid,
+                    createdAt: new Date().toISOString(),
+                    expiresAt
+                });
+
+                const url = `${window.location.origin}${window.location.pathname}?join=${token}&hid=${currentHouseholdId}`;
+                const input = document.getElementById('invite-link-display');
+                const copyBtn = document.getElementById('copy-invite-btn');
+                if (input) { input.value = url; }
+                if (copyBtn) { copyBtn.style.display = ''; }
+            } catch (e) {
+                console.error('Error generating invite link:', e);
+                showSyncStatus('error', 'Could not generate link');
+            }
+        }
+        window.generateInviteLink = generateInviteLink;
+
+        function copyInviteLink() {
+            const input = document.getElementById('invite-link-display');
+            if (!input || !input.value) return;
+            navigator.clipboard.writeText(input.value).then(() => {
+                showSyncStatus('success', 'Link copied!');
+            });
+        }
+        window.copyInviteLink = copyInviteLink;
+
+        // ── Join via link ──────────────────────────────────────────────────
+
+        async function checkForJoin() {
+            const params = new URLSearchParams(window.location.search);
+            const token = params.get('join');
+            const hid   = params.get('hid');
+            if (!token || !hid) return;
+
+            // Clear the URL params immediately
+            window.history.replaceState({}, document.title, window.location.pathname);
+
+            if (currentHouseholdId === hid) {
+                // Already a member of this household
+                showSyncStatus('success', 'You\'re already in this household!');
+                return;
+            }
+
+            if (currentHouseholdId) {
+                alert('You are already in a household. Leave your current household before joining another.');
+                return;
+            }
+
+            try {
+                const inviteSnap = await getDoc(doc(db, "households", hid, "invites", token));
+                if (!inviteSnap.exists()) {
+                    alert('This invite link is invalid or has already been used.');
+                    return;
+                }
+                const invite = inviteSnap.data();
+                if (new Date(invite.expiresAt) < new Date()) {
+                    alert('This invite link has expired. Ask the household owner to generate a new one.');
+                    return;
+                }
+
+                const householdSnap = await getDoc(doc(db, "households", hid));
+                if (!householdSnap.exists()) {
+                    alert('Household not found.');
+                    return;
+                }
+                const householdName = householdSnap.data().name || 'Household';
+
+                if (!confirm(`Join "${householdName}"? You will keep your personal data and can switch between personal and household views at any time.`)) return;
+
+                // Add user to household members
+                await updateDoc(doc(db, "households", hid), {
+                    [`members.${currentUser.uid}`]: {
+                        email: currentUser.email,
+                        role: 'member',
+                        joinedAt: new Date().toISOString()
+                    }
+                });
+
+                // Update user profile
+                const existingProfile = await getDoc(doc(db, "users", currentUser.uid, "profile"));
+                await setDoc(doc(db, "users", currentUser.uid, "profile"), {
+                    ...(existingProfile.exists() ? existingProfile.data() : {}),
+                    householdId: hid,
+                    householdName,
+                    householdRole: 'member'
+                });
+
+                currentHouseholdId   = hid;
+                currentHouseholdName = householdName;
+                currentHouseholdRole = 'member';
+                updateContextSwitcher();
+                renderHouseholdSettings();
+                showSyncStatus('success', `Joined "${householdName}"!`);
+            } catch (e) {
+                console.error('Error joining household:', e);
+                showSyncStatus('error', 'Could not join household');
+            }
+        }
+
+        function openJoinHouseholdModal() {
+            const url = prompt('Paste the invite link or enter the invite code:');
+            if (!url) return;
+            try {
+                const params = new URLSearchParams(new URL(url.includes('?') ? url : `https://x.com?${url}`).search);
+                const token = params.get('join');
+                const hid   = params.get('hid');
+                if (!token || !hid) throw new Error('Invalid');
+                // Simulate URL navigation
+                window.history.pushState({}, '', `?join=${token}&hid=${hid}`);
+                checkForJoin();
+            } catch {
+                alert('Invalid invite link. Please paste the full link as shared with you.');
+            }
+        }
+        window.openJoinHouseholdModal = openJoinHouseholdModal;
+
+        // ── Remove member ──────────────────────────────────────────────────
+
+        async function removeMember(uid) {
+            if (!currentHouseholdId) return;
+            if (!confirm('Remove this member from the household?')) return;
+            try {
+                // Firestore doesn't support deleting a map key with updateDoc directly,
+                // so we fetch the current members, remove the key, then setDoc.
+                const snap = await getDoc(doc(db, "households", currentHouseholdId));
+                if (!snap.exists()) return;
+                const members = { ...snap.data().members };
+                delete members[uid];
+                await updateDoc(doc(db, "households", currentHouseholdId), { members });
+
+                // Clear the household from that user's profile (best-effort; they'll
+                // notice on next login and the rules will prevent access anyway)
+                showSyncStatus('success', 'Member removed');
+                renderHouseholdSettings();
+            } catch (e) {
+                console.error('Error removing member:', e);
+                showSyncStatus('error', 'Could not remove member');
+            }
+        }
+        window.removeMember = removeMember;
+
+        // ── Leave household ────────────────────────────────────────────────
+
+        async function confirmLeaveHousehold() {
+            if (!currentHouseholdId || !currentUser) return;
+
+            if (currentHouseholdRole === 'owner') {
+                // Check if sole owner
+                const snap = await getDoc(doc(db, "households", currentHouseholdId));
+                if (snap.exists()) {
+                    const members = snap.data().members || {};
+                    const owners = Object.values(members).filter(m => m.role === 'owner');
+                    if (owners.length === 1) {
+                        alert('You are the sole owner. Transfer ownership to another member before leaving, or delete the household.');
+                        return;
+                    }
+                }
+            }
+
+            if (!confirm('Leave this household? Your personal data is unaffected. Data you contributed to the household stays there.')) return;
+
+            try {
+                // Remove from household members
+                const snap = await getDoc(doc(db, "households", currentHouseholdId));
+                if (snap.exists()) {
+                    const members = { ...snap.data().members };
+                    delete members[currentUser.uid];
+                    await updateDoc(doc(db, "households", currentHouseholdId), { members });
+                }
+
+                // Clear household from user profile
+                const profileSnap = await getDoc(doc(db, "users", currentUser.uid, "profile"));
+                await setDoc(doc(db, "users", currentUser.uid, "profile"), {
+                    ...(profileSnap.exists() ? profileSnap.data() : {}),
+                    householdId: null,
+                    householdName: null,
+                    householdRole: null
+                });
+
+                // Revert to personal mode
+                currentHouseholdId   = null;
+                currentHouseholdName = null;
+                currentHouseholdRole = null;
+                if (currentDataMode === 'household') {
+                    currentDataMode = 'personal';
+                    currentShopId = null;
+                    setupDataListeners(getDataPath());
+                }
+                updateContextSwitcher();
+                renderHouseholdSettings();
+                showSyncStatus('success', 'You have left the household');
+            } catch (e) {
+                console.error('Error leaving household:', e);
+                showSyncStatus('error', 'Could not leave household');
+            }
+        }
+        window.confirmLeaveHousehold = confirmLeaveHousehold;
+
+        // ── Share data between contexts ────────────────────────────────────
+
+        async function shareDataToHousehold() {
+            if (!currentHouseholdId || !currentUser) return;
+            if (!confirm('Copy all your personal recipes and shop layouts into the household? Existing household data with the same name will not be overwritten — new copies will be added.')) return;
+            showSyncStatus('syncing', 'Copying…');
+            try {
+                const personalPath = ['users', currentUser.uid, 'personal'];
+                const householdPath = ['households', currentHouseholdId];
+
+                const recipeSnap = await getDocs(collection(db, ...personalPath, 'recipes'));
+                for (const d of recipeSnap.docs) {
+                    await setDoc(doc(db, ...householdPath, 'recipes', generateId()), d.data());
+                }
+
+                const shopSnap = await getDocs(collection(db, ...personalPath, 'shops'));
+                for (const d of shopSnap.docs) {
+                    await setDoc(doc(db, ...householdPath, 'shops', generateId()), d.data());
+                }
+
+                const aislesSnap = await getDoc(doc(db, ...personalPath, 'settings', 'ingredientAisles'));
+                if (aislesSnap.exists()) {
+                    const existing = await getDoc(doc(db, ...householdPath, 'settings', 'ingredientAisles'));
+                    const merged = { ...(existing.exists() ? existing.data() : {}), ...aislesSnap.data() };
+                    await setDoc(doc(db, ...householdPath, 'settings', 'ingredientAisles'), merged);
+                }
+
+                showSyncStatus('success', 'Copied to household!');
+            } catch (e) {
+                console.error('Error sharing to household:', e);
+                showSyncStatus('error', 'Copy failed');
+            }
+        }
+        window.shareDataToHousehold = shareDataToHousehold;
+
+        async function shareDataToPersonal() {
+            if (!currentHouseholdId || !currentUser) return;
+            if (!confirm('Copy all household recipes and shop layouts into your personal space? New copies will be added.')) return;
+            showSyncStatus('syncing', 'Copying…');
+            try {
+                const householdPath = ['households', currentHouseholdId];
+                const personalPath  = ['users', currentUser.uid, 'personal'];
+
+                const recipeSnap = await getDocs(collection(db, ...householdPath, 'recipes'));
+                for (const d of recipeSnap.docs) {
+                    await setDoc(doc(db, ...personalPath, 'recipes', generateId()), d.data());
+                }
+
+                const shopSnap = await getDocs(collection(db, ...householdPath, 'shops'));
+                for (const d of shopSnap.docs) {
+                    await setDoc(doc(db, ...personalPath, 'shops', generateId()), d.data());
+                }
+
+                const aislesSnap = await getDoc(doc(db, ...householdPath, 'settings', 'ingredientAisles'));
+                if (aislesSnap.exists()) {
+                    const existing = await getDoc(doc(db, ...personalPath, 'settings', 'ingredientAisles'));
+                    const merged = { ...(existing.exists() ? existing.data() : {}), ...aislesSnap.data() };
+                    await setDoc(doc(db, ...personalPath, 'settings', 'ingredientAisles'), merged);
+                }
+
+                showSyncStatus('success', 'Copied to personal!');
+            } catch (e) {
+                console.error('Error sharing to personal:', e);
+                showSyncStatus('error', 'Copy failed');
+            }
+        }
+        window.shareDataToPersonal = shareDataToPersonal;
 
         // =====================
         // Meal Categories Functions
