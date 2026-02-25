@@ -1287,6 +1287,123 @@
             text-align: center;
         }
 
+        /* Suggestions Panel */
+        .suggestions-panel-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 0.75rem;
+        }
+
+        .suggestions-panel-title {
+            font-family: var(--font-heading);
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin: 0;
+        }
+
+        .suggestions-week-tabs {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .suggestions-tab {
+            background: none;
+            border: 1px solid var(--border-medium);
+            border-radius: var(--radius-sm);
+            padding: 0.35rem 0.75rem;
+            font-size: 0.85rem;
+            cursor: pointer;
+            color: var(--text-secondary);
+            transition: all 0.15s;
+        }
+
+        .suggestions-tab.active {
+            background: var(--accent-green);
+            border-color: var(--accent-green);
+            color: white;
+            font-weight: 600;
+        }
+
+        .suggestion-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+            padding: 0.75rem 1rem;
+            background: var(--bg-white);
+            border: 1px solid var(--border-light);
+            border-radius: var(--radius-md);
+            margin-bottom: 0.5rem;
+        }
+
+        .suggestion-main {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .suggestion-recipe-name {
+            font-weight: 600;
+            font-size: 0.95rem;
+            color: var(--text-primary);
+        }
+
+        .suggestion-meta {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            margin-top: 0.2rem;
+        }
+
+        .suggestion-actions {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            flex-shrink: 0;
+        }
+
+        .suggestion-vote-btn {
+            background: none;
+            border: 1px solid var(--border-medium);
+            border-radius: var(--radius-sm);
+            padding: 0.35rem 0.6rem;
+            font-size: 0.85rem;
+            cursor: pointer;
+            color: var(--text-secondary);
+            transition: all 0.15s;
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+
+        .suggestion-vote-btn.voted {
+            background: var(--accent-green-light);
+            border-color: var(--accent-green);
+            color: var(--accent-green-dark);
+            font-weight: 600;
+        }
+
+        .suggestion-vote-count {
+            font-weight: 700;
+            min-width: 1ch;
+        }
+
+        .suggestion-delete-btn {
+            padding: 0.35rem 0.5rem !important;
+            min-width: unset !important;
+        }
+
+        .suggestions-empty {
+            text-align: center;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            padding: 2rem 1rem;
+            background: var(--bg-cream);
+            border-radius: var(--radius-md);
+            border: 1px dashed var(--border-medium);
+        }
+
         /* Search Box */
         .search-box {
             margin-bottom: 1.5rem;
@@ -3316,9 +3433,23 @@
                         <span class="month-display" id="month-display"></span>
                         <button class="week-nav-btn" onclick="changeMonth(1)">Next →</button>
                     </div>
-                    
+
                     <div id="planner-month" class="month-grid">
                         <!-- Month grid will be rendered here -->
+                    </div>
+                </div>
+
+                <!-- Suggestions Panel (household mode only) -->
+                <div id="suggestions-panel" style="display: none; margin-top: 2rem;">
+                    <div class="suggestions-panel-header">
+                        <h2 class="suggestions-panel-title">💡 Meal Suggestions</h2>
+                        <button class="btn btn-primary btn-small" onclick="openSuggestRecipeModal()">+ Suggest</button>
+                    </div>
+                    <div class="suggestions-week-tabs" id="suggestions-week-tabs">
+                        <!-- Rendered by JS -->
+                    </div>
+                    <div id="suggestions-list">
+                        <!-- Rendered by JS -->
                     </div>
                 </div>
             </section>
@@ -4147,6 +4278,63 @@ oregano"></textarea>
         </div>
     </div>
 
+    <!-- Suggest Recipe Modal -->
+    <div class="modal-overlay" id="suggest-recipe-modal">
+        <div class="modal" style="max-width: 480px;">
+            <div class="modal-header">
+                <h2 class="modal-title">Suggest a Meal</h2>
+                <button class="modal-close" onclick="closeSuggestRecipeModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="form-label">Recipe</label>
+                    <select class="form-select" id="suggest-recipe-select">
+                        <!-- Populated by JS -->
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Suggest for week starting</label>
+                    <select class="form-select" id="suggest-week-select">
+                        <!-- Populated by JS -->
+                    </select>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="closeSuggestRecipeModal()">Cancel</button>
+                <button type="button" class="btn btn-primary" onclick="submitSuggestion()">Suggest</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Assign Suggestion to Meal Plan Modal -->
+    <div class="modal-overlay" id="assign-suggestion-modal">
+        <div class="modal" style="max-width: 400px;">
+            <div class="modal-header">
+                <h2 class="modal-title">Add to Meal Plan</h2>
+                <button class="modal-close" onclick="closeAssignSuggestionModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p style="margin-bottom: 1rem; font-weight: 600; font-family: var(--font-heading);" id="assign-suggestion-recipe-name"></p>
+                <div class="form-group">
+                    <label class="form-label">Day</label>
+                    <select class="form-select" id="assign-day-select">
+                        <!-- Populated by JS -->
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Meal</label>
+                    <select class="form-select" id="assign-meal-select">
+                        <!-- Populated by JS -->
+                    </select>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="closeAssignSuggestionModal()">Cancel</button>
+                <button type="button" class="btn btn-primary" onclick="confirmAssignSuggestion()">Add to Plan</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Meal Plan Print Modal -->
     <div class="modal-overlay" id="planner-print-modal">
         <div class="modal" style="max-width: 420px;">
@@ -4209,7 +4397,7 @@ oregano"></textarea>
         // Firebase Setup
         // =====================
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getFirestore, collection, doc, setDoc, getDoc, getDocs, deleteDoc, onSnapshot, query, updateDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getFirestore, collection, doc, setDoc, getDoc, getDocs, deleteDoc, onSnapshot, query, updateDoc, deleteField } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
         import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signInWithPopup, signInWithRedirect, getRedirectResult, GoogleAuthProvider, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
 		// Your Firebase configuration
@@ -4282,6 +4470,12 @@ oregano"></textarea>
         let mealCategories = ['Breakfast', 'Lunch', 'Dinner']; // Default categories
         let dayNotes = {}; // { "YYYY-MM-DD": "note text" }
         let unsubscribeSettings = null;
+
+        // Suggestions (household mode)
+        let suggestions = [];
+        let unsubscribeSuggestions = null;
+        let suggestionsFilter = 'this'; // 'this' | 'next' | 'all'
+        let currentAssignSuggestionId = null;
 
         // UI State
         let collapsedShops = {}; // { shopId: true } for collapsed aisle lists
@@ -4638,6 +4832,7 @@ oregano"></textarea>
             currentDataMode = mode;
             currentShopId = null; // reset so the correct default shop is picked
             updateContextSwitcher();
+            renderSuggestions(); // update panel visibility immediately
             setupDataListeners(getDataPath());
         }
         window.switchDataMode = switchDataMode;
@@ -4775,6 +4970,26 @@ oregano"></textarea>
                     console.error("Error listening to user settings:", error);
                 }
             );
+
+            // Suggestions listener (household mode only)
+            if (dataPath[0] === 'households') {
+                unsubscribeSuggestions = onSnapshot(
+                    collection(db, ...dataPath, "suggestions"),
+                    (snapshot) => {
+                        suggestions = [];
+                        snapshot.forEach((d) => {
+                            suggestions.push({ id: d.id, ...d.data() });
+                        });
+                        renderSuggestions();
+                    },
+                    (error) => {
+                        console.error("Error listening to suggestions:", error);
+                    }
+                );
+            } else {
+                suggestions = [];
+                renderSuggestions();
+            }
         }
 
         function cleanupDataListeners() {
@@ -4785,6 +5000,7 @@ oregano"></textarea>
             if (unsubscribeShops) unsubscribeShops();
             if (unsubscribeIngredientAisles) unsubscribeIngredientAisles();
             if (unsubscribeSettings) unsubscribeSettings();
+            if (unsubscribeSuggestions) { unsubscribeSuggestions(); unsubscribeSuggestions = null; }
 
             recipes = [];
             mealPlan = {};
@@ -4795,6 +5011,7 @@ oregano"></textarea>
             currentShopId = null;
             mealCategories = ['Breakfast', 'Lunch', 'Dinner'];
             dayNotes = {};
+            suggestions = [];
         }
 
         // =====================
@@ -5448,6 +5665,243 @@ oregano"></textarea>
             container.innerHTML = html;
         }
         window.renderPlanner = renderPlanner;
+
+        // =====================
+        // Suggestions Functions
+        // =====================
+
+        function getSuggestionsWeekStart(filter) {
+            const thisWeekStart = getWeekStart(new Date());
+            if (filter === 'this') return formatDate(thisWeekStart);
+            if (filter === 'next') {
+                const next = new Date(thisWeekStart);
+                next.setDate(next.getDate() + 7);
+                return formatDate(next);
+            }
+            return null; // 'all'
+        }
+
+        function renderSuggestions() {
+            const panel = document.getElementById('suggestions-panel');
+            if (!panel) return;
+
+            if (currentDataMode !== 'household') {
+                panel.style.display = 'none';
+                return;
+            }
+            panel.style.display = '';
+
+            // Render week filter tabs
+            const tabsEl = document.getElementById('suggestions-week-tabs');
+            const tabDefs = [['this', 'This Week'], ['next', 'Next Week'], ['all', 'All']];
+            tabsEl.innerHTML = tabDefs.map(([key, label]) =>
+                `<button class="suggestions-tab${suggestionsFilter === key ? ' active' : ''}" onclick="setSuggestionsFilter('${key}')">${label}</button>`
+            ).join('');
+
+            // Filter suggestions by week
+            const weekStart = getSuggestionsWeekStart(suggestionsFilter);
+            let filtered = weekStart
+                ? suggestions.filter(s => s.weekStart === weekStart)
+                : [...suggestions];
+
+            // Sort: highest votes first, then oldest first
+            filtered.sort((a, b) => {
+                const va = Object.keys(a.votes || {}).length;
+                const vb = Object.keys(b.votes || {}).length;
+                if (vb !== va) return vb - va;
+                return (a.suggestedAt || '').localeCompare(b.suggestedAt || '');
+            });
+
+            const listEl = document.getElementById('suggestions-list');
+            const canManage = currentHouseholdRole === 'owner' || currentHouseholdRole === 'admin';
+
+            if (filtered.length === 0) {
+                listEl.innerHTML = '<div class="suggestions-empty">No suggestions yet for this period. Be the first to suggest a meal!</div>';
+                return;
+            }
+
+            listEl.innerHTML = filtered.map(s => {
+                const voteCount = Object.keys(s.votes || {}).length;
+                const hasVoted = !!(s.votes && s.votes[currentUser.uid]);
+                const isOwn = s.suggestedBy === currentUser.uid;
+                const canDelete = isOwn || canManage;
+                const weekDate = new Date(s.weekStart + 'T00:00:00');
+                const weekLabel = `w/c ${formatDisplayDate(weekDate)}`;
+
+                return `
+                    <div class="suggestion-item">
+                        <div class="suggestion-main">
+                            <div class="suggestion-recipe-name">${escapeHtml(s.recipeName)}</div>
+                            <div class="suggestion-meta">Suggested by ${escapeHtml(s.suggestedByEmail || 'unknown')} &middot; ${weekLabel}</div>
+                        </div>
+                        <div class="suggestion-actions">
+                            <button class="suggestion-vote-btn${hasVoted ? ' voted' : ''}" onclick="voteSuggestion('${s.id}')" title="${hasVoted ? 'Remove vote' : 'Vote for this'}">
+                                👍 <span class="suggestion-vote-count">${voteCount}</span>
+                            </button>
+                            ${canManage ? `<button class="btn btn-primary btn-small" onclick="openAssignSuggestionModal('${s.id}')" title="Add to meal plan">Add to Plan</button>` : ''}
+                            ${canDelete ? `<button class="btn btn-secondary btn-small suggestion-delete-btn" onclick="removeSuggestion('${s.id}')" title="Remove suggestion">✕</button>` : ''}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+        window.renderSuggestions = renderSuggestions;
+
+        function setSuggestionsFilter(filter) {
+            suggestionsFilter = filter;
+            renderSuggestions();
+        }
+        window.setSuggestionsFilter = setSuggestionsFilter;
+
+        function openSuggestRecipeModal() {
+            if (currentDataMode !== 'household') return;
+
+            // Populate recipe select
+            const recipeSelect = document.getElementById('suggest-recipe-select');
+            const sorted = [...recipes].sort((a, b) => a.name.localeCompare(b.name));
+            if (sorted.length === 0) {
+                recipeSelect.innerHTML = '<option value="">No recipes available — add some first</option>';
+            } else {
+                recipeSelect.innerHTML = sorted.map(r =>
+                    `<option value="${r.id}">${escapeHtml(r.name)}</option>`
+                ).join('');
+            }
+
+            // Populate week select
+            const thisWeek = getWeekStart(new Date());
+            const nextWeek = new Date(thisWeek);
+            nextWeek.setDate(nextWeek.getDate() + 7);
+            const weekSelect = document.getElementById('suggest-week-select');
+            weekSelect.innerHTML = `
+                <option value="${formatDate(thisWeek)}">This week (from ${formatDisplayDate(thisWeek)})</option>
+                <option value="${formatDate(nextWeek)}">Next week (from ${formatDisplayDate(nextWeek)})</option>
+            `;
+
+            document.getElementById('suggest-recipe-modal').classList.add('active');
+        }
+        window.openSuggestRecipeModal = openSuggestRecipeModal;
+
+        function closeSuggestRecipeModal() {
+            document.getElementById('suggest-recipe-modal').classList.remove('active');
+        }
+        window.closeSuggestRecipeModal = closeSuggestRecipeModal;
+
+        async function submitSuggestion() {
+            const recipeId = document.getElementById('suggest-recipe-select').value;
+            const weekStart = document.getElementById('suggest-week-select').value;
+            if (!recipeId) { showSyncStatus('error', 'Select a recipe'); return; }
+
+            const recipe = recipes.find(r => r.id === recipeId);
+            if (!recipe) return;
+
+            const suggestionData = {
+                recipeId: recipe.id,
+                recipeName: recipe.name,
+                suggestedBy: currentUser.uid,
+                suggestedByEmail: currentUser.email,
+                suggestedAt: new Date().toISOString(),
+                weekStart,
+                votes: {}
+            };
+
+            try {
+                showSyncStatus('syncing', 'Saving...');
+                await setDoc(doc(db, ...getDataPath(), 'suggestions', generateId()), suggestionData);
+                showSyncStatus('success', 'Suggested!');
+                closeSuggestRecipeModal();
+            } catch (e) {
+                console.error('Error saving suggestion:', e);
+                showSyncStatus('error', 'Failed to save');
+            }
+        }
+        window.submitSuggestion = submitSuggestion;
+
+        async function voteSuggestion(suggestionId) {
+            if (!currentUser || currentDataMode !== 'household') return;
+            const suggestion = suggestions.find(s => s.id === suggestionId);
+            if (!suggestion) return;
+
+            const hasVoted = !!(suggestion.votes && suggestion.votes[currentUser.uid]);
+            const ref = doc(db, ...getDataPath(), 'suggestions', suggestionId);
+            try {
+                if (hasVoted) {
+                    await updateDoc(ref, { [`votes.${currentUser.uid}`]: deleteField() });
+                } else {
+                    await updateDoc(ref, { [`votes.${currentUser.uid}`]: true });
+                }
+            } catch (e) {
+                console.error('Error voting:', e);
+                showSyncStatus('error', 'Vote failed');
+            }
+        }
+        window.voteSuggestion = voteSuggestion;
+
+        async function removeSuggestion(suggestionId) {
+            if (!currentUser || currentDataMode !== 'household') return;
+            if (!confirm('Remove this suggestion?')) return;
+            try {
+                showSyncStatus('syncing', 'Removing...');
+                await deleteDoc(doc(db, ...getDataPath(), 'suggestions', suggestionId));
+                showSyncStatus('success', 'Removed');
+            } catch (e) {
+                console.error('Error removing suggestion:', e);
+                showSyncStatus('error', 'Failed to remove');
+            }
+        }
+        window.removeSuggestion = removeSuggestion;
+
+        function openAssignSuggestionModal(suggestionId) {
+            const suggestion = suggestions.find(s => s.id === suggestionId);
+            if (!suggestion) return;
+            currentAssignSuggestionId = suggestionId;
+
+            document.getElementById('assign-suggestion-recipe-name').textContent = suggestion.recipeName;
+
+            // Populate day select with days from suggestion's week
+            const weekStart = new Date(suggestion.weekStart + 'T00:00:00');
+            const dayNames = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+            const daySelect = document.getElementById('assign-day-select');
+            daySelect.innerHTML = '';
+            for (let i = 0; i < 7; i++) {
+                const d = new Date(weekStart);
+                d.setDate(d.getDate() + i);
+                const opt = document.createElement('option');
+                opt.value = formatDate(d);
+                opt.textContent = `${dayNames[i]} (${formatDisplayDate(d)})`;
+                daySelect.appendChild(opt);
+            }
+
+            // Populate meal type select
+            const mealSelect = document.getElementById('assign-meal-select');
+            mealSelect.innerHTML = getMealTypes().map(m => {
+                const key = m.toLowerCase().replace(/[^a-z0-9]/g, '_');
+                return `<option value="${escapeHtml(key)}">${escapeHtml(m)}</option>`;
+            }).join('');
+
+            document.getElementById('assign-suggestion-modal').classList.add('active');
+        }
+        window.openAssignSuggestionModal = openAssignSuggestionModal;
+
+        async function confirmAssignSuggestion() {
+            const suggestion = suggestions.find(s => s.id === currentAssignSuggestionId);
+            if (!suggestion) return;
+
+            const date = document.getElementById('assign-day-select').value;
+            const meal = document.getElementById('assign-meal-select').value;
+
+            if (!mealPlan[date]) mealPlan[date] = {};
+            mealPlan[date][meal] = suggestion.recipeId;
+
+            closeAssignSuggestionModal();
+            await saveMealPlanToFirebase(date, mealPlan[date]);
+        }
+        window.confirmAssignSuggestion = confirmAssignSuggestion;
+
+        function closeAssignSuggestionModal() {
+            document.getElementById('assign-suggestion-modal').classList.remove('active');
+            currentAssignSuggestionId = null;
+        }
+        window.closeAssignSuggestionModal = closeAssignSuggestionModal;
 
         function changeWeek(direction) {
             currentWeekStart.setDate(currentWeekStart.getDate() + (direction * 7));
@@ -7394,6 +7848,11 @@ oregano"></textarea>
             // Setup adhoc autocomplete when switching to shopping
             if (viewName === 'shopping') {
                 setTimeout(setupAdhocAutocomplete, 100);
+            }
+
+            // Render suggestions panel when switching to planner
+            if (viewName === 'planner') {
+                renderSuggestions();
             }
         }
         window.showView = showView;
