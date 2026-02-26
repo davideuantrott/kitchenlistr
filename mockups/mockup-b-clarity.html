@@ -1,0 +1,1026 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>KitchenListr — Mockup B: Clarity</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&display=swap" rel="stylesheet">
+  <style>
+    /* =====================================================
+       MOCKUP B: CLARITY
+       Aesthetic: Minimal, Nordic, Purposeful. Nothing
+       decorative. Every element earns its place. White
+       space is the design. One accent colour. No cards.
+    ===================================================== */
+
+    :root {
+      --bg:           #FFFFFF;
+      --bg-off:       #F7F7F5;
+      --bg-subtle:    #F0F0EE;
+      --text-primary: #111827;
+      --text-mid:     #6B7280;
+      --text-light:   #9CA3AF;
+      --accent:       #1A5C48;      /* deep forest green */
+      --accent-mid:   #2A7A60;
+      --accent-l:     #D1EAE3;      /* very light green tint */
+      --accent-ll:    #EBF5F1;
+      --danger:       #DC2626;
+      --border:       #E5E7EB;
+      --border-mid:   #D1D5DB;
+      --r: 6px;
+      --font: 'DM Sans', system-ui, -apple-system, sans-serif;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: var(--font);
+      font-size: 15px;
+      background: var(--bg);
+      color: var(--text-primary);
+      line-height: 1.6;
+      min-height: 100vh;
+    }
+
+    /* ── HEADER ── */
+    .header {
+      background: var(--bg);
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .header-inner {
+      max-width: 1080px;
+      margin: 0 auto;
+      padding: 0 2rem;
+      display: flex;
+      align-items: center;
+      gap: 3rem;
+    }
+
+    .logo {
+      font-size: 1.15rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      letter-spacing: -0.3px;
+      padding: 1.1rem 0;
+      text-decoration: none;
+      white-space: nowrap;
+    }
+
+    .logo span { color: var(--accent); }
+
+    /* Underline tab nav — very minimal */
+    .nav {
+      display: flex;
+      flex: 1;
+      gap: 0;
+    }
+
+    .nav-btn {
+      position: relative;
+      padding: 0 1.25rem;
+      height: 52px;
+      border: none;
+      background: transparent;
+      font-family: var(--font);
+      font-size: 0.9rem;
+      font-weight: 400;
+      color: var(--text-mid);
+      cursor: pointer;
+      transition: color 0.15s;
+      letter-spacing: 0;
+    }
+
+    .nav-btn::after {
+      content: '';
+      position: absolute;
+      bottom: -1px; /* overlay the border-bottom */
+      left: 0.75rem;
+      right: 0.75rem;
+      height: 2px;
+      background: var(--accent);
+      opacity: 0;
+      transition: opacity 0.15s;
+    }
+
+    .nav-btn:hover { color: var(--text-primary); }
+
+    .nav-btn.active {
+      color: var(--accent);
+      font-weight: 500;
+    }
+
+    .nav-btn.active::after { opacity: 1; }
+
+    .header-right {
+      margin-left: auto;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .avatar {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      background: var(--accent-l);
+      color: var(--accent);
+      font-size: 0.8rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .user-name {
+      font-size: 0.875rem;
+      color: var(--text-mid);
+    }
+
+    /* ── LAYOUT ── */
+    .main {
+      max-width: 1080px;
+      margin: 0 auto;
+      padding: 3rem 2rem;
+    }
+
+    .view { display: none; }
+    .view.active { display: block; animation: fadeIn 0.2s ease; }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to   { opacity: 1; }
+    }
+
+    /* ── PAGE HEADERS ── */
+    .page-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 2.5rem;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .page-title {
+      font-size: 1.5rem;
+      font-weight: 600;
+      letter-spacing: -0.4px;
+      color: var(--text-primary);
+    }
+
+    .page-count {
+      font-size: 0.875rem;
+      color: var(--text-mid);
+      font-weight: 400;
+      margin-left: 0.6rem;
+    }
+
+    /* ── BUTTONS ── */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.55rem 1rem;
+      border-radius: var(--r);
+      border: 1px solid transparent;
+      font-family: var(--font);
+      font-size: 0.875rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .btn-primary {
+      background: var(--accent);
+      color: #fff;
+    }
+
+    .btn-primary:hover { background: var(--accent-mid); }
+
+    .btn-ghost {
+      background: transparent;
+      color: var(--text-mid);
+      border-color: var(--border-mid);
+    }
+
+    .btn-ghost:hover {
+      color: var(--text-primary);
+      border-color: var(--text-mid);
+      background: var(--bg-off);
+    }
+
+    .btn-sm { padding: 0.4rem 0.8rem; font-size: 0.82rem; }
+
+    /* ── SEARCH ── */
+    .search-wrap {
+      display: flex;
+      gap: 0.6rem;
+      align-items: center;
+      margin-bottom: 2rem;
+      flex-wrap: wrap;
+    }
+
+    .search-input {
+      padding: 0.6rem 0.9rem 0.6rem 2.5rem;
+      border: 1px solid var(--border-mid);
+      border-radius: var(--r);
+      font-family: var(--font);
+      font-size: 0.9rem;
+      width: 280px;
+      background: var(--bg-off) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%239CA3AF' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cline x1='21' y1='21' x2='16.65' y2='16.65'/%3E%3C/svg%3E") no-repeat 0.8rem center;
+      transition: border-color 0.15s, box-shadow 0.15s;
+    }
+
+    .search-input:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px var(--accent-ll);
+      background-color: var(--bg);
+    }
+
+    .filter-pills {
+      display: flex;
+      gap: 0.4rem;
+      flex-wrap: wrap;
+    }
+
+    .pill {
+      padding: 0.35rem 0.8rem;
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      font-size: 0.82rem;
+      color: var(--text-mid);
+      background: transparent;
+      cursor: pointer;
+      font-family: var(--font);
+      transition: all 0.15s;
+    }
+
+    .pill:hover { border-color: var(--border-mid); color: var(--text-primary); }
+
+    .pill.active {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #fff;
+    }
+
+    /* ── RECIPE LIST (not grid — list-based) ── */
+    .recipe-list { border-top: 1px solid var(--border); }
+
+    .recipe-row {
+      display: flex;
+      align-items: center;
+      padding: 1rem 0;
+      border-bottom: 1px solid var(--border);
+      gap: 1rem;
+      cursor: pointer;
+      transition: background 0.12s;
+    }
+
+    .recipe-row:hover { background: var(--bg-off); margin: 0 -1rem; padding: 1rem; border-radius: var(--r); border-bottom-color: transparent; }
+
+    .recipe-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      flex-shrink: 0;
+      margin-left: 0.25rem;
+    }
+
+    .dot-italian { background: #BF6840; }
+    .dot-indian  { background: #7A5C9B; }
+    .dot-british { background: #4A7A9B; }
+    .dot-salad   { background: #1A5C48; }
+    .dot-thai    { background: #9B7A4A; }
+
+    .recipe-row-main { flex: 1; }
+
+    .recipe-row-title {
+      font-size: 0.975rem;
+      font-weight: 500;
+      color: var(--text-primary);
+    }
+
+    .recipe-row-meta {
+      font-size: 0.82rem;
+      color: var(--text-mid);
+      margin-top: 0.1rem;
+    }
+
+    .recipe-row-actions {
+      display: flex;
+      gap: 0.4rem;
+      opacity: 0;
+      transition: opacity 0.15s;
+    }
+
+    .recipe-row:hover .recipe-row-actions { opacity: 1; }
+
+    .row-action-btn {
+      padding: 0.3rem 0.6rem;
+      border: 1px solid var(--border-mid);
+      border-radius: var(--r);
+      background: var(--bg);
+      font-size: 0.8rem;
+      color: var(--text-mid);
+      cursor: pointer;
+      font-family: var(--font);
+      transition: all 0.12s;
+    }
+
+    .row-action-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+    /* ── PLANNER ── */
+    .planner-nav {
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+    }
+
+    .planner-nav-btn {
+      background: none;
+      border: none;
+      color: var(--text-mid);
+      font-size: 1rem;
+      cursor: pointer;
+      padding: 0.25rem 0.5rem;
+      border-radius: var(--r);
+      transition: color 0.15s;
+      font-family: var(--font);
+    }
+
+    .planner-nav-btn:hover { color: var(--text-primary); background: var(--bg-off); }
+
+    .planner-week-label {
+      font-size: 0.95rem;
+      font-weight: 500;
+      color: var(--text-primary);
+    }
+
+    .planner-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      border: 1px solid var(--border);
+      border-radius: var(--r);
+      overflow: hidden;
+    }
+
+    @media (max-width: 900px) { .planner-grid { grid-template-columns: repeat(2, 1fr); } }
+
+    .day-col { border-right: 1px solid var(--border); min-height: 240px; display: flex; flex-direction: column; }
+    .day-col:last-child { border-right: none; }
+
+    .day-col-head {
+      padding: 0.75rem 0.75rem 0.6rem;
+      border-bottom: 1px solid var(--border);
+      background: var(--bg-off);
+    }
+
+    .day-col.today .day-col-head { background: var(--accent-ll); border-bottom-color: var(--accent-l); }
+
+    .day-col-name {
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      color: var(--text-mid);
+    }
+
+    .day-col.today .day-col-name { color: var(--accent); }
+
+    .day-col-date {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      line-height: 1;
+      margin-top: 0.2rem;
+    }
+
+    .day-col.today .day-col-date { color: var(--accent); }
+
+    .day-col-meals { flex: 1; padding: 0.6rem; display: flex; flex-direction: column; gap: 0.4rem; }
+
+    .meal-chip {
+      padding: 0.4rem 0.6rem;
+      border-radius: 4px;
+      font-size: 0.8rem;
+      line-height: 1.3;
+    }
+
+    .meal-chip.filled {
+      background: var(--accent-ll);
+      border-left: 2px solid var(--accent);
+    }
+
+    .meal-chip.empty {
+      border: 1px dashed var(--border-mid);
+      color: var(--text-light);
+      cursor: pointer;
+    }
+
+    .meal-chip.empty:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+      background: var(--accent-ll);
+    }
+
+    .meal-chip-type {
+      font-size: 0.68rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--text-mid);
+      font-weight: 500;
+    }
+
+    .meal-chip.filled .meal-chip-type { color: var(--accent); }
+
+    .meal-chip-name {
+      font-weight: 500;
+      color: var(--text-primary);
+      font-size: 0.82rem;
+      margin-top: 0.1rem;
+    }
+
+    .meal-chip.empty .meal-chip-name { color: var(--text-light); font-weight: 400; }
+
+    /* ── SHOPPING LIST ── */
+    .shopping-summary-bar {
+      display: flex;
+      gap: 2.5rem;
+      padding: 1.25rem 1.5rem;
+      background: var(--bg-off);
+      border-radius: var(--r);
+      margin-bottom: 2rem;
+      border: 1px solid var(--border);
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .summary-item { display: flex; flex-direction: column; gap: 0.1rem; }
+
+    .summary-num {
+      font-size: 1.5rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      letter-spacing: -0.5px;
+      line-height: 1;
+    }
+
+    .summary-label {
+      font-size: 0.8rem;
+      color: var(--text-mid);
+    }
+
+    .summary-sep {
+      width: 1px;
+      height: 36px;
+      background: var(--border);
+    }
+
+    .shop-group { margin-bottom: 2.5rem; }
+
+    .shop-group-header {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 1.25rem;
+    }
+
+    .shop-group-name {
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--text-mid);
+    }
+
+    .shop-group-line {
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+
+    .aisle-group { margin-bottom: 1.25rem; }
+
+    .aisle-label {
+      font-size: 0.78rem;
+      font-weight: 500;
+      color: var(--text-light);
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      margin-bottom: 0.35rem;
+      padding-left: 0.1rem;
+    }
+
+    .s-item {
+      display: grid;
+      grid-template-columns: 24px 1fr auto auto;
+      align-items: center;
+      gap: 0.85rem;
+      padding: 0.6rem 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .s-item:last-child { border-bottom: none; }
+
+    .s-item.checked .s-item-name { color: var(--text-light); text-decoration: line-through; }
+
+    .s-cb {
+      width: 18px;
+      height: 18px;
+      accent-color: var(--accent);
+      cursor: pointer;
+    }
+
+    .s-item-name {
+      font-size: 0.925rem;
+      color: var(--text-primary);
+    }
+
+    .s-item-source {
+      font-size: 0.78rem;
+      color: var(--text-light);
+    }
+
+    .s-item-qty {
+      font-size: 0.875rem;
+      color: var(--text-mid);
+      font-weight: 500;
+      text-align: right;
+      white-space: nowrap;
+    }
+
+    /* ── ADD ITEM ── */
+    .add-item-section {
+      padding-top: 1.5rem;
+      border-top: 1px solid var(--border);
+      margin-top: 1.5rem;
+    }
+
+    .add-item-label {
+      font-size: 0.8rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      color: var(--text-mid);
+      margin-bottom: 0.6rem;
+    }
+
+    .add-item-row {
+      display: flex;
+      gap: 0.5rem;
+    }
+
+    .add-item-input {
+      flex: 1;
+      max-width: 360px;
+      padding: 0.55rem 0.85rem;
+      border: 1px solid var(--border-mid);
+      border-radius: var(--r);
+      font-family: var(--font);
+      font-size: 0.9rem;
+      transition: border-color 0.15s;
+    }
+
+    .add-item-input:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px var(--accent-ll);
+    }
+
+    /* ── MISC ── */
+    .design-label {
+      position: fixed;
+      bottom: 1rem;
+      left: 1rem;
+      background: var(--text-primary);
+      color: var(--bg);
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      padding: 0.35rem 0.75rem;
+      border-radius: 20px;
+      pointer-events: none;
+      opacity: 0.65;
+    }
+  </style>
+</head>
+<body>
+
+<!-- ========== HEADER ========== -->
+<header class="header">
+  <div class="header-inner">
+    <a class="logo">Kitchen<span>Listr</span></a>
+    <nav class="nav">
+      <button class="nav-btn active" data-view="recipes">Recipes</button>
+      <button class="nav-btn" data-view="planner">Meal Plan</button>
+      <button class="nav-btn" data-view="shopping">Shopping List</button>
+      <button class="nav-btn" data-view="settings">Settings</button>
+    </nav>
+    <div class="header-right">
+      <div class="avatar">D</div>
+      <span class="user-name">David</span>
+    </div>
+  </div>
+</header>
+
+<!-- ========== MAIN ========== -->
+<main class="main">
+
+  <!-- ── RECIPES ── -->
+  <section id="recipes" class="view active">
+    <div class="page-header">
+      <h1 class="page-title">Recipes <span class="page-count">6</span></h1>
+      <button class="btn btn-primary">+ Add Recipe</button>
+    </div>
+
+    <div class="search-wrap">
+      <input class="search-input" placeholder="Search…" type="search">
+      <div class="filter-pills">
+        <button class="pill active">All</button>
+        <button class="pill">Italian</button>
+        <button class="pill">British</button>
+        <button class="pill">Indian</button>
+        <button class="pill">Salads</button>
+      </div>
+    </div>
+
+    <div class="recipe-list">
+
+      <div class="recipe-row">
+        <div class="recipe-dot dot-italian"></div>
+        <div class="recipe-row-main">
+          <div class="recipe-row-title">Spaghetti Bolognese</div>
+          <div class="recipe-row-meta">Italian &nbsp;·&nbsp; 45 min &nbsp;·&nbsp; 12 ingredients &nbsp;·&nbsp; Serves 4</div>
+        </div>
+        <div class="recipe-row-actions">
+          <button class="row-action-btn">Edit</button>
+          <button class="row-action-btn">Add to plan</button>
+        </div>
+      </div>
+
+      <div class="recipe-row">
+        <div class="recipe-dot dot-indian"></div>
+        <div class="recipe-row-main">
+          <div class="recipe-row-title">Chicken Tikka Masala</div>
+          <div class="recipe-row-meta">Indian &nbsp;·&nbsp; 40 min &nbsp;·&nbsp; 18 ingredients &nbsp;·&nbsp; Serves 4</div>
+        </div>
+        <div class="recipe-row-actions">
+          <button class="row-action-btn">Edit</button>
+          <button class="row-action-btn">Add to plan</button>
+        </div>
+      </div>
+
+      <div class="recipe-row">
+        <div class="recipe-dot dot-british"></div>
+        <div class="recipe-row-main">
+          <div class="recipe-row-title">Shepherd's Pie</div>
+          <div class="recipe-row-meta">British &nbsp;·&nbsp; 60 min &nbsp;·&nbsp; 14 ingredients &nbsp;·&nbsp; Serves 6</div>
+        </div>
+        <div class="recipe-row-actions">
+          <button class="row-action-btn">Edit</button>
+          <button class="row-action-btn">Add to plan</button>
+        </div>
+      </div>
+
+      <div class="recipe-row">
+        <div class="recipe-dot dot-salad"></div>
+        <div class="recipe-row-main">
+          <div class="recipe-row-title">Caesar Salad</div>
+          <div class="recipe-row-meta">Salad &nbsp;·&nbsp; 15 min &nbsp;·&nbsp; 8 ingredients &nbsp;·&nbsp; Serves 2</div>
+        </div>
+        <div class="recipe-row-actions">
+          <button class="row-action-btn">Edit</button>
+          <button class="row-action-btn">Add to plan</button>
+        </div>
+      </div>
+
+      <div class="recipe-row">
+        <div class="recipe-dot dot-thai"></div>
+        <div class="recipe-row-main">
+          <div class="recipe-row-title">Thai Green Curry</div>
+          <div class="recipe-row-meta">Thai &nbsp;·&nbsp; 35 min &nbsp;·&nbsp; 16 ingredients &nbsp;·&nbsp; Serves 4</div>
+        </div>
+        <div class="recipe-row-actions">
+          <button class="row-action-btn">Edit</button>
+          <button class="row-action-btn">Add to plan</button>
+        </div>
+      </div>
+
+      <div class="recipe-row">
+        <div class="recipe-dot dot-british"></div>
+        <div class="recipe-row-main">
+          <div class="recipe-row-title">Beef &amp; Ale Stew</div>
+          <div class="recipe-row-meta">British &nbsp;·&nbsp; 2 hr &nbsp;·&nbsp; 12 ingredients &nbsp;·&nbsp; Serves 6</div>
+        </div>
+        <div class="recipe-row-actions">
+          <button class="row-action-btn">Edit</button>
+          <button class="row-action-btn">Add to plan</button>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ── PLANNER ── -->
+  <section id="planner" class="view">
+    <div class="page-header">
+      <h1 class="page-title">Meal Plan</h1>
+      <button class="btn btn-ghost btn-sm">Generate Shopping List</button>
+    </div>
+
+    <div class="planner-nav">
+      <button class="planner-nav-btn">← Prev</button>
+      <span class="planner-week-label">24 Feb – 2 Mar 2026</span>
+      <button class="planner-nav-btn">Next →</button>
+    </div>
+
+    <div class="planner-grid">
+
+      <div class="day-col today">
+        <div class="day-col-head">
+          <div class="day-col-name">Mon</div>
+          <div class="day-col-date">24</div>
+        </div>
+        <div class="day-col-meals">
+          <div class="meal-chip filled">
+            <div class="meal-chip-type">Dinner</div>
+            <div class="meal-chip-name">Spaghetti Bolognese</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="day-col">
+        <div class="day-col-head">
+          <div class="day-col-name">Tue</div>
+          <div class="day-col-date">25</div>
+        </div>
+        <div class="day-col-meals">
+          <div class="meal-chip filled">
+            <div class="meal-chip-type">Lunch</div>
+            <div class="meal-chip-name">Caesar Salad</div>
+          </div>
+          <div class="meal-chip filled">
+            <div class="meal-chip-type">Dinner</div>
+            <div class="meal-chip-name">Thai Green Curry</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="day-col">
+        <div class="day-col-head">
+          <div class="day-col-name">Wed</div>
+          <div class="day-col-date">26</div>
+        </div>
+        <div class="day-col-meals">
+          <div class="meal-chip empty">
+            <div class="meal-chip-type">Dinner</div>
+            <div class="meal-chip-name">Add meal…</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="day-col">
+        <div class="day-col-head">
+          <div class="day-col-name">Thu</div>
+          <div class="day-col-date">27</div>
+        </div>
+        <div class="day-col-meals">
+          <div class="meal-chip filled">
+            <div class="meal-chip-type">Dinner</div>
+            <div class="meal-chip-name">Shepherd's Pie</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="day-col">
+        <div class="day-col-head">
+          <div class="day-col-name">Fri</div>
+          <div class="day-col-date">28</div>
+        </div>
+        <div class="day-col-meals">
+          <div class="meal-chip filled">
+            <div class="meal-chip-type">Dinner</div>
+            <div class="meal-chip-name">Chicken Tikka Masala</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="day-col">
+        <div class="day-col-head">
+          <div class="day-col-name">Sat</div>
+          <div class="day-col-date">1</div>
+        </div>
+        <div class="day-col-meals">
+          <div class="meal-chip filled">
+            <div class="meal-chip-type">Dinner</div>
+            <div class="meal-chip-name">Beef &amp; Ale Stew</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="day-col">
+        <div class="day-col-head">
+          <div class="day-col-name">Sun</div>
+          <div class="day-col-date">2</div>
+        </div>
+        <div class="day-col-meals">
+          <div class="meal-chip empty">
+            <div class="meal-chip-type">Dinner</div>
+            <div class="meal-chip-name">Add meal…</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ── SHOPPING LIST ── -->
+  <section id="shopping" class="view">
+    <div class="page-header">
+      <h1 class="page-title">Shopping List</h1>
+      <div style="display:flex;gap:0.5rem;">
+        <button class="btn btn-ghost btn-sm">Export</button>
+        <button class="btn btn-ghost btn-sm">Print</button>
+      </div>
+    </div>
+
+    <div class="shopping-summary-bar">
+      <div class="summary-item">
+        <div class="summary-num">18</div>
+        <div class="summary-label">to buy</div>
+      </div>
+      <div class="summary-sep"></div>
+      <div class="summary-item">
+        <div class="summary-num">5</div>
+        <div class="summary-label">already have</div>
+      </div>
+      <div class="summary-sep"></div>
+      <div class="summary-item">
+        <div class="summary-num">5</div>
+        <div class="summary-label">meals</div>
+      </div>
+      <div style="font-size:0.85rem;color:var(--text-mid);">24 Feb – 2 Mar 2026</div>
+    </div>
+
+    <!-- Tesco -->
+    <div class="shop-group">
+      <div class="shop-group-header">
+        <span class="shop-group-name">Tesco</span>
+        <div class="shop-group-line"></div>
+      </div>
+
+      <div class="aisle-group">
+        <div class="aisle-label">Produce</div>
+        <div class="s-item checked">
+          <input type="checkbox" class="s-cb" checked>
+          <span class="s-item-name">Onions</span>
+          <span class="s-item-source">Bolognese, Tikka, Stew</span>
+          <span class="s-item-qty">×3</span>
+        </div>
+        <div class="s-item">
+          <input type="checkbox" class="s-cb">
+          <span class="s-item-name">Garlic</span>
+          <span class="s-item-source">Multiple meals</span>
+          <span class="s-item-qty">2 bulbs</span>
+        </div>
+        <div class="s-item">
+          <input type="checkbox" class="s-cb">
+          <span class="s-item-name">Carrots</span>
+          <span class="s-item-source">Shepherd's Pie, Stew</span>
+          <span class="s-item-qty">×5</span>
+        </div>
+        <div class="s-item">
+          <input type="checkbox" class="s-cb">
+          <span class="s-item-name">Fresh ginger</span>
+          <span class="s-item-source">Tikka, Thai Curry</span>
+          <span class="s-item-qty">1 piece</span>
+        </div>
+        <div class="s-item">
+          <input type="checkbox" class="s-cb">
+          <span class="s-item-name">Romaine lettuce</span>
+          <span class="s-item-source">Caesar Salad</span>
+          <span class="s-item-qty">×1</span>
+        </div>
+      </div>
+
+      <div class="aisle-group">
+        <div class="aisle-label">Meat</div>
+        <div class="s-item">
+          <input type="checkbox" class="s-cb">
+          <span class="s-item-name">Minced beef</span>
+          <span class="s-item-source">Bolognese, Shepherd's Pie</span>
+          <span class="s-item-qty">800g</span>
+        </div>
+        <div class="s-item">
+          <input type="checkbox" class="s-cb">
+          <span class="s-item-name">Chicken thighs</span>
+          <span class="s-item-source">Tikka Masala</span>
+          <span class="s-item-qty">600g</span>
+        </div>
+      </div>
+
+      <div class="aisle-group">
+        <div class="aisle-label">Dairy</div>
+        <div class="s-item checked">
+          <input type="checkbox" class="s-cb" checked>
+          <span class="s-item-name">Parmesan</span>
+          <span class="s-item-source">Bolognese, Caesar</span>
+          <span class="s-item-qty">100g</span>
+        </div>
+        <div class="s-item">
+          <input type="checkbox" class="s-cb">
+          <span class="s-item-name">Double cream</span>
+          <span class="s-item-source">Tikka Masala</span>
+          <span class="s-item-qty">300ml</span>
+        </div>
+      </div>
+
+      <div class="aisle-group">
+        <div class="aisle-label">Tinned &amp; Dry</div>
+        <div class="s-item">
+          <input type="checkbox" class="s-cb">
+          <span class="s-item-name">Chopped tomatoes</span>
+          <span class="s-item-source">Bolognese, Tikka</span>
+          <span class="s-item-qty">×2</span>
+        </div>
+        <div class="s-item">
+          <input type="checkbox" class="s-cb">
+          <span class="s-item-name">Coconut milk</span>
+          <span class="s-item-source">Thai Green Curry</span>
+          <span class="s-item-qty">×2</span>
+        </div>
+        <div class="s-item">
+          <input type="checkbox" class="s-cb">
+          <span class="s-item-name">Spaghetti</span>
+          <span class="s-item-source">Bolognese</span>
+          <span class="s-item-qty">500g</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Butcher -->
+    <div class="shop-group">
+      <div class="shop-group-header">
+        <span class="shop-group-name">Butcher</span>
+        <div class="shop-group-line"></div>
+      </div>
+      <div class="aisle-group">
+        <div class="aisle-label">Meat</div>
+        <div class="s-item">
+          <input type="checkbox" class="s-cb">
+          <span class="s-item-name">Braising steak</span>
+          <span class="s-item-source">Beef &amp; Ale Stew</span>
+          <span class="s-item-qty">800g</span>
+        </div>
+        <div class="s-item">
+          <input type="checkbox" class="s-cb">
+          <span class="s-item-name">Lamb mince</span>
+          <span class="s-item-source">Shepherd's Pie</span>
+          <span class="s-item-qty">500g</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="add-item-section">
+      <div class="add-item-label">Add extra item</div>
+      <div class="add-item-row">
+        <input class="add-item-input" placeholder="e.g. olive oil…" type="text">
+        <button class="btn btn-primary btn-sm">Add</button>
+      </div>
+    </div>
+
+  </section>
+
+  <!-- ── SETTINGS ── -->
+  <section id="settings" class="view">
+    <div class="page-header">
+      <h1 class="page-title">Settings</h1>
+    </div>
+    <p style="color:var(--text-mid);">Settings panel not included in this mockup.</p>
+  </section>
+
+</main>
+
+<div class="design-label">Mockup B — Clarity</div>
+
+<script>
+  document.querySelectorAll('.nav-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById(btn.dataset.view).classList.add('active');
+    });
+  });
+</script>
+</body>
+</html>

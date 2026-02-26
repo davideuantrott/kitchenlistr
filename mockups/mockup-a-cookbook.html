@@ -1,0 +1,1123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>KitchenListr — Mockup A: The Cookbook</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Source+Sans+3:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    /* =====================================================
+       MOCKUP A: THE COOKBOOK
+       Aesthetic: Warm, editorial, artisan. Feels like a
+       beautiful cookbook you'd keep on the kitchen shelf.
+       Serif headings, terracotta accent, parchment tones.
+    ===================================================== */
+
+    :root {
+      --bg-parchment:   #F7F1E8;
+      --bg-warm-white:  #FFFCF7;
+      --bg-cream:       #F2EAD8;
+      --text-espresso:  #2A1F14;
+      --text-warm-mid:  #7A6855;
+      --text-light:     #A0896F;
+      --accent-terra:   #BF6840;   /* terracotta / spice */
+      --accent-terra-l: #F3DDD1;   /* terracotta light */
+      --accent-sage:    #6E9975;   /* herbal sage */
+      --accent-sage-l:  #D8EDD9;   /* sage light */
+      --border:         #DDD3C0;
+      --border-dark:    #BFB09A;
+      --shadow-warm:    0 2px 8px rgba(80, 55, 30, 0.10);
+      --shadow-card:    0 4px 18px rgba(80, 55, 30, 0.13);
+      --r-sm: 4px;
+      --r-md: 8px;
+      --r-lg: 14px;
+      --font-head: 'Cormorant Garamond', Georgia, serif;
+      --font-body: 'Source Sans 3', system-ui, sans-serif;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: var(--font-body);
+      font-size: 16px;
+      background: var(--bg-parchment);
+      color: var(--text-espresso);
+      line-height: 1.65;
+      min-height: 100vh;
+    }
+
+    /* ── HEADER ── */
+    .header {
+      background: var(--bg-warm-white);
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 1px 6px rgba(80,55,30,0.08);
+    }
+
+    .header-inner {
+      max-width: 1160px;
+      margin: 0 auto;
+      padding: 0 1.75rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 2rem;
+    }
+
+    .logo {
+      padding: 1.1rem 0;
+      font-family: var(--font-head);
+      font-size: 1.7rem;
+      font-weight: 700;
+      color: var(--text-espresso);
+      letter-spacing: -0.3px;
+      text-decoration: none;
+      user-select: none;
+    }
+
+    .logo span { color: var(--accent-terra); }
+
+    /* Tab-style nav — elegant underlines */
+    .nav {
+      display: flex;
+      align-items: stretch;
+      gap: 0;
+      height: 100%;
+    }
+
+    .nav-btn {
+      position: relative;
+      padding: 0 1.5rem;
+      height: 58px;
+      border: none;
+      background: transparent;
+      font-family: var(--font-body);
+      font-size: 0.95rem;
+      font-weight: 500;
+      letter-spacing: 0.3px;
+      color: var(--text-warm-mid);
+      cursor: pointer;
+      transition: color 0.2s;
+    }
+
+    .nav-btn::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 1rem;
+      right: 1rem;
+      height: 2px;
+      background: var(--accent-terra);
+      transform: scaleX(0);
+      transition: transform 0.2s ease;
+    }
+
+    .nav-btn:hover { color: var(--text-espresso); }
+    .nav-btn:hover::after { transform: scaleX(0.5); }
+
+    .nav-btn.active {
+      color: var(--accent-terra);
+      font-weight: 600;
+    }
+
+    .nav-btn.active::after { transform: scaleX(1); }
+
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      font-size: 0.9rem;
+      color: var(--text-warm-mid);
+    }
+
+    .avatar {
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      background: var(--accent-terra-l);
+      color: var(--accent-terra);
+      font-weight: 700;
+      font-size: 0.85rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--font-head);
+    }
+
+    /* ── LAYOUT ── */
+    .main {
+      max-width: 1160px;
+      margin: 0 auto;
+      padding: 2.25rem 1.75rem;
+    }
+
+    .view { display: none; }
+    .view.active { display: block; animation: fadeUp 0.25s ease; }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(8px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ── PAGE HEADERS ── */
+    .page-header {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      margin-bottom: 2rem;
+      padding-bottom: 1.25rem;
+      border-bottom: 1px solid var(--border);
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .page-title {
+      font-family: var(--font-head);
+      font-size: 2.2rem;
+      font-weight: 700;
+      color: var(--text-espresso);
+      letter-spacing: -0.5px;
+      line-height: 1.15;
+    }
+
+    .page-subtitle {
+      font-size: 1rem;
+      color: var(--text-warm-mid);
+      margin-top: 0.3rem;
+      font-style: italic;
+    }
+
+    /* ── BUTTONS ── */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.65rem 1.4rem;
+      border-radius: var(--r-sm);
+      border: none;
+      font-family: var(--font-body);
+      font-size: 0.9rem;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      cursor: pointer;
+      transition: all 0.2s;
+      text-transform: uppercase;
+    }
+
+    .btn-primary {
+      background: var(--accent-terra);
+      color: #fff;
+    }
+
+    .btn-primary:hover {
+      background: #A85830;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 14px rgba(191,104,64,0.35);
+    }
+
+    .btn-secondary {
+      background: transparent;
+      color: var(--accent-terra);
+      border: 1.5px solid var(--accent-terra);
+    }
+
+    .btn-secondary:hover {
+      background: var(--accent-terra-l);
+    }
+
+    .btn-sage {
+      background: var(--accent-sage);
+      color: #fff;
+    }
+
+    .btn-sage:hover { background: #5A8562; }
+
+    .btn-sm {
+      padding: 0.4rem 0.9rem;
+      font-size: 0.8rem;
+    }
+
+    /* ── RECIPE GRID ── */
+    .recipe-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+      gap: 1.4rem;
+    }
+
+    .recipe-card {
+      background: var(--bg-warm-white);
+      border: 1px solid var(--border);
+      border-radius: var(--r-lg);
+      overflow: hidden;
+      cursor: pointer;
+      transition: all 0.22s;
+      position: relative;
+    }
+
+    .recipe-card:hover {
+      box-shadow: var(--shadow-card);
+      transform: translateY(-3px);
+      border-color: var(--border-dark);
+    }
+
+    /* Coloured top stripe per category */
+    .recipe-card-stripe {
+      height: 4px;
+    }
+
+    .stripe-italian { background: linear-gradient(90deg, #BF6840, #D4975B); }
+    .stripe-indian  { background: linear-gradient(90deg, #7A5C9B, #B07DCC); }
+    .stripe-british { background: linear-gradient(90deg, #4A7A9B, #6DA0BF); }
+    .stripe-salad   { background: linear-gradient(90deg, #6E9975, #98C79E); }
+    .stripe-thai    { background: linear-gradient(90deg, #9B7A4A, #C4A46B); }
+
+    .recipe-card-body { padding: 1.25rem 1.4rem 1.4rem; }
+
+    .recipe-tag {
+      display: inline-block;
+      font-size: 0.7rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      padding: 0.2rem 0.55rem;
+      border-radius: 3px;
+      margin-bottom: 0.65rem;
+    }
+
+    .tag-italian { background: var(--accent-terra-l); color: var(--accent-terra); }
+    .tag-indian  { background: #EDE4F5; color: #7A5C9B; }
+    .tag-british { background: #E0EBF5; color: #4A7A9B; }
+    .tag-salad   { background: var(--accent-sage-l); color: var(--accent-sage); }
+    .tag-thai    { background: #F5EEE0; color: #9B7A4A; }
+
+    .recipe-card-title {
+      font-family: var(--font-head);
+      font-size: 1.3rem;
+      font-weight: 600;
+      color: var(--text-espresso);
+      margin-bottom: 0.5rem;
+      line-height: 1.25;
+    }
+
+    .recipe-card-meta {
+      font-size: 0.85rem;
+      color: var(--text-warm-mid);
+      display: flex;
+      gap: 1rem;
+    }
+
+    .recipe-card-meta span { display: flex; align-items: center; gap: 0.3rem; }
+
+    .recipe-card-footer {
+      padding: 0.75rem 1.4rem;
+      border-top: 1px solid var(--border);
+      background: var(--bg-parchment);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .recipe-card-serves {
+      font-size: 0.8rem;
+      color: var(--text-warm-mid);
+    }
+
+    .recipe-card-actions { display: flex; gap: 0.4rem; }
+
+    .icon-btn {
+      background: none;
+      border: 1px solid var(--border);
+      border-radius: var(--r-sm);
+      padding: 0.3rem 0.55rem;
+      cursor: pointer;
+      color: var(--text-warm-mid);
+      font-size: 0.85rem;
+      transition: all 0.15s;
+    }
+
+    .icon-btn:hover { border-color: var(--accent-terra); color: var(--accent-terra); }
+
+    /* ── SEARCH BAR ── */
+    .search-bar-wrap {
+      margin-bottom: 1.75rem;
+      display: flex;
+      gap: 0.75rem;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .search-input {
+      flex: 1;
+      min-width: 240px;
+      max-width: 420px;
+      padding: 0.7rem 1rem 0.7rem 2.75rem;
+      border: 1.5px solid var(--border);
+      border-radius: var(--r-sm);
+      font-family: var(--font-body);
+      font-size: 0.95rem;
+      background: var(--bg-warm-white) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23A0896F' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cline x1='21' y1='21' x2='16.65' y2='16.65'/%3E%3C/svg%3E") no-repeat 0.85rem center;
+      color: var(--text-espresso);
+      transition: border-color 0.2s;
+    }
+
+    .search-input:focus {
+      outline: none;
+      border-color: var(--accent-terra);
+      box-shadow: 0 0 0 3px var(--accent-terra-l);
+    }
+
+    .filter-chip {
+      padding: 0.4rem 0.9rem;
+      border: 1.5px solid var(--border);
+      border-radius: 20px;
+      background: transparent;
+      font-family: var(--font-body);
+      font-size: 0.85rem;
+      color: var(--text-warm-mid);
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .filter-chip.active, .filter-chip:hover {
+      background: var(--accent-terra-l);
+      border-color: var(--accent-terra);
+      color: var(--accent-terra);
+    }
+
+    /* ── PLANNER ── */
+    .planner-controls {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1.5rem;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .week-nav {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .week-nav-btn {
+      background: var(--bg-warm-white);
+      border: 1.5px solid var(--border);
+      border-radius: var(--r-sm);
+      padding: 0.45rem 0.9rem;
+      cursor: pointer;
+      color: var(--text-warm-mid);
+      font-size: 1rem;
+      transition: all 0.15s;
+    }
+
+    .week-nav-btn:hover { border-color: var(--accent-terra); color: var(--accent-terra); background: var(--accent-terra-l); }
+
+    .week-label {
+      font-family: var(--font-head);
+      font-size: 1.15rem;
+      font-weight: 600;
+      color: var(--text-espresso);
+      min-width: 200px;
+      text-align: center;
+    }
+
+    .planner-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 0.75rem;
+    }
+
+    @media (max-width: 900px) { .planner-grid { grid-template-columns: repeat(2, 1fr); } }
+    @media (max-width: 500px) { .planner-grid { grid-template-columns: 1fr; } }
+
+    .day-card {
+      background: var(--bg-warm-white);
+      border: 1px solid var(--border);
+      border-radius: var(--r-md);
+      overflow: hidden;
+      min-height: 180px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .day-card.today {
+      border-color: var(--accent-terra);
+      box-shadow: 0 0 0 2px var(--accent-terra-l);
+    }
+
+    .day-head {
+      padding: 0.6rem 0.85rem;
+      background: var(--bg-cream);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .day-card.today .day-head {
+      background: var(--accent-terra-l);
+    }
+
+    .day-name {
+      font-family: var(--font-head);
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--text-espresso);
+    }
+
+    .day-card.today .day-name { color: var(--accent-terra); }
+
+    .day-date {
+      font-size: 0.75rem;
+      color: var(--text-warm-mid);
+    }
+
+    .day-meals { flex: 1; padding: 0.6rem 0.75rem; display: flex; flex-direction: column; gap: 0.4rem; }
+
+    .meal-slot {
+      padding: 0.45rem 0.6rem;
+      border-radius: var(--r-sm);
+      font-size: 0.82rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.1rem;
+    }
+
+    .meal-slot.filled { background: var(--accent-sage-l); border: 1px solid #B8DDB9; }
+    .meal-slot.empty  { background: var(--bg-parchment); border: 1px dashed var(--border-dark); cursor: pointer; }
+    .meal-slot.empty:hover { border-color: var(--accent-terra); background: var(--accent-terra-l); }
+
+    .meal-type {
+      font-size: 0.68rem;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      font-weight: 700;
+      color: var(--accent-sage);
+    }
+
+    .meal-slot.empty .meal-type { color: var(--text-light); }
+
+    .meal-name {
+      font-weight: 600;
+      color: var(--text-espresso);
+      font-size: 0.85rem;
+      font-family: var(--font-head);
+    }
+
+    .meal-empty-text {
+      color: var(--text-light);
+      font-style: italic;
+      font-size: 0.82rem;
+    }
+
+    /* ── SHOPPING LIST ── */
+    .shopping-hero {
+      background: linear-gradient(135deg, var(--accent-terra-l) 0%, #EDE8DF 100%);
+      border: 1px solid var(--border);
+      border-radius: var(--r-lg);
+      padding: 1.4rem 1.75rem;
+      margin-bottom: 1.75rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 1.25rem;
+    }
+
+    .shopping-stat {
+      text-align: center;
+    }
+
+    .stat-num {
+      font-family: var(--font-head);
+      font-size: 2.5rem;
+      font-weight: 700;
+      color: var(--accent-terra);
+      line-height: 1;
+    }
+
+    .stat-label {
+      font-size: 0.82rem;
+      color: var(--text-warm-mid);
+      margin-top: 0.2rem;
+    }
+
+    .shopping-date-info {
+      font-family: var(--font-head);
+      font-size: 1.1rem;
+      font-style: italic;
+      color: var(--text-warm-mid);
+    }
+
+    .shop-section { margin-bottom: 2rem; }
+
+    .shop-name {
+      font-family: var(--font-head);
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--text-espresso);
+      margin-bottom: 0.35rem;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .shop-name::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+
+    .aisle-section { margin-bottom: 1.25rem; }
+
+    .aisle-name {
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--text-light);
+      margin-bottom: 0.5rem;
+      padding-left: 0.25rem;
+    }
+
+    .shopping-item {
+      display: flex;
+      align-items: center;
+      gap: 0.85rem;
+      padding: 0.75rem 1rem;
+      background: var(--bg-warm-white);
+      border: 1px solid var(--border);
+      border-radius: var(--r-sm);
+      margin-bottom: 0.4rem;
+      transition: all 0.2s;
+    }
+
+    .shopping-item:hover { border-color: var(--border-dark); }
+
+    .shopping-item.checked {
+      background: var(--accent-sage-l);
+      border-color: #B8DDB9;
+    }
+
+    .shopping-item.checked .item-name { text-decoration: line-through; color: var(--text-warm-mid); }
+
+    .shopping-cb {
+      width: 20px;
+      height: 20px;
+      accent-color: var(--accent-sage);
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+
+    .item-name {
+      flex: 1;
+      font-size: 0.95rem;
+      color: var(--text-espresso);
+    }
+
+    .item-qty {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--text-warm-mid);
+      min-width: 60px;
+      text-align: right;
+    }
+
+    .item-source {
+      font-size: 0.78rem;
+      color: var(--text-light);
+      font-style: italic;
+    }
+
+    /* ── EXTRA ITEMS ── */
+    .add-item-row {
+      display: flex;
+      gap: 0.6rem;
+      margin-top: 1rem;
+    }
+
+    .add-item-input {
+      flex: 1;
+      padding: 0.65rem 1rem;
+      border: 1.5px solid var(--border);
+      border-radius: var(--r-sm);
+      font-family: var(--font-body);
+      font-size: 0.95rem;
+      background: var(--bg-warm-white);
+    }
+
+    .add-item-input:focus {
+      outline: none;
+      border-color: var(--accent-terra);
+      box-shadow: 0 0 0 3px var(--accent-terra-l);
+    }
+
+    /* ── MISC LABEL ── */
+    .design-label {
+      position: fixed;
+      bottom: 1rem;
+      left: 1rem;
+      background: var(--text-espresso);
+      color: var(--bg-parchment);
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      padding: 0.4rem 0.8rem;
+      border-radius: 20px;
+      pointer-events: none;
+      opacity: 0.75;
+    }
+  </style>
+</head>
+<body>
+
+<!-- ========== HEADER ========== -->
+<header class="header">
+  <div class="header-inner">
+    <a class="logo">Kitchen<span>Listr</span></a>
+    <nav class="nav">
+      <button class="nav-btn active" data-view="recipes">Recipes</button>
+      <button class="nav-btn" data-view="planner">Meal Plan</button>
+      <button class="nav-btn" data-view="shopping">Shopping List</button>
+      <button class="nav-btn" data-view="settings">Settings</button>
+    </nav>
+    <div class="header-right">
+      <div class="avatar">D</div>
+      <span>David</span>
+    </div>
+  </div>
+</header>
+
+<!-- ========== MAIN ========== -->
+<main class="main">
+
+  <!-- ── RECIPES ── -->
+  <section id="recipes" class="view active">
+    <div class="page-header">
+      <div>
+        <h1 class="page-title">Your Recipes</h1>
+        <p class="page-subtitle">6 recipes in your collection</p>
+      </div>
+      <button class="btn btn-primary">+ Add Recipe</button>
+    </div>
+
+    <div class="search-bar-wrap">
+      <input class="search-input" placeholder="Search recipes…" type="search">
+      <button class="filter-chip active">All</button>
+      <button class="filter-chip">Italian</button>
+      <button class="filter-chip">British</button>
+      <button class="filter-chip">Indian</button>
+      <button class="filter-chip">Salads</button>
+    </div>
+
+    <div class="recipe-grid">
+
+      <div class="recipe-card">
+        <div class="recipe-card-stripe stripe-italian"></div>
+        <div class="recipe-card-body">
+          <span class="recipe-tag tag-italian">Italian</span>
+          <h3 class="recipe-card-title">Spaghetti Bolognese</h3>
+          <div class="recipe-card-meta">
+            <span>⏱ 45 min</span>
+            <span>🧂 12 ingredients</span>
+          </div>
+        </div>
+        <div class="recipe-card-footer">
+          <span class="recipe-card-serves">Serves 4</span>
+          <div class="recipe-card-actions">
+            <button class="icon-btn">✏</button>
+            <button class="icon-btn">📅</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="recipe-card">
+        <div class="recipe-card-stripe stripe-indian"></div>
+        <div class="recipe-card-body">
+          <span class="recipe-tag tag-indian">Indian</span>
+          <h3 class="recipe-card-title">Chicken Tikka Masala</h3>
+          <div class="recipe-card-meta">
+            <span>⏱ 40 min</span>
+            <span>🧂 18 ingredients</span>
+          </div>
+        </div>
+        <div class="recipe-card-footer">
+          <span class="recipe-card-serves">Serves 4</span>
+          <div class="recipe-card-actions">
+            <button class="icon-btn">✏</button>
+            <button class="icon-btn">📅</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="recipe-card">
+        <div class="recipe-card-stripe stripe-british"></div>
+        <div class="recipe-card-body">
+          <span class="recipe-tag tag-british">British</span>
+          <h3 class="recipe-card-title">Shepherd's Pie</h3>
+          <div class="recipe-card-meta">
+            <span>⏱ 60 min</span>
+            <span>🧂 14 ingredients</span>
+          </div>
+        </div>
+        <div class="recipe-card-footer">
+          <span class="recipe-card-serves">Serves 6</span>
+          <div class="recipe-card-actions">
+            <button class="icon-btn">✏</button>
+            <button class="icon-btn">📅</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="recipe-card">
+        <div class="recipe-card-stripe stripe-salad"></div>
+        <div class="recipe-card-body">
+          <span class="recipe-tag tag-salad">Salad</span>
+          <h3 class="recipe-card-title">Caesar Salad</h3>
+          <div class="recipe-card-meta">
+            <span>⏱ 15 min</span>
+            <span>🧂 8 ingredients</span>
+          </div>
+        </div>
+        <div class="recipe-card-footer">
+          <span class="recipe-card-serves">Serves 2</span>
+          <div class="recipe-card-actions">
+            <button class="icon-btn">✏</button>
+            <button class="icon-btn">📅</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="recipe-card">
+        <div class="recipe-card-stripe stripe-thai"></div>
+        <div class="recipe-card-body">
+          <span class="recipe-tag tag-thai">Thai</span>
+          <h3 class="recipe-card-title">Thai Green Curry</h3>
+          <div class="recipe-card-meta">
+            <span>⏱ 35 min</span>
+            <span>🧂 16 ingredients</span>
+          </div>
+        </div>
+        <div class="recipe-card-footer">
+          <span class="recipe-card-serves">Serves 4</span>
+          <div class="recipe-card-actions">
+            <button class="icon-btn">✏</button>
+            <button class="icon-btn">📅</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="recipe-card">
+        <div class="recipe-card-stripe stripe-british"></div>
+        <div class="recipe-card-body">
+          <span class="recipe-tag tag-british">British</span>
+          <h3 class="recipe-card-title">Beef &amp; Ale Stew</h3>
+          <div class="recipe-card-meta">
+            <span>⏱ 2 hr</span>
+            <span>🧂 12 ingredients</span>
+          </div>
+        </div>
+        <div class="recipe-card-footer">
+          <span class="recipe-card-serves">Serves 6</span>
+          <div class="recipe-card-actions">
+            <button class="icon-btn">✏</button>
+            <button class="icon-btn">📅</button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ── PLANNER ── -->
+  <section id="planner" class="view">
+    <div class="page-header">
+      <div>
+        <h1 class="page-title">Meal Plan</h1>
+        <p class="page-subtitle">Week of 24 February – 2 March 2026</p>
+      </div>
+      <button class="btn btn-secondary">Generate Shopping List</button>
+    </div>
+
+    <div class="planner-controls">
+      <div class="week-nav">
+        <button class="week-nav-btn">← Prev</button>
+        <span class="week-label">24 Feb – 2 Mar</span>
+        <button class="week-nav-btn">Next →</button>
+      </div>
+    </div>
+
+    <div class="planner-grid">
+
+      <div class="day-card today">
+        <div class="day-head">
+          <div class="day-name">Monday</div>
+          <div class="day-date">24 Feb</div>
+        </div>
+        <div class="day-meals">
+          <div class="meal-slot filled">
+            <div class="meal-type">Dinner</div>
+            <div class="meal-name">Spaghetti Bolognese</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="day-card">
+        <div class="day-head">
+          <div class="day-name">Tuesday</div>
+          <div class="day-date">25 Feb</div>
+        </div>
+        <div class="day-meals">
+          <div class="meal-slot filled">
+            <div class="meal-type">Lunch</div>
+            <div class="meal-name">Caesar Salad</div>
+          </div>
+          <div class="meal-slot filled">
+            <div class="meal-type">Dinner</div>
+            <div class="meal-name">Thai Green Curry</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="day-card">
+        <div class="day-head">
+          <div class="day-name">Wednesday</div>
+          <div class="day-date">26 Feb</div>
+        </div>
+        <div class="day-meals">
+          <div class="meal-slot empty">
+            <div class="meal-type">Dinner</div>
+            <div class="meal-empty-text">Add a meal…</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="day-card">
+        <div class="day-head">
+          <div class="day-name">Thursday</div>
+          <div class="day-date">27 Feb</div>
+        </div>
+        <div class="day-meals">
+          <div class="meal-slot filled">
+            <div class="meal-type">Dinner</div>
+            <div class="meal-name">Shepherd's Pie</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="day-card">
+        <div class="day-head">
+          <div class="day-name">Friday</div>
+          <div class="day-date">28 Feb</div>
+        </div>
+        <div class="day-meals">
+          <div class="meal-slot filled">
+            <div class="meal-type">Dinner</div>
+            <div class="meal-name">Chicken Tikka Masala</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="day-card">
+        <div class="day-head">
+          <div class="day-name">Saturday</div>
+          <div class="day-date">1 Mar</div>
+        </div>
+        <div class="day-meals">
+          <div class="meal-slot filled">
+            <div class="meal-type">Dinner</div>
+            <div class="meal-name">Beef &amp; Ale Stew</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="day-card">
+        <div class="day-head">
+          <div class="day-name">Sunday</div>
+          <div class="day-date">2 Mar</div>
+        </div>
+        <div class="day-meals">
+          <div class="meal-slot empty">
+            <div class="meal-type">Dinner</div>
+            <div class="meal-empty-text">Add a meal…</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ── SHOPPING LIST ── -->
+  <section id="shopping" class="view">
+    <div class="page-header">
+      <div>
+        <h1 class="page-title">Shopping List</h1>
+        <p class="page-subtitle">24 Feb – 2 March 2026 · 5 meals</p>
+      </div>
+      <div style="display:flex;gap:0.6rem;">
+        <button class="btn btn-secondary btn-sm">Export</button>
+        <button class="btn btn-secondary btn-sm">Print</button>
+      </div>
+    </div>
+
+    <div class="shopping-hero">
+      <div class="shopping-stat"><div class="stat-num">18</div><div class="stat-label">Items to buy</div></div>
+      <div class="shopping-stat"><div class="stat-num">5</div><div class="stat-label">Already have</div></div>
+      <div class="shopping-stat"><div class="stat-num">2</div><div class="stat-label">Shops</div></div>
+      <div class="shopping-date-info">Week of 24 February 2026</div>
+    </div>
+
+    <!-- Supermarket -->
+    <div class="shop-section">
+      <h2 class="shop-name">Tesco</h2>
+
+      <div class="aisle-section">
+        <div class="aisle-name">Produce</div>
+        <div class="shopping-item checked">
+          <input type="checkbox" class="shopping-cb" checked>
+          <span class="item-name">Onions</span>
+          <span class="item-source">Bolognese, Tikka, Stew</span>
+          <span class="item-qty">×3</span>
+        </div>
+        <div class="shopping-item">
+          <input type="checkbox" class="shopping-cb">
+          <span class="item-name">Garlic</span>
+          <span class="item-source">Multiple meals</span>
+          <span class="item-qty">2 bulbs</span>
+        </div>
+        <div class="shopping-item">
+          <input type="checkbox" class="shopping-cb">
+          <span class="item-name">Carrots</span>
+          <span class="item-source">Shepherd's Pie, Stew</span>
+          <span class="item-qty">×5</span>
+        </div>
+        <div class="shopping-item">
+          <input type="checkbox" class="shopping-cb">
+          <span class="item-name">Fresh ginger</span>
+          <span class="item-source">Tikka Masala, Thai Curry</span>
+          <span class="item-qty">1 piece</span>
+        </div>
+        <div class="shopping-item">
+          <input type="checkbox" class="shopping-cb">
+          <span class="item-name">Romaine lettuce</span>
+          <span class="item-source">Caesar Salad</span>
+          <span class="item-qty">×1</span>
+        </div>
+      </div>
+
+      <div class="aisle-section">
+        <div class="aisle-name">Meat</div>
+        <div class="shopping-item">
+          <input type="checkbox" class="shopping-cb">
+          <span class="item-name">Minced beef</span>
+          <span class="item-source">Bolognese, Shepherd's Pie</span>
+          <span class="item-qty">800g</span>
+        </div>
+        <div class="shopping-item">
+          <input type="checkbox" class="shopping-cb">
+          <span class="item-name">Chicken thighs</span>
+          <span class="item-source">Tikka Masala</span>
+          <span class="item-qty">600g</span>
+        </div>
+      </div>
+
+      <div class="aisle-section">
+        <div class="aisle-name">Dairy</div>
+        <div class="shopping-item checked">
+          <input type="checkbox" class="shopping-cb" checked>
+          <span class="item-name">Parmesan</span>
+          <span class="item-source">Bolognese, Caesar Salad</span>
+          <span class="item-qty">100g</span>
+        </div>
+        <div class="shopping-item">
+          <input type="checkbox" class="shopping-cb">
+          <span class="item-name">Double cream</span>
+          <span class="item-source">Tikka Masala</span>
+          <span class="item-qty">300ml</span>
+        </div>
+      </div>
+
+      <div class="aisle-section">
+        <div class="aisle-name">Tinned &amp; Dry</div>
+        <div class="shopping-item">
+          <input type="checkbox" class="shopping-cb">
+          <span class="item-name">Chopped tomatoes</span>
+          <span class="item-source">Bolognese, Tikka Masala</span>
+          <span class="item-qty">×2 tins</span>
+        </div>
+        <div class="shopping-item">
+          <input type="checkbox" class="shopping-cb">
+          <span class="item-name">Coconut milk</span>
+          <span class="item-source">Thai Green Curry</span>
+          <span class="item-qty">×2 tins</span>
+        </div>
+        <div class="shopping-item">
+          <input type="checkbox" class="shopping-cb">
+          <span class="item-name">Spaghetti</span>
+          <span class="item-source">Bolognese</span>
+          <span class="item-qty">500g</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Butcher -->
+    <div class="shop-section">
+      <h2 class="shop-name">Butcher</h2>
+      <div class="aisle-section">
+        <div class="aisle-name">Meat</div>
+        <div class="shopping-item">
+          <input type="checkbox" class="shopping-cb">
+          <span class="item-name">Braising steak</span>
+          <span class="item-source">Beef &amp; Ale Stew</span>
+          <span class="item-qty">800g</span>
+        </div>
+        <div class="shopping-item">
+          <input type="checkbox" class="shopping-cb">
+          <span class="item-name">Lamb mince</span>
+          <span class="item-source">Shepherd's Pie</span>
+          <span class="item-qty">500g</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Extra items -->
+    <div style="margin-top:1.5rem;">
+      <h3 style="font-family:var(--font-head);font-size:1.15rem;font-weight:600;margin-bottom:0.75rem;color:var(--text-espresso);">Add Extra Item</h3>
+      <div class="add-item-row">
+        <input class="add-item-input" placeholder="e.g. olive oil, fresh herbs…" type="text">
+        <button class="btn btn-sage">Add</button>
+      </div>
+    </div>
+
+  </section>
+
+  <!-- ── SETTINGS ── -->
+  <section id="settings" class="view">
+    <div class="page-header">
+      <div>
+        <h1 class="page-title">Settings</h1>
+        <p class="page-subtitle">Manage your shops, aisles, and preferences</p>
+      </div>
+    </div>
+    <p style="color:var(--text-warm-mid);font-style:italic;">Settings panel not included in this mockup.</p>
+  </section>
+
+</main>
+
+<div class="design-label">Mockup A — The Cookbook</div>
+
+<script>
+  document.querySelectorAll('.nav-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById(btn.dataset.view).classList.add('active');
+    });
+  });
+</script>
+</body>
+</html>

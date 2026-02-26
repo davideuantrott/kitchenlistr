@@ -1,0 +1,1292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>KitchenListr — Mockup C: Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700&family=Source+Sans+3:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    /* =====================================================
+       MOCKUP C: DASHBOARD
+       Aesthetic: Modern app with sidebar nav. Dark sidebar
+       gives confidence and structure. Content area is
+       light and airy. Better use of horizontal space.
+       Feels like a capable, professional tool.
+    ===================================================== */
+
+    :root {
+      /* Sidebar */
+      --sidebar-bg:     #18302C;
+      --sidebar-hover:  #243D38;
+      --sidebar-active: #2D5046;
+      --sidebar-text:   #A8C4BC;
+      --sidebar-active-text: #FFFFFF;
+      --sidebar-accent: #4ED6A0;   /* bright mint for active indicator */
+      --sidebar-width:  220px;
+
+      /* Content */
+      --bg:             #F2F5F3;
+      --bg-card:        #FFFFFF;
+      --text-primary:   #1C2B28;
+      --text-mid:       #5C7570;
+      --text-light:     #8FA9A2;
+      --accent:         #2E8B6A;
+      --accent-mid:     #3DAA84;
+      --accent-l:       #D0EEE4;
+      --accent-ll:      #EAF7F2;
+      --green-bright:   #4ED6A0;
+      --border:         #E0EAE7;
+      --border-mid:     #C8DBD5;
+      --shadow-sm:      0 1px 4px rgba(28,43,40,0.08);
+      --shadow-md:      0 4px 16px rgba(28,43,40,0.10);
+      --shadow-lg:      0 8px 32px rgba(28,43,40,0.13);
+      --r-sm: 6px;
+      --r-md: 10px;
+      --r-lg: 14px;
+      --font-head: 'Sora', system-ui, sans-serif;
+      --font-body: 'Source Sans 3', system-ui, sans-serif;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: var(--font-body);
+      font-size: 15px;
+      background: var(--bg);
+      color: var(--text-primary);
+      line-height: 1.6;
+      display: flex;
+      min-height: 100vh;
+    }
+
+    /* ── SIDEBAR ── */
+    .sidebar {
+      width: var(--sidebar-width);
+      background: var(--sidebar-bg);
+      display: flex;
+      flex-direction: column;
+      flex-shrink: 0;
+      position: fixed;
+      top: 0;
+      left: 0;
+      height: 100vh;
+      z-index: 100;
+      overflow-y: auto;
+    }
+
+    .sidebar-logo {
+      padding: 1.4rem 1.25rem 1rem;
+      border-bottom: 1px solid rgba(255,255,255,0.07);
+    }
+
+    .sidebar-logo-text {
+      font-family: var(--font-head);
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: #fff;
+      letter-spacing: -0.3px;
+    }
+
+    .sidebar-logo-text span { color: var(--sidebar-accent); }
+
+    .sidebar-logo-sub {
+      font-size: 0.7rem;
+      color: var(--sidebar-text);
+      margin-top: 0.1rem;
+      letter-spacing: 0.3px;
+    }
+
+    /* Household badge */
+    .household-badge {
+      margin: 0.75rem 1.25rem;
+      padding: 0.5rem 0.75rem;
+      background: rgba(78, 214, 160, 0.1);
+      border: 1px solid rgba(78, 214, 160, 0.2);
+      border-radius: var(--r-sm);
+      font-size: 0.75rem;
+      color: var(--sidebar-accent);
+    }
+
+    .household-badge-label { color: var(--sidebar-text); font-size: 0.68rem; display: block; margin-bottom: 0.15rem; }
+
+    /* Nav */
+    .sidebar-nav {
+      flex: 1;
+      padding: 0.5rem 0.75rem;
+    }
+
+    .nav-section-label {
+      font-size: 0.65rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1.2px;
+      color: var(--sidebar-text);
+      opacity: 0.6;
+      padding: 0.9rem 0.5rem 0.4rem;
+    }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 0.7rem;
+      padding: 0.6rem 0.75rem;
+      border-radius: var(--r-sm);
+      color: var(--sidebar-text);
+      font-size: 0.9rem;
+      font-weight: 400;
+      cursor: pointer;
+      transition: all 0.15s;
+      position: relative;
+      border: none;
+      background: transparent;
+      width: 100%;
+      text-align: left;
+      font-family: var(--font-body);
+    }
+
+    .nav-item:hover {
+      background: var(--sidebar-hover);
+      color: #e8f0ee;
+    }
+
+    .nav-item.active {
+      background: var(--sidebar-active);
+      color: var(--sidebar-active-text);
+      font-weight: 500;
+    }
+
+    .nav-item.active::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 20%;
+      bottom: 20%;
+      width: 3px;
+      background: var(--sidebar-accent);
+      border-radius: 0 3px 3px 0;
+    }
+
+    .nav-icon {
+      width: 18px;
+      height: 18px;
+      flex-shrink: 0;
+      opacity: 0.7;
+    }
+
+    .nav-item.active .nav-icon { opacity: 1; }
+
+    /* User section at bottom */
+    .sidebar-user {
+      padding: 0.85rem 1rem;
+      border-top: 1px solid rgba(255,255,255,0.07);
+      display: flex;
+      align-items: center;
+      gap: 0.7rem;
+    }
+
+    .sidebar-avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: var(--sidebar-active);
+      color: var(--sidebar-accent);
+      font-size: 0.82rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--font-head);
+      flex-shrink: 0;
+    }
+
+    .sidebar-user-info { flex: 1; min-width: 0; }
+
+    .sidebar-user-name {
+      font-size: 0.85rem;
+      color: #e0ece9;
+      font-weight: 500;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .sidebar-user-role {
+      font-size: 0.7rem;
+      color: var(--sidebar-text);
+    }
+
+    /* ── CONTENT AREA ── */
+    .content {
+      margin-left: var(--sidebar-width);
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    /* Top bar */
+    .topbar {
+      background: var(--bg-card);
+      border-bottom: 1px solid var(--border);
+      padding: 0 2rem;
+      height: 56px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .topbar-title {
+      font-family: var(--font-head);
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+
+    .topbar-actions {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+
+    /* ── VIEWS ── */
+    .view { display: none; }
+    .view.active { display: block; animation: fadeUp 0.2s ease; }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(6px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ── PAGE BODY ── */
+    .page-body { padding: 1.75rem 2rem; }
+
+    /* ── STATS ROW ── */
+    .stats-row {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 1.75rem;
+      flex-wrap: wrap;
+    }
+
+    .stat-card {
+      flex: 1;
+      min-width: 140px;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--r-md);
+      padding: 1rem 1.25rem;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .stat-card-value {
+      font-family: var(--font-head);
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      letter-spacing: -0.5px;
+      line-height: 1;
+    }
+
+    .stat-card-label {
+      font-size: 0.78rem;
+      color: var(--text-mid);
+      margin-top: 0.3rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      font-weight: 500;
+    }
+
+    .stat-card.accent { border-color: var(--accent-l); }
+    .stat-card.accent .stat-card-value { color: var(--accent); }
+
+    /* ── BUTTONS ── */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.55rem 1.1rem;
+      border-radius: var(--r-sm);
+      border: 1px solid transparent;
+      font-family: var(--font-body);
+      font-size: 0.875rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .btn-primary { background: var(--accent); color: #fff; }
+    .btn-primary:hover { background: var(--accent-mid); box-shadow: 0 2px 10px rgba(46,139,106,0.3); }
+
+    .btn-outline {
+      background: var(--bg-card);
+      color: var(--text-mid);
+      border-color: var(--border-mid);
+    }
+
+    .btn-outline:hover { color: var(--text-primary); border-color: var(--text-mid); }
+
+    .btn-sm { padding: 0.38rem 0.85rem; font-size: 0.82rem; }
+
+    /* ── SEARCH ── */
+    .search-wrap { display: flex; gap: 0.6rem; margin-bottom: 1.25rem; flex-wrap: wrap; align-items: center; }
+
+    .search-input {
+      padding: 0.55rem 0.9rem 0.55rem 2.4rem;
+      border: 1px solid var(--border-mid);
+      border-radius: var(--r-sm);
+      font-family: var(--font-body);
+      font-size: 0.9rem;
+      width: 260px;
+      background: var(--bg-card) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%238FA9A2' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cline x1='21' y1='21' x2='16.65' y2='16.65'/%3E%3C/svg%3E") no-repeat 0.75rem center;
+      color: var(--text-primary);
+      transition: border-color 0.15s, box-shadow 0.15s;
+    }
+
+    .search-input:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px var(--accent-ll);
+    }
+
+    .filter-pills { display: flex; gap: 0.35rem; flex-wrap: wrap; }
+
+    .pill {
+      padding: 0.3rem 0.7rem;
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      font-size: 0.8rem;
+      color: var(--text-mid);
+      background: var(--bg-card);
+      cursor: pointer;
+      font-family: var(--font-body);
+      transition: all 0.12s;
+    }
+
+    .pill:hover { border-color: var(--border-mid); color: var(--text-primary); }
+    .pill.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+
+    /* ── RECIPE GRID (card-based) ── */
+    .recipe-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 1rem;
+    }
+
+    .recipe-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--r-md);
+      overflow: hidden;
+      cursor: pointer;
+      transition: all 0.18s;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .recipe-card:hover {
+      box-shadow: var(--shadow-md);
+      transform: translateY(-2px);
+      border-color: var(--border-mid);
+    }
+
+    /* Colour-coded left border */
+    .recipe-card-inner {
+      display: flex;
+      align-items: stretch;
+    }
+
+    .recipe-card-accent {
+      width: 4px;
+      flex-shrink: 0;
+    }
+
+    .accent-italian { background: #BF6840; }
+    .accent-indian  { background: #7A5C9B; }
+    .accent-british { background: #4A7A9B; }
+    .accent-salad   { background: #2E8B6A; }
+    .accent-thai    { background: #9B7A4A; }
+
+    .recipe-card-content { padding: 1rem 1.1rem; flex: 1; }
+
+    .recipe-card-tag {
+      font-size: 0.7rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.7px;
+      color: var(--text-light);
+      margin-bottom: 0.35rem;
+    }
+
+    .recipe-card-title {
+      font-family: var(--font-head);
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 0.4rem;
+      letter-spacing: -0.2px;
+    }
+
+    .recipe-card-meta {
+      font-size: 0.8rem;
+      color: var(--text-mid);
+      display: flex;
+      gap: 0.75rem;
+    }
+
+    .recipe-card-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.6rem 1.1rem;
+      border-top: 1px solid var(--border);
+      background: var(--bg);
+    }
+
+    .recipe-card-serves { font-size: 0.78rem; color: var(--text-light); }
+
+    .recipe-card-actions { display: flex; gap: 0.3rem; }
+
+    .card-action-btn {
+      padding: 0.25rem 0.55rem;
+      border: 1px solid var(--border);
+      border-radius: var(--r-sm);
+      background: var(--bg-card);
+      font-size: 0.78rem;
+      color: var(--text-mid);
+      cursor: pointer;
+      font-family: var(--font-body);
+      transition: all 0.12s;
+    }
+
+    .card-action-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+    /* ── PLANNER ── */
+    .planner-nav {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 1.25rem;
+      flex-wrap: wrap;
+      justify-content: space-between;
+    }
+
+    .planner-nav-left { display: flex; align-items: center; gap: 0.75rem; }
+
+    .planner-nav-btn {
+      background: var(--bg-card);
+      border: 1px solid var(--border-mid);
+      border-radius: var(--r-sm);
+      padding: 0.38rem 0.75rem;
+      cursor: pointer;
+      color: var(--text-mid);
+      font-size: 0.9rem;
+      transition: all 0.12s;
+      font-family: var(--font-body);
+    }
+
+    .planner-nav-btn:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-ll); }
+
+    .week-label {
+      font-family: var(--font-head);
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+
+    .planner-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 0.75rem;
+    }
+
+    @media (max-width: 1000px) { .planner-grid { grid-template-columns: repeat(2, 1fr); } }
+
+    .day-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--r-md);
+      overflow: hidden;
+      min-height: 190px;
+      display: flex;
+      flex-direction: column;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .day-card.today {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 2px var(--accent-ll), var(--shadow-sm);
+    }
+
+    .day-card-head {
+      padding: 0.65rem 0.8rem;
+      background: var(--bg);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .day-card.today .day-card-head {
+      background: var(--accent-ll);
+      border-bottom-color: var(--accent-l);
+    }
+
+    .day-card-name {
+      font-size: 0.7rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      color: var(--text-mid);
+      font-family: var(--font-head);
+    }
+
+    .day-card.today .day-card-name { color: var(--accent); }
+
+    .day-card-date {
+      font-family: var(--font-head);
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      line-height: 1.1;
+    }
+
+    .day-card.today .day-card-date { color: var(--accent); }
+
+    .day-card-meals { flex: 1; padding: 0.6rem; display: flex; flex-direction: column; gap: 0.35rem; }
+
+    .meal-chip { padding: 0.4rem 0.6rem; border-radius: var(--r-sm); font-size: 0.8rem; }
+
+    .meal-chip.filled {
+      background: var(--accent-ll);
+      border: 1px solid var(--accent-l);
+    }
+
+    .meal-chip.empty {
+      border: 1px dashed var(--border-mid);
+      cursor: pointer;
+      color: var(--text-light);
+    }
+
+    .meal-chip.empty:hover { border-color: var(--accent); background: var(--accent-ll); color: var(--accent); }
+
+    .meal-chip-type {
+      font-size: 0.65rem;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      font-weight: 700;
+      color: var(--text-light);
+      font-family: var(--font-head);
+    }
+
+    .meal-chip.filled .meal-chip-type { color: var(--accent); }
+
+    .meal-chip-name {
+      font-weight: 600;
+      color: var(--text-primary);
+      font-size: 0.82rem;
+      font-family: var(--font-head);
+      margin-top: 0.1rem;
+    }
+
+    .meal-chip.empty .meal-chip-name { font-weight: 400; font-family: var(--font-body); }
+
+    /* ── SHOPPING LIST ── */
+    .shopping-layout {
+      display: grid;
+      grid-template-columns: 1fr 300px;
+      gap: 1.5rem;
+      align-items: start;
+    }
+
+    @media (max-width: 900px) { .shopping-layout { grid-template-columns: 1fr; } }
+
+    .shopping-main { }
+
+    /* Summary sidebar card */
+    .summary-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--r-md);
+      padding: 1.25rem;
+      box-shadow: var(--shadow-sm);
+      position: sticky;
+      top: 72px;
+    }
+
+    .summary-card-title {
+      font-family: var(--font-head);
+      font-size: 0.85rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--text-mid);
+      margin-bottom: 1rem;
+    }
+
+    .summary-stat-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      padding: 0.6rem 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .summary-stat-row:last-of-type { border-bottom: none; margin-bottom: 0.75rem; }
+
+    .summary-stat-name { font-size: 0.875rem; color: var(--text-mid); }
+
+    .summary-stat-val { font-family: var(--font-head); font-size: 1.1rem; font-weight: 700; color: var(--text-primary); }
+
+    .summary-stat-val.accent-val { color: var(--accent); }
+
+    .progress-bar-wrap { margin-top: 0.75rem; }
+
+    .progress-bar-label { display: flex; justify-content: space-between; font-size: 0.78rem; color: var(--text-mid); margin-bottom: 0.4rem; }
+
+    .progress-bar {
+      height: 6px;
+      background: var(--border);
+      border-radius: 3px;
+      overflow: hidden;
+    }
+
+    .progress-bar-fill {
+      height: 100%;
+      background: var(--accent);
+      border-radius: 3px;
+    }
+
+    .shop-section { margin-bottom: 1.75rem; }
+
+    .shop-header {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 0.85rem;
+    }
+
+    .shop-icon {
+      width: 28px;
+      height: 28px;
+      border-radius: var(--r-sm);
+      background: var(--accent-ll);
+      color: var(--accent);
+      font-size: 0.75rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--font-head);
+    }
+
+    .shop-name-title {
+      font-family: var(--font-head);
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+
+    .shop-count {
+      font-size: 0.78rem;
+      color: var(--text-light);
+      margin-left: auto;
+    }
+
+    /* Aisle sections */
+    .aisle-group { margin-bottom: 1rem; }
+
+    .aisle-label {
+      font-size: 0.7rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--text-light);
+      padding: 0.3rem 0.1rem;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 0.3rem;
+    }
+
+    .s-item {
+      display: grid;
+      grid-template-columns: 22px 1fr auto auto;
+      gap: 0.75rem;
+      align-items: center;
+      padding: 0.55rem 0.1rem;
+      border-radius: var(--r-sm);
+      transition: background 0.12s;
+    }
+
+    .s-item:hover { background: var(--bg); }
+
+    .s-item.checked .s-item-name { text-decoration: line-through; color: var(--text-light); }
+
+    .s-cb { width: 16px; height: 16px; accent-color: var(--accent); cursor: pointer; }
+
+    .s-item-name { font-size: 0.9rem; color: var(--text-primary); }
+
+    .s-item-source { font-size: 0.75rem; color: var(--text-light); }
+
+    .s-item-qty { font-size: 0.85rem; font-weight: 600; color: var(--text-mid); white-space: nowrap; text-align: right; }
+
+    /* Add item */
+    .add-item-bar {
+      display: flex;
+      gap: 0.5rem;
+      padding-top: 1rem;
+      border-top: 1px solid var(--border);
+      margin-top: 0.5rem;
+    }
+
+    .add-item-input {
+      flex: 1;
+      padding: 0.55rem 0.85rem;
+      border: 1px solid var(--border-mid);
+      border-radius: var(--r-sm);
+      font-family: var(--font-body);
+      font-size: 0.9rem;
+      background: var(--bg-card);
+      transition: border-color 0.15s;
+    }
+
+    .add-item-input:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px var(--accent-ll);
+    }
+
+    /* ── MISC ── */
+    .design-label {
+      position: fixed;
+      bottom: 1rem;
+      right: 1rem;
+      background: var(--sidebar-bg);
+      color: var(--sidebar-accent);
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      padding: 0.35rem 0.75rem;
+      border-radius: 20px;
+      pointer-events: none;
+    }
+  </style>
+</head>
+<body>
+
+<!-- ========== SIDEBAR ========== -->
+<aside class="sidebar">
+  <div class="sidebar-logo">
+    <div class="sidebar-logo-text">Kitchen<span>Listr</span></div>
+    <div class="sidebar-logo-sub">Meal &amp; Shopping Planner</div>
+  </div>
+
+  <div class="household-badge">
+    <span class="household-badge-label">Household</span>
+    The Harris Family
+  </div>
+
+  <nav class="sidebar-nav">
+    <div class="nav-section-label">App</div>
+
+    <button class="nav-item active" data-view="recipes">
+      <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14,2 14,8 20,8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10,9 9,9 8,9"/></svg>
+      Recipes
+    </button>
+
+    <button class="nav-item" data-view="planner">
+      <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+      Meal Plan
+    </button>
+
+    <button class="nav-item" data-view="shopping">
+      <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+      Shopping List
+    </button>
+
+    <div class="nav-section-label">Manage</div>
+
+    <button class="nav-item" data-view="settings">
+      <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M4.93 4.93a10 10 0 0 0 0 14.14"/></svg>
+      Settings
+    </button>
+  </nav>
+
+  <div class="sidebar-user">
+    <div class="sidebar-avatar">D</div>
+    <div class="sidebar-user-info">
+      <div class="sidebar-user-name">David Harris</div>
+      <div class="sidebar-user-role">Admin</div>
+    </div>
+  </div>
+</aside>
+
+<!-- ========== CONTENT ========== -->
+<div class="content">
+
+  <!-- ── RECIPES VIEW ── -->
+  <div id="recipes" class="view active">
+    <div class="topbar">
+      <span class="topbar-title">Recipes</span>
+      <div class="topbar-actions">
+        <button class="btn btn-primary btn-sm">+ Add Recipe</button>
+      </div>
+    </div>
+    <div class="page-body">
+
+      <div class="stats-row">
+        <div class="stat-card">
+          <div class="stat-card-value">6</div>
+          <div class="stat-card-label">Total Recipes</div>
+        </div>
+        <div class="stat-card accent">
+          <div class="stat-card-value">5</div>
+          <div class="stat-card-label">Planned This Week</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card-value">3</div>
+          <div class="stat-card-label">Categories</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card-value">42</div>
+          <div class="stat-card-label">Ingredients Tracked</div>
+        </div>
+      </div>
+
+      <div class="search-wrap">
+        <input class="search-input" placeholder="Search recipes…" type="search">
+        <div class="filter-pills">
+          <button class="pill active">All</button>
+          <button class="pill">Italian</button>
+          <button class="pill">British</button>
+          <button class="pill">Indian</button>
+          <button class="pill">Thai</button>
+          <button class="pill">Salads</button>
+        </div>
+      </div>
+
+      <div class="recipe-grid">
+
+        <div class="recipe-card">
+          <div class="recipe-card-inner">
+            <div class="recipe-card-accent accent-italian"></div>
+            <div class="recipe-card-content">
+              <div class="recipe-card-tag">Italian</div>
+              <div class="recipe-card-title">Spaghetti Bolognese</div>
+              <div class="recipe-card-meta"><span>⏱ 45 min</span><span>🧂 12 ingredients</span></div>
+            </div>
+          </div>
+          <div class="recipe-card-footer">
+            <span class="recipe-card-serves">Serves 4</span>
+            <div class="recipe-card-actions">
+              <button class="card-action-btn">Edit</button>
+              <button class="card-action-btn">Plan</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="recipe-card">
+          <div class="recipe-card-inner">
+            <div class="recipe-card-accent accent-indian"></div>
+            <div class="recipe-card-content">
+              <div class="recipe-card-tag">Indian</div>
+              <div class="recipe-card-title">Chicken Tikka Masala</div>
+              <div class="recipe-card-meta"><span>⏱ 40 min</span><span>🧂 18 ingredients</span></div>
+            </div>
+          </div>
+          <div class="recipe-card-footer">
+            <span class="recipe-card-serves">Serves 4</span>
+            <div class="recipe-card-actions">
+              <button class="card-action-btn">Edit</button>
+              <button class="card-action-btn">Plan</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="recipe-card">
+          <div class="recipe-card-inner">
+            <div class="recipe-card-accent accent-british"></div>
+            <div class="recipe-card-content">
+              <div class="recipe-card-tag">British</div>
+              <div class="recipe-card-title">Shepherd's Pie</div>
+              <div class="recipe-card-meta"><span>⏱ 60 min</span><span>🧂 14 ingredients</span></div>
+            </div>
+          </div>
+          <div class="recipe-card-footer">
+            <span class="recipe-card-serves">Serves 6</span>
+            <div class="recipe-card-actions">
+              <button class="card-action-btn">Edit</button>
+              <button class="card-action-btn">Plan</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="recipe-card">
+          <div class="recipe-card-inner">
+            <div class="recipe-card-accent accent-salad"></div>
+            <div class="recipe-card-content">
+              <div class="recipe-card-tag">Salad</div>
+              <div class="recipe-card-title">Caesar Salad</div>
+              <div class="recipe-card-meta"><span>⏱ 15 min</span><span>🧂 8 ingredients</span></div>
+            </div>
+          </div>
+          <div class="recipe-card-footer">
+            <span class="recipe-card-serves">Serves 2</span>
+            <div class="recipe-card-actions">
+              <button class="card-action-btn">Edit</button>
+              <button class="card-action-btn">Plan</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="recipe-card">
+          <div class="recipe-card-inner">
+            <div class="recipe-card-accent accent-thai"></div>
+            <div class="recipe-card-content">
+              <div class="recipe-card-tag">Thai</div>
+              <div class="recipe-card-title">Thai Green Curry</div>
+              <div class="recipe-card-meta"><span>⏱ 35 min</span><span>🧂 16 ingredients</span></div>
+            </div>
+          </div>
+          <div class="recipe-card-footer">
+            <span class="recipe-card-serves">Serves 4</span>
+            <div class="recipe-card-actions">
+              <button class="card-action-btn">Edit</button>
+              <button class="card-action-btn">Plan</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="recipe-card">
+          <div class="recipe-card-inner">
+            <div class="recipe-card-accent accent-british"></div>
+            <div class="recipe-card-content">
+              <div class="recipe-card-tag">British</div>
+              <div class="recipe-card-title">Beef &amp; Ale Stew</div>
+              <div class="recipe-card-meta"><span>⏱ 2 hr</span><span>🧂 12 ingredients</span></div>
+            </div>
+          </div>
+          <div class="recipe-card-footer">
+            <span class="recipe-card-serves">Serves 6</span>
+            <div class="recipe-card-actions">
+              <button class="card-action-btn">Edit</button>
+              <button class="card-action-btn">Plan</button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- ── PLANNER VIEW ── -->
+  <div id="planner" class="view">
+    <div class="topbar">
+      <span class="topbar-title">Meal Plan</span>
+      <div class="topbar-actions">
+        <button class="btn btn-outline btn-sm">Generate Shopping List</button>
+      </div>
+    </div>
+    <div class="page-body">
+
+      <div class="planner-nav">
+        <div class="planner-nav-left">
+          <button class="planner-nav-btn">← Prev</button>
+          <span class="week-label">24 Feb – 2 Mar 2026</span>
+          <button class="planner-nav-btn">Next →</button>
+        </div>
+      </div>
+
+      <div class="planner-grid">
+
+        <div class="day-card today">
+          <div class="day-card-head">
+            <div class="day-card-name">Mon</div>
+            <div class="day-card-date">24</div>
+          </div>
+          <div class="day-card-meals">
+            <div class="meal-chip filled">
+              <div class="meal-chip-type">Dinner</div>
+              <div class="meal-chip-name">Spaghetti Bolognese</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="day-card">
+          <div class="day-card-head">
+            <div class="day-card-name">Tue</div>
+            <div class="day-card-date">25</div>
+          </div>
+          <div class="day-card-meals">
+            <div class="meal-chip filled">
+              <div class="meal-chip-type">Lunch</div>
+              <div class="meal-chip-name">Caesar Salad</div>
+            </div>
+            <div class="meal-chip filled">
+              <div class="meal-chip-type">Dinner</div>
+              <div class="meal-chip-name">Thai Green Curry</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="day-card">
+          <div class="day-card-head">
+            <div class="day-card-name">Wed</div>
+            <div class="day-card-date">26</div>
+          </div>
+          <div class="day-card-meals">
+            <div class="meal-chip empty">
+              <div class="meal-chip-type">Dinner</div>
+              <div class="meal-chip-name">Add meal…</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="day-card">
+          <div class="day-card-head">
+            <div class="day-card-name">Thu</div>
+            <div class="day-card-date">27</div>
+          </div>
+          <div class="day-card-meals">
+            <div class="meal-chip filled">
+              <div class="meal-chip-type">Dinner</div>
+              <div class="meal-chip-name">Shepherd's Pie</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="day-card">
+          <div class="day-card-head">
+            <div class="day-card-name">Fri</div>
+            <div class="day-card-date">28</div>
+          </div>
+          <div class="day-card-meals">
+            <div class="meal-chip filled">
+              <div class="meal-chip-type">Dinner</div>
+              <div class="meal-chip-name">Chicken Tikka Masala</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="day-card">
+          <div class="day-card-head">
+            <div class="day-card-name">Sat</div>
+            <div class="day-card-date">1</div>
+          </div>
+          <div class="day-card-meals">
+            <div class="meal-chip filled">
+              <div class="meal-chip-type">Dinner</div>
+              <div class="meal-chip-name">Beef &amp; Ale Stew</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="day-card">
+          <div class="day-card-head">
+            <div class="day-card-name">Sun</div>
+            <div class="day-card-date">2</div>
+          </div>
+          <div class="day-card-meals">
+            <div class="meal-chip empty">
+              <div class="meal-chip-type">Dinner</div>
+              <div class="meal-chip-name">Add meal…</div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- ── SHOPPING VIEW ── -->
+  <div id="shopping" class="view">
+    <div class="topbar">
+      <span class="topbar-title">Shopping List · 24 Feb – 2 Mar</span>
+      <div class="topbar-actions">
+        <button class="btn btn-outline btn-sm">Export</button>
+        <button class="btn btn-outline btn-sm">Print</button>
+      </div>
+    </div>
+    <div class="page-body">
+      <div class="shopping-layout">
+
+        <!-- Main list -->
+        <div class="shopping-main">
+
+          <div class="shop-section">
+            <div class="shop-header">
+              <div class="shop-icon">T</div>
+              <span class="shop-name-title">Tesco</span>
+              <span class="shop-count">9 items</span>
+            </div>
+
+            <div class="aisle-group">
+              <div class="aisle-label">Produce</div>
+              <div class="s-item checked">
+                <input type="checkbox" class="s-cb" checked>
+                <span class="s-item-name">Onions</span>
+                <span class="s-item-source">Bolognese, Tikka, Stew</span>
+                <span class="s-item-qty">×3</span>
+              </div>
+              <div class="s-item">
+                <input type="checkbox" class="s-cb">
+                <span class="s-item-name">Garlic</span>
+                <span class="s-item-source">Multiple meals</span>
+                <span class="s-item-qty">2 bulbs</span>
+              </div>
+              <div class="s-item">
+                <input type="checkbox" class="s-cb">
+                <span class="s-item-name">Carrots</span>
+                <span class="s-item-source">Shepherd's Pie, Stew</span>
+                <span class="s-item-qty">×5</span>
+              </div>
+              <div class="s-item">
+                <input type="checkbox" class="s-cb">
+                <span class="s-item-name">Fresh ginger</span>
+                <span class="s-item-source">Tikka, Thai Curry</span>
+                <span class="s-item-qty">1 piece</span>
+              </div>
+            </div>
+
+            <div class="aisle-group">
+              <div class="aisle-label">Meat</div>
+              <div class="s-item">
+                <input type="checkbox" class="s-cb">
+                <span class="s-item-name">Minced beef</span>
+                <span class="s-item-source">Bolognese, Shepherd's Pie</span>
+                <span class="s-item-qty">800g</span>
+              </div>
+              <div class="s-item">
+                <input type="checkbox" class="s-cb">
+                <span class="s-item-name">Chicken thighs</span>
+                <span class="s-item-source">Tikka Masala</span>
+                <span class="s-item-qty">600g</span>
+              </div>
+            </div>
+
+            <div class="aisle-group">
+              <div class="aisle-label">Dairy</div>
+              <div class="s-item checked">
+                <input type="checkbox" class="s-cb" checked>
+                <span class="s-item-name">Parmesan</span>
+                <span class="s-item-source">Bolognese, Caesar</span>
+                <span class="s-item-qty">100g</span>
+              </div>
+              <div class="s-item">
+                <input type="checkbox" class="s-cb">
+                <span class="s-item-name">Double cream</span>
+                <span class="s-item-source">Tikka Masala</span>
+                <span class="s-item-qty">300ml</span>
+              </div>
+            </div>
+
+            <div class="aisle-group">
+              <div class="aisle-label">Tinned &amp; Dry</div>
+              <div class="s-item">
+                <input type="checkbox" class="s-cb">
+                <span class="s-item-name">Chopped tomatoes</span>
+                <span class="s-item-source">Bolognese, Tikka</span>
+                <span class="s-item-qty">×2</span>
+              </div>
+              <div class="s-item">
+                <input type="checkbox" class="s-cb">
+                <span class="s-item-name">Coconut milk</span>
+                <span class="s-item-source">Thai Green Curry</span>
+                <span class="s-item-qty">×2</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="shop-section">
+            <div class="shop-header">
+              <div class="shop-icon">B</div>
+              <span class="shop-name-title">Butcher</span>
+              <span class="shop-count">2 items</span>
+            </div>
+            <div class="aisle-group">
+              <div class="aisle-label">Meat</div>
+              <div class="s-item">
+                <input type="checkbox" class="s-cb">
+                <span class="s-item-name">Braising steak</span>
+                <span class="s-item-source">Beef &amp; Ale Stew</span>
+                <span class="s-item-qty">800g</span>
+              </div>
+              <div class="s-item">
+                <input type="checkbox" class="s-cb">
+                <span class="s-item-name">Lamb mince</span>
+                <span class="s-item-source">Shepherd's Pie</span>
+                <span class="s-item-qty">500g</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="add-item-bar">
+            <input class="add-item-input" placeholder="Add extra item…" type="text">
+            <button class="btn btn-primary btn-sm">Add</button>
+          </div>
+
+        </div>
+
+        <!-- Summary sidebar -->
+        <div>
+          <div class="summary-card">
+            <div class="summary-card-title">Progress</div>
+            <div class="summary-stat-row">
+              <span class="summary-stat-name">Total items</span>
+              <span class="summary-stat-val">23</span>
+            </div>
+            <div class="summary-stat-row">
+              <span class="summary-stat-name">To buy</span>
+              <span class="summary-stat-val accent-val">18</span>
+            </div>
+            <div class="summary-stat-row">
+              <span class="summary-stat-name">Already have</span>
+              <span class="summary-stat-val">5</span>
+            </div>
+            <div class="progress-bar-wrap">
+              <div class="progress-bar-label">
+                <span>Collected</span>
+                <span>5 of 23</span>
+              </div>
+              <div class="progress-bar">
+                <div class="progress-bar-fill" style="width: 22%;"></div>
+              </div>
+            </div>
+            <div style="margin-top:1.25rem;padding-top:1rem;border-top:1px solid var(--border);">
+              <button class="btn btn-primary" style="width:100%;justify-content:center;">Generate New List</button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- ── SETTINGS VIEW ── -->
+  <div id="settings" class="view">
+    <div class="topbar">
+      <span class="topbar-title">Settings</span>
+    </div>
+    <div class="page-body">
+      <p style="color:var(--text-mid);">Settings panel not included in this mockup.</p>
+    </div>
+  </div>
+
+</div><!-- /content -->
+
+<div class="design-label">Mockup C — Dashboard</div>
+
+<script>
+  // Sidebar nav
+  document.querySelectorAll('.nav-item').forEach(item => {
+    item.addEventListener('click', () => {
+      document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+      document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+      item.classList.add('active');
+      document.getElementById(item.dataset.view).classList.add('active');
+    });
+  });
+</script>
+</body>
+</html>
