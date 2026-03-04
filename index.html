@@ -413,6 +413,25 @@
             cursor: pointer;
             border-radius: var(--radius-sm);
             transition: all 0.2s ease;
+            white-space: nowrap;
+        }
+
+        @media (max-width: 768px) {
+            .header { padding: 0.75rem 1rem; }
+            .header-content { gap: 0.5rem; }
+            .nav {
+                order: 10;
+                flex-basis: 100%;
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+                scrollbar-width: none;
+            }
+            .nav::-webkit-scrollbar { display: none; }
+            .nav-btn {
+                padding: 0.5rem 0.85rem;
+                font-size: 0.875rem;
+                flex-shrink: 0;
+            }
         }
 
         .nav-btn:hover {
