@@ -2847,27 +2847,58 @@
             z-index: 1100;
             background: var(--bg-white);
             border: 1px solid var(--border-light);
-            max-height: 260px;
-            overflow-y: auto;
             border-radius: var(--radius-md);
             box-shadow: 0 8px 32px rgba(0,0,0,0.15);
-            padding: 0.6rem;
-            width: 288px;
+            padding: 0.5rem;
+            width: 340px;
+            display: flex;
+            flex-direction: column;
+            gap: 0.4rem;
+        }
+
+        .emoji-search {
+            width: 100%;
+            box-sizing: border-box;
+            padding: 0.35rem 0.6rem;
+            border: 1px solid var(--border-light);
+            border-radius: var(--radius-sm);
+            font-size: 0.85rem;
+            background: var(--bg-cream);
+            color: var(--text-primary);
+            outline: none;
+        }
+        .emoji-search:focus {
+            border-color: var(--accent-green);
+            box-shadow: 0 0 0 2px var(--accent-glow-soft);
         }
 
         .emoji-picker-grid {
             display: grid;
-            grid-template-columns: repeat(8, 1fr);
-            gap: 2px;
+            grid-template-columns: repeat(9, 1fr);
+            gap: 1px;
+            max-height: 300px;
+            overflow-y: auto;
         }
 
+        .emoji-category-header {
+            grid-column: 1 / -1;
+            font-size: 0.65rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            color: var(--text-secondary);
+            padding: 0.4rem 0.2rem 0.1rem;
+            margin-top: 0.2rem;
+        }
+        .emoji-category-header:first-child { margin-top: 0; }
+
         .emoji-option {
-            width: 32px;
-            height: 32px;
+            width: 34px;
+            height: 34px;
             border: none;
             background: none;
             border-radius: var(--radius-sm);
-            font-size: 1.1rem;
+            font-size: 1.2rem;
             cursor: pointer;
             display: flex;
             align-items: center;
@@ -4253,6 +4284,7 @@
 
             <!-- Emoji picker popover (shared, positioned by JS) -->
             <div id="emoji-picker" class="emoji-picker-popover" style="display:none;" role="dialog" aria-label="Pick an emoji">
+                <input id="emoji-search" class="emoji-search" type="search" placeholder="Search emoji…" oninput="filterEmojiPicker(this.value)" autocomplete="off" aria-label="Search emoji">
                 <div class="emoji-picker-grid" id="emoji-picker-grid">
                     <!-- Populated by JS -->
                 </div>
@@ -8244,24 +8276,173 @@ oregano"></textarea>
         // Emoji Picker
         // =====================
 
-        const FOOD_EMOJI = [
-            // Vegetables & herbs
-            '🥦','🥕','🧅','🧄','🌽','🥑','🍅','🥔','🥒','🫑',
-            '🥬','🌿','🌾','🍄','🫛','🥜','🫘','🫚','🧆','🌶️',
-            // Meat, fish & dairy
-            '🍗','🥩','🥓','🌭','🥚','🧀','🥛','🧈','🐟','🦐',
-            '🦞','🦑','🥩','🍖','🦪','🍣','🐠','🦀','🐓','🥩',
-            // Bakery & grains
-            '🍞','🥐','🥨','🫓','🧇','🥞','🍝','🥫','🧆','🥙',
-            // Fruit
-            '🍎','🍋','🍇','🍓','🍌','🍊','🥝','🍑','🫐','🍒',
-            '🍈','🍐','🍏','🫒','🍍','🥭','🍉','🍆','🫙','🥥',
-            // Sweet & snacks
-            '🍰','🍪','🍫','🍬','🧁','🍩','🍦','🧃','🍿','🥜',
-            // Drinks
-            '☕','🍵','🫖','🧃','🥤','🍺','🍷','🥂','🍾','💧',
-            // Household & other
-            '🧹','🧻','🧼','🪥','🧴','🪣','🧺','📦','🛒','✨',
+        const ALL_EMOJI = [
+          { cat: 'Smileys', items: [
+            {e:'😀',k:'grin smile happy face'},{e:'😁',k:'grin beam smile'},{e:'😂',k:'laugh cry tears joy'},{e:'🤣',k:'laugh rolling floor'},
+            {e:'😃',k:'smile open happy'},{e:'😄',k:'smile eyes happy'},{e:'😅',k:'sweat smile relief'},{e:'😆',k:'laugh squint happy'},
+            {e:'😊',k:'blush smile happy'},{e:'😍',k:'heart eyes love'},{e:'🥰',k:'hearts love smiling'},{e:'😘',k:'kiss blow face'},
+            {e:'😎',k:'cool sunglasses'},{e:'🤩',k:'star eyes excited wow'},{e:'🥳',k:'party celebrate birthday'},{e:'😏',k:'smirk'},
+            {e:'😒',k:'unamused unimpressed'},{e:'😔',k:'pensive sad'},{e:'😟',k:'worried concerned'},{e:'😕',k:'confused unsure'},
+            {e:'🥺',k:'pleading puppy eyes sad'},{e:'😢',k:'cry tears sad'},{e:'😭',k:'sob cry loud sad'},{e:'😤',k:'huff triumph'},
+            {e:'😠',k:'angry mad'},{e:'😡',k:'rage angry mad furious'},{e:'🤬',k:'swearing angry symbols'},{e:'🤯',k:'exploding head mind blown'},
+            {e:'😱',k:'scream fear shock'},{e:'😨',k:'fearful scared'},{e:'😰',k:'anxious sweat cold'},{e:'😳',k:'flushed embarrassed'},
+            {e:'🤪',k:'zany wacky crazy'},{e:'🤔',k:'thinking hmm'},{e:'🤭',k:'giggle oops secret'},{e:'🤫',k:'shush quiet silent'},
+            {e:'😶',k:'no mouth silent'},{e:'😐',k:'neutral blank'},{e:'🙄',k:'eye roll'},{e:'😬',k:'grimace awkward'},
+            {e:'🤤',k:'drool hungry'},{e:'😴',k:'sleep zzz tired'},{e:'🤒',k:'sick ill thermometer'},{e:'🤕',k:'hurt bandage injured'},
+            {e:'🤢',k:'nauseated sick green'},{e:'🤮',k:'vomit sick'},{e:'🤧',k:'sneeze cold sniffle'},{e:'🥵',k:'hot overheated sweating'},
+            {e:'🥶',k:'cold frozen freezing'},{e:'😈',k:'devil horns mischief'},{e:'👿',k:'devil angry imp'},{e:'💀',k:'skull death bones'},
+            {e:'👻',k:'ghost boo halloween'},{e:'💩',k:'poop brown'},{e:'🤡',k:'clown joker'},{e:'👽',k:'alien extraterrestrial'},
+          ]},
+          { cat: 'People', items: [
+            {e:'👋',k:'wave hello goodbye hand'},{e:'🤚',k:'raised back hand stop'},{e:'✋',k:'raised hand stop high five'},
+            {e:'🤙',k:'call shaka hang loose'},{e:'👌',k:'ok perfect'},{e:'🤌',k:'pinch chef kiss italy'},
+            {e:'✌️',k:'peace victory two fingers'},{e:'🤞',k:'fingers crossed luck'},{e:'🤟',k:'love you sign'},
+            {e:'👍',k:'thumbs up good like'},{e:'👎',k:'thumbs down dislike bad'},{e:'👏',k:'clap applause'},
+            {e:'🙌',k:'raise hands celebrate high five'},{e:'🤝',k:'handshake deal agreement'},{e:'🙏',k:'pray thanks please namaste'},
+            {e:'💪',k:'muscle strong flex bicep'},{e:'🫶',k:'heart hands love care'},{e:'🤷',k:'shrug whatever dunno'},
+            {e:'🤦',k:'facepalm'},{e:'👶',k:'baby infant'},{e:'🧒',k:'child kid'},{e:'👦',k:'boy'},
+            {e:'👧',k:'girl'},{e:'🧑',k:'person adult'},{e:'👨',k:'man'},{e:'👩',k:'woman'},
+            {e:'🧓',k:'older adult'},{e:'👴',k:'old man grandpa'},{e:'👵',k:'old woman grandma'},
+            {e:'🧑‍🍳',k:'cook chef cooking'},{e:'🧑‍🌾',k:'farmer gardener'},{e:'🧑‍🏫',k:'teacher professor'},
+            {e:'🧑‍⚕️',k:'doctor nurse health medical'},{e:'🧑‍💻',k:'technologist coder developer'},
+            {e:'🧑‍🎨',k:'artist painter'},{e:'🧑‍🔧',k:'mechanic handyperson'},
+          ]},
+          { cat: 'Animals', items: [
+            {e:'🐶',k:'dog puppy pet'},{e:'🐱',k:'cat kitten pet'},{e:'🐭',k:'mouse rat'},{e:'🐹',k:'hamster'},
+            {e:'🐰',k:'rabbit bunny'},{e:'🦊',k:'fox'},{e:'🐻',k:'bear'},{e:'🐼',k:'panda'},
+            {e:'🐨',k:'koala'},{e:'🐯',k:'tiger'},{e:'🦁',k:'lion'},{e:'🐮',k:'cow'},
+            {e:'🐷',k:'pig'},{e:'🐸',k:'frog'},{e:'🐵',k:'monkey'},{e:'🐔',k:'chicken hen'},
+            {e:'🐧',k:'penguin'},{e:'🐦',k:'bird'},{e:'🐤',k:'chick baby bird'},{e:'🦆',k:'duck'},
+            {e:'🦅',k:'eagle'},{e:'🦉',k:'owl'},{e:'🦇',k:'bat'},{e:'🐺',k:'wolf'},
+            {e:'🐗',k:'boar pig wild'},{e:'🐴',k:'horse'},{e:'🦄',k:'unicorn'},{e:'🐝',k:'bee honey'},
+            {e:'🦋',k:'butterfly'},{e:'🐌',k:'snail'},{e:'🐞',k:'ladybug ladybird'},{e:'🐜',k:'ant'},
+            {e:'🐢',k:'turtle tortoise'},{e:'🐍',k:'snake'},{e:'🦎',k:'lizard'},{e:'🐊',k:'crocodile alligator'},
+            {e:'🐳',k:'whale'},{e:'🐬',k:'dolphin'},{e:'🦭',k:'seal'},{e:'🐟',k:'fish'},
+            {e:'🐠',k:'tropical fish'},{e:'🦈',k:'shark'},{e:'🐙',k:'octopus'},{e:'🦑',k:'squid'},
+            {e:'🦐',k:'shrimp prawn'},{e:'🦀',k:'crab'},{e:'🦞',k:'lobster'},{e:'🦪',k:'oyster'},
+            {e:'🌸',k:'cherry blossom flower pink'},{e:'🌺',k:'hibiscus flower'},{e:'🌻',k:'sunflower'},
+            {e:'🌹',k:'rose'},{e:'🌷',k:'tulip'},{e:'🌿',k:'herb leaf green plant'},
+            {e:'🍀',k:'clover luck four leaf'},{e:'🌱',k:'sprout seedling grow'},{e:'🌾',k:'wheat grain sheaf'},
+            {e:'🍄',k:'mushroom fungi'},{e:'🌵',k:'cactus'},{e:'🌴',k:'palm tree tropical'},
+            {e:'🌊',k:'wave ocean water sea'},{e:'⭐',k:'star yellow'},{e:'🌙',k:'moon crescent night'},
+            {e:'☀️',k:'sun sunny bright'},{e:'🌈',k:'rainbow'},{e:'⛅',k:'cloud sun partly cloudy'},
+            {e:'🌧️',k:'rain cloud rainy'},{e:'❄️',k:'snow snowflake cold'},{e:'🔥',k:'fire flame hot'},
+            {e:'💧',k:'water drop'},{e:'🌍',k:'earth globe world'},
+          ]},
+          { cat: 'Food & Drink', items: [
+            {e:'🍎',k:'apple red fruit'},{e:'🍏',k:'apple green fruit'},{e:'🍐',k:'pear fruit'},{e:'🍊',k:'orange tangerine fruit'},
+            {e:'🍋',k:'lemon citrus fruit'},{e:'🍌',k:'banana fruit'},{e:'🍉',k:'watermelon fruit'},{e:'🍇',k:'grapes fruit'},
+            {e:'🍓',k:'strawberry fruit'},{e:'🫐',k:'blueberries fruit'},{e:'🍈',k:'melon fruit'},{e:'🍒',k:'cherries fruit'},
+            {e:'🍑',k:'peach fruit'},{e:'🥭',k:'mango fruit'},{e:'🍍',k:'pineapple fruit'},{e:'🥥',k:'coconut'},
+            {e:'🥝',k:'kiwi fruit'},{e:'🍅',k:'tomato'},{e:'🫒',k:'olive'},{e:'🥑',k:'avocado'},
+            {e:'🍆',k:'eggplant aubergine vegetable'},{e:'🥔',k:'potato vegetable'},{e:'🥕',k:'carrot vegetable'},
+            {e:'🌽',k:'corn maize vegetable'},{e:'🌶️',k:'chilli pepper hot spicy'},{e:'🫑',k:'bell pepper vegetable'},
+            {e:'🥒',k:'cucumber vegetable'},{e:'🥬',k:'leafy green lettuce vegetable'},{e:'🥦',k:'broccoli vegetable'},
+            {e:'🧄',k:'garlic vegetable'},{e:'🧅',k:'onion vegetable'},{e:'🥜',k:'peanut nut'},
+            {e:'🫘',k:'beans legumes'},{e:'🌰',k:'chestnut nut'},{e:'🍞',k:'bread loaf'},
+            {e:'🥐',k:'croissant pastry'},{e:'🥖',k:'baguette bread french'},{e:'🫓',k:'flatbread'},
+            {e:'🥨',k:'pretzel'},{e:'🥯',k:'bagel'},{e:'🧇',k:'waffle'},
+            {e:'🥞',k:'pancake flapjack'},{e:'🧈',k:'butter'},{e:'🍳',k:'egg fry pan cooking'},
+            {e:'🥚',k:'egg'},{e:'🧀',k:'cheese'},{e:'🥩',k:'meat steak beef'},
+            {e:'🥓',k:'bacon'},{e:'🍗',k:'chicken drumstick poultry'},{e:'🍖',k:'bone meat'},
+            {e:'🌭',k:'hotdog sausage'},{e:'🍔',k:'burger hamburger'},{e:'🍟',k:'fries chips'},
+            {e:'🍕',k:'pizza'},{e:'🌮',k:'taco mexican'},{e:'🌯',k:'burrito wrap'},
+            {e:'🥙',k:'pita wrap falafel kebab'},{e:'🧆',k:'falafel'},{e:'🍿',k:'popcorn cinema'},
+            {e:'🧂',k:'salt seasoning'},{e:'🥫',k:'tin can canned food'},{e:'🍱',k:'bento box lunch'},
+            {e:'🍚',k:'rice bowl'},{e:'🍛',k:'curry rice'},{e:'🍜',k:'noodles ramen soup'},
+            {e:'🍝',k:'pasta spaghetti'},{e:'🍣',k:'sushi fish'},{e:'🍤',k:'fried shrimp prawn'},
+            {e:'🫙',k:'jar preserve'},{e:'🫚',k:'olive oil bottle'},{e:'🥛',k:'milk glass'},
+            {e:'🍦',k:'ice cream soft serve'},{e:'🍧',k:'shaved ice'},{e:'🍨',k:'ice cream scoop'},
+            {e:'🍩',k:'doughnut donut'},{e:'🍪',k:'cookie biscuit'},{e:'🎂',k:'birthday cake celebration'},
+            {e:'🍰',k:'cake slice'},{e:'🧁',k:'cupcake'},{e:'🥧',k:'pie tart'},
+            {e:'🍫',k:'chocolate bar'},{e:'🍬',k:'candy sweet'},{e:'🍭',k:'lollipop sweet'},
+            {e:'🍮',k:'custard pudding'},{e:'🍯',k:'honey pot'},
+            {e:'☕',k:'coffee hot espresso'},{e:'🫖',k:'teapot kettle tea'},{e:'🍵',k:'tea cup green matcha'},
+            {e:'🧃',k:'juice box drink'},{e:'🥤',k:'cup straw soda'},{e:'🧋',k:'bubble tea boba'},
+            {e:'🍺',k:'beer pint ale'},{e:'🍻',k:'cheers beers toast'},{e:'🥂',k:'champagne toast prosecco'},
+            {e:'🍷',k:'wine red glass'},{e:'🍸',k:'cocktail martini'},{e:'🍹',k:'tropical drink cocktail'},
+            {e:'🍾',k:'champagne bottle celebration'},{e:'💧',k:'water drop drink'},
+          ]},
+          { cat: 'Travel & Places', items: [
+            {e:'🏠',k:'house home'},{e:'🏡',k:'house garden home'},{e:'🏢',k:'office building'},
+            {e:'🏥',k:'hospital health'},{e:'🏦',k:'bank money'},{e:'🏪',k:'shop store convenience'},
+            {e:'🏫',k:'school education'},{e:'🏨',k:'hotel stay'},{e:'🏰',k:'castle'},
+            {e:'⛪',k:'church'},{e:'🕌',k:'mosque'},{e:'🕍',k:'synagogue'},
+            {e:'🏗️',k:'construction building crane'},{e:'🌁',k:'foggy bridge city'},
+            {e:'🌃',k:'night city stars'},{e:'🏙️',k:'cityscape city skyline'},
+            {e:'🌄',k:'sunrise mountain dawn'},{e:'🏕️',k:'camping tent outdoors'},
+            {e:'⛺',k:'tent camping'},{e:'🏔️',k:'mountain snow snowy'},
+            {e:'⛰️',k:'mountain peak'},{e:'🌋',k:'volcano'},
+            {e:'🏖️',k:'beach sand sea'},{e:'🏝️',k:'island tropical desert'},
+            {e:'🚗',k:'car auto drive'},{e:'🚕',k:'taxi cab'},{e:'🚙',k:'suv car'},
+            {e:'🚌',k:'bus public transport'},{e:'🚂',k:'train steam locomotive'},
+            {e:'🚀',k:'rocket space launch'},{e:'✈️',k:'plane airplane fly travel'},
+            {e:'⛵',k:'sailboat sea'},{e:'🚲',k:'bicycle bike cycle'},
+            {e:'🛵',k:'scooter moped'},{e:'🛒',k:'shopping trolley cart'},
+            {e:'🗺️',k:'map world travel'},{e:'🧭',k:'compass navigate'},
+            {e:'⚓',k:'anchor ship sea'},{e:'🚩',k:'flag red triangular'},
+          ]},
+          { cat: 'Activities', items: [
+            {e:'⚽',k:'football soccer ball'},{e:'🏀',k:'basketball'},{e:'🏈',k:'american football'},
+            {e:'⚾',k:'baseball'},{e:'🎾',k:'tennis'},{e:'🏐',k:'volleyball'},
+            {e:'🏉',k:'rugby'},{e:'🥊',k:'boxing glove fight'},{e:'🎯',k:'bullseye target dart'},
+            {e:'⛳',k:'golf hole green'},{e:'🎣',k:'fishing rod angling'},{e:'🏊',k:'swim swimming pool'},
+            {e:'🚴',k:'cycling bike'},{e:'🏋️',k:'weightlifting gym fitness'},{e:'🤸',k:'gymnastics cartwheel'},
+            {e:'🧘',k:'yoga meditation calm'},{e:'🎮',k:'video game controller gaming'},
+            {e:'🎲',k:'dice board game'},{e:'♟️',k:'chess'},{e:'🎭',k:'theatre masks performance'},
+            {e:'🎨',k:'art palette paint creative'},{e:'🎬',k:'movie film clapper cinema'},
+            {e:'🎤',k:'microphone sing karaoke'},{e:'🎵',k:'music note song'},{e:'🎶',k:'music notes melody'},
+            {e:'🎸',k:'guitar electric acoustic'},{e:'🎹',k:'piano keyboard'},
+            {e:'🥁',k:'drums percussion'},{e:'🎷',k:'saxophone jazz'},{e:'🎺',k:'trumpet'},
+            {e:'📚',k:'books reading study learning'},{e:'🎓',k:'graduation cap university degree'},
+            {e:'🏆',k:'trophy winner prize'},{e:'🥇',k:'gold medal first place'},{e:'🎪',k:'circus tent fair'},
+          ]},
+          { cat: 'Objects', items: [
+            {e:'💡',k:'lightbulb idea bright'},{e:'🔦',k:'torch flashlight'},{e:'🕯️',k:'candle light'},
+            {e:'🔋',k:'battery power charge'},{e:'🔌',k:'plug socket power'},
+            {e:'💻',k:'laptop computer work'},{e:'🖥️',k:'monitor desktop screen'},
+            {e:'📱',k:'phone mobile smartphone'},{e:'📷',k:'camera photo picture'},
+            {e:'📺',k:'television tv screen'},{e:'📻',k:'radio music'},
+            {e:'⏰',k:'alarm clock time wake'},{e:'⌚',k:'watch wristwatch time'},
+            {e:'📅',k:'calendar date schedule'},{e:'📋',k:'clipboard list'},
+            {e:'📝',k:'memo note write'},{e:'✏️',k:'pencil write draw'},{e:'🖊️',k:'pen write'},
+            {e:'📌',k:'pin pushpin location'},{e:'📎',k:'paperclip attach'},{e:'✂️',k:'scissors cut'},
+            {e:'🔑',k:'key lock access'},{e:'🗝️',k:'old key vintage'},{e:'🔒',k:'lock locked secure'},
+            {e:'🔓',k:'unlock open access'},{e:'🛠️',k:'tools repair fix'},{e:'🔧',k:'wrench spanner tool'},
+            {e:'🔨',k:'hammer build'},{e:'⚙️',k:'gear settings cog'},{e:'🧰',k:'toolbox kit'},
+            {e:'🧲',k:'magnet attract'},{e:'💊',k:'pill medicine tablet'},{e:'🩺',k:'stethoscope doctor'},
+            {e:'🌡️',k:'thermometer temperature fever'},{e:'🧪',k:'test tube science lab'},
+            {e:'🔬',k:'microscope science research'},{e:'🧴',k:'lotion bottle cream'},
+            {e:'🧹',k:'broom sweep clean'},{e:'🧺',k:'basket laundry'},{e:'🧻',k:'toilet roll paper tissue'},
+            {e:'🪣',k:'bucket pail'},{e:'🧼',k:'soap wash clean'},{e:'🪥',k:'toothbrush teeth'},
+            {e:'🛁',k:'bathtub bath'},{e:'🚿',k:'shower wash'},{e:'🪑',k:'chair seat'},
+            {e:'🛋️',k:'sofa couch sit'},{e:'🛏️',k:'bed sleep'},{e:'🚪',k:'door entrance'},
+            {e:'🪟',k:'window view'},{e:'🧸',k:'teddy bear toy stuffed'},
+            {e:'🎁',k:'gift present wrapped birthday'},{e:'🎉',k:'party popper celebrate confetti'},
+            {e:'🎊',k:'confetti ball celebrate'},{e:'💰',k:'money bag rich wealth'},
+            {e:'💳',k:'credit card payment'},{e:'📦',k:'box package delivery'},
+            {e:'🛍️',k:'shopping bags retail'},{e:'📫',k:'mailbox letter post'},
+            {e:'📧',k:'email message'},{e:'📞',k:'telephone phone call'},
+          ]},
+          { cat: 'Symbols', items: [
+            {e:'❤️',k:'heart red love'},{e:'🧡',k:'heart orange love'},{e:'💛',k:'heart yellow love'},
+            {e:'💚',k:'heart green love'},{e:'💙',k:'heart blue love'},{e:'💜',k:'heart purple love'},
+            {e:'🖤',k:'heart black'},{e:'🤍',k:'heart white'},{e:'💔',k:'broken heart sad'},
+            {e:'💕',k:'two hearts love'},{e:'💖',k:'sparkling heart love'},{e:'✅',k:'check tick done yes'},
+            {e:'❌',k:'cross x wrong no'},{e:'❓',k:'question mark'},{e:'❗',k:'exclamation alert important'},
+            {e:'⭐',k:'star yellow favourite'},{e:'🌟',k:'glowing star shine'},{e:'✨',k:'sparkles magic shine'},
+            {e:'💫',k:'dizzy star spin'},{e:'💯',k:'100 percent perfect'},
+            {e:'🔔',k:'bell notification alert'},{e:'🔕',k:'bell off silent mute'},
+            {e:'📢',k:'loudspeaker announce'},{e:'🚫',k:'no entry prohibited ban'},
+            {e:'⛔',k:'no entry stop red'},{e:'♻️',k:'recycle green environment'},
+            {e:'🔴',k:'red circle dot'},{e:'🟠',k:'orange circle dot'},{e:'🟡',k:'yellow circle dot'},
+            {e:'🟢',k:'green circle dot'},{e:'🔵',k:'blue circle dot'},{e:'🟣',k:'purple circle dot'},
+            {e:'⚫',k:'black circle dot'},{e:'⚪',k:'white circle dot'},
+            {e:'💬',k:'speech bubble talk comment'},{e:'💭',k:'thought bubble think'},
+            {e:'💤',k:'zzz sleep tired'},{e:'💢',k:'anger symbol furious'},
+            {e:'🏁',k:'chequered flag finish race'},{e:'🚩',k:'flag red warning'},
+            {e:'🏴',k:'black flag'},{e:'🏳️',k:'white flag surrender peace'},
+          ]},
         ];
 
         let _emojiCallback = null;
@@ -8281,11 +8462,37 @@ oregano"></textarea>
         function renderEmojiPicker() {
             const grid = document.getElementById('emoji-picker-grid');
             if (!grid || grid.dataset.built === '1') return;
-            grid.innerHTML = FOOD_EMOJI.map(e =>
-                `<button class="emoji-option" onclick="selectEmoji('${e}')" type="button">${e}</button>`
-            ).join('');
+            let html = '';
+            for (const { cat, items } of ALL_EMOJI) {
+                html += `<div class="emoji-category-header">${cat}</div>`;
+                for (const { e, k } of items) {
+                    html += `<button class="emoji-option" data-e="${e}" data-k="${k}" type="button">${e}</button>`;
+                }
+            }
+            grid.innerHTML = html;
+            // Event delegation — avoids inline onclick issues with compound emoji
+            grid.addEventListener('click', ev => {
+                const btn = ev.target.closest('.emoji-option');
+                if (btn) selectEmoji(btn.dataset.e);
+            });
             grid.dataset.built = '1';
         }
+
+        function filterEmojiPicker(query) {
+            const grid = document.getElementById('emoji-picker-grid');
+            if (!grid) return;
+            const q = query.trim().toLowerCase();
+            if (!q) {
+                grid.querySelectorAll('.emoji-option, .emoji-category-header').forEach(el => el.style.display = '');
+                return;
+            }
+            // Hide headers while searching; show/hide buttons by keyword match
+            grid.querySelectorAll('.emoji-category-header').forEach(el => el.style.display = 'none');
+            grid.querySelectorAll('.emoji-option').forEach(btn => {
+                btn.style.display = (btn.dataset.k.includes(q) || btn.dataset.e === q) ? '' : 'none';
+            });
+        }
+        window.filterEmojiPicker = filterEmojiPicker;
 
         let _emojiTrigger = null;
 
@@ -8293,12 +8500,17 @@ oregano"></textarea>
             renderEmojiPicker();
             _emojiCallback = callback;
             _emojiTrigger = triggerEl;
+
+            // Reset search on each open
+            const searchInput = document.getElementById('emoji-search');
+            if (searchInput) { searchInput.value = ''; filterEmojiPicker(''); }
+
             const picker = document.getElementById('emoji-picker');
-            picker.style.display = 'block';
+            picker.style.display = 'flex';
 
             const rect = triggerEl.getBoundingClientRect();
-            const pickerW = 288;
-            const pickerH = 260;
+            const pickerW = 340;
+            const pickerH = 380;
             let left = rect.left + window.scrollX;
             let top = rect.bottom + window.scrollY + 6;
 
@@ -8316,6 +8528,9 @@ oregano"></textarea>
 
             picker.style.left = `${left}px`;
             picker.style.top = `${top}px`;
+
+            // Focus search for immediate typing
+            setTimeout(() => { if (searchInput) searchInput.focus(); }, 50);
         }
         window.openEmojiPicker = openEmojiPicker;
 
