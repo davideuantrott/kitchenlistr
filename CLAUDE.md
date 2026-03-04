@@ -150,14 +150,23 @@ New brand colour variables also added (not yet widely used): `--color-tomato`, `
 - Aisle data model: `{ name, emoji?, order }` — `emoji` field added, backward-compatible (undefined = no emoji)
 - Shopping list headers: emoji shown if set; fallback = deterministic colour circle with initial letter (`aisleInitialColor()` — 10-colour brand palette, hash by char code)
 
-#### 🔲 Phase 7 — Recipe screen
-- Hash-based pastel avatar: deterministic colour from recipe name, large emoji centred (or image if URL provided)
-- Recipe form: add optional image URL field
-- Category filter chips at top of recipe list (auto-populated from shared category list)
-- Two-column card grid — test at 480px before committing; revert to single-column if titles clip
+#### ✅ Phase 7 — Recipe screen
+- **Avatar system:** `recipeAvatarColor(name)` (10-colour brand palette, hash) + `recipeAvatarEmoji(name)` (food emoji set, second hash); deterministic per recipe name
+- **Recipe cards restructured:** `padding: 0`, `overflow: hidden`; top 100px avatar strip (`.recipe-card-avatar`) + `.recipe-card-body` with padding; image shown instead of emoji when `imageUrl` set
+- **Optional image URL field:** added to recipe form; saved to Firestore as `imageUrl`; backward-compatible (empty string = use avatar)
+- **Category field:** added to recipe form as `<select>` populated from `mealCategories`; saved to Firestore as `category`; shown as subtitle on card meta line
+- **Category filter chips:** pill chip row (`#recipe-category-filter`) above the grid; "All" + one chip per mealCategory; `currentRecipeCategory` state; chips re-render on `showView('recipes')` and when `mealCategories` updates in settings listener
+- **Two-column grid:** `minmax` changed 280px → 200px (two columns from ~420px viewport)
+- **View modal:** shows large 140px avatar at top; category shown as subtitle below title
 
-#### 🔲 Phase 8 — Blob decorations & animations (additive, lowest priority)
-- Decorative CSS blob shapes on screen headers (blush, buttercup, sage pastels)
-- Blob float + morph keyframe animations
-- Card pop-in, list stagger, spring check animation
-- All animations behind `@media (prefers-reduced-motion: reduce)`
+#### ✅ Phase 8 — Blob decorations & animations
+- **Blob decorations:** `.page-header::before` / `::after` pseudo-elements; organic blob shapes via `border-radius: 60% 40% 30% 70% / ...`; opacity 0.38; per-view pastel colours (blush/buttercup on recipes, sage-pale/lavender on planner, blush/peach on shopping, sage-pale/sky on settings, lavender/buttercup on account)
+- **Blob animations:** `blobMorph` (border-radius oscillation, 9s/11s) + `blobFloat` (translate + rotate, 7s/9s); `::before` and `::after` run at different speeds and in reverse for organic feel
+- **Card pop-in:** `popIn` keyframe (scale 0.92 + fade → scale 1); applied to `.recipe-card` (0.28s, 50ms stagger) and `.shopping-item` (0.22s, 35ms stagger); stagger driven by `--anim-order` CSS custom property set inline during render; `_shopAnimOrder` counter reset at start of each `renderShoppingList()` call
+- **Spring check:** `springCheck` keyframe applied as `.spring-check` class on the newly checked shopping item; `recentlyCheckedKey` module variable set in `toggleShoppingItem()` before re-render, cleared after; class applied in `renderShoppingItem()` when `ing.key === recentlyCheckedKey`
+- **Reduced motion:** all new animations inside `@media (prefers-reduced-motion: no-preference)`; existing `reduce` block kills them as second safety net
+
+### Deploy checklist (before merging redesign → main)
+1. Increment `CACHE_NAME` in `sw.js` (currently `kitchenlistr-v1` → `kitchenlistr-v2`) to force cache refresh for all users
+2. Merge `redesign` branch into `main` via PR
+3. GitHub Pages deploys automatically on push to `main`
