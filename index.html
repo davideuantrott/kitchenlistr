@@ -1111,19 +1111,25 @@
 
         .day-card {
             background: var(--bg-white);
-            border-radius: var(--radius-md);
-            border: 1px solid var(--border-light);
+            border-radius: var(--radius-lg);
+            border: none;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
             min-height: 200px;
             display: flex;
             flex-direction: column;
+            transition: box-shadow 0.15s;
+        }
+
+        .day-card:hover {
+            box-shadow: 0 4px 14px rgba(0,0,0,0.1);
         }
 
         .day-header {
             padding: 0.75rem 1rem;
-            background: linear-gradient(135deg, var(--accent-green-light) 0%, #c4f0dc 100%);
-            border-bottom: 1px solid var(--border-light);
+            background: var(--bg-cream);
+            border-radius: var(--radius-lg) var(--radius-lg) 0 0;
             font-weight: 600;
-            color: var(--accent-green-dark);
+            color: var(--text-secondary);
             font-size: 0.9rem;
         }
 
@@ -1131,6 +1137,7 @@
             font-weight: 400;
             color: var(--text-secondary);
             font-size: 0.8rem;
+            opacity: 0.8;
         }
 
         .day-meals {
@@ -1150,6 +1157,17 @@
             align-items: center;
             justify-content: space-between;
             gap: 0.5rem;
+            border: 1.5px solid transparent;
+        }
+
+        /* Empty meal slot: dashed border, transparent bg */
+        .meal-slot.meal-empty {
+            background: transparent;
+            border: 1.5px dashed var(--border-light);
+        }
+
+        .meal-slot.meal-empty .meal-slot-label {
+            opacity: 0.6;
         }
 
         .meal-slot-label {
@@ -1193,7 +1211,7 @@
 
         /* Day card states */
         .day-card.past {
-            opacity: 0.5;
+            opacity: 0.45;
             pointer-events: none;
         }
 
@@ -1202,12 +1220,17 @@
         }
 
         .day-card.today {
-            border-color: var(--accent-green);
-            box-shadow: 0 0 0 2px var(--accent-green-light);
+            box-shadow: 0 0 0 2px var(--accent-green), 0 4px 14px rgba(242,101,74,0.12);
         }
 
         .day-card.today .day-header {
-            background: linear-gradient(135deg, var(--accent-mint) 0%, var(--accent-green-light) 100%);
+            background: linear-gradient(135deg, var(--accent-green) 0%, var(--accent-green-dark) 100%);
+            color: white;
+        }
+
+        .day-card.today .day-header .date {
+            color: rgba(255,255,255,0.8);
+            opacity: 1;
         }
 
         /* Shopping List */
@@ -1391,17 +1414,20 @@
 
         .week-nav-btn {
             background: var(--bg-white);
-            border: 1px solid var(--border-medium);
-            border-radius: var(--radius-sm);
-            padding: 0.5rem 1rem;
+            border: 1.5px solid var(--border-light);
+            border-radius: var(--radius-pill);
+            padding: 0.45rem 1.1rem;
             cursor: pointer;
-            font-size: 1rem;
-            transition: all 0.2s ease;
+            font-size: 0.88rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+            font-family: var(--font-body);
+            transition: border-color 0.15s, color 0.15s;
         }
 
         .week-nav-btn:hover {
-            background: var(--accent-green-light);
             border-color: var(--accent-green);
+            color: var(--accent-green);
         }
 
         .week-display {
@@ -1618,27 +1644,29 @@
             border-color: var(--accent-green);
         }
 
-        /* View Toggle */
+        /* View Toggle — pill pair */
         .view-toggle {
             display: flex;
-            gap: 0.25rem;
+            gap: 0;
             background: var(--bg-cream);
-            padding: 0.25rem;
-            border-radius: var(--radius-sm);
+            padding: 0.2rem;
+            border-radius: var(--radius-pill);
             margin-bottom: 1.5rem;
+            width: fit-content;
+            border: 1.5px solid var(--border-light);
         }
 
         .view-toggle-btn {
-            padding: 0.5rem 1rem;
+            padding: 0.4rem 1.25rem;
             border: none;
             background: transparent;
             color: var(--text-secondary);
             font-family: var(--font-body);
-            font-size: 0.9rem;
+            font-size: 0.88rem;
             font-weight: 500;
             cursor: pointer;
-            border-radius: var(--radius-sm);
-            transition: all 0.2s ease;
+            border-radius: var(--radius-pill);
+            transition: background 0.15s, color 0.15s, box-shadow 0.15s;
         }
 
         .view-toggle-btn:hover {
@@ -1646,9 +1674,9 @@
         }
 
         .view-toggle-btn.active {
-            background: var(--bg-white);
-            color: var(--accent-green);
-            box-shadow: var(--shadow-sm);
+            background: var(--accent-green);
+            color: white;
+            box-shadow: 0 2px 8px rgba(242, 101, 74, 0.3);
         }
 
         /* Month View */
@@ -1670,39 +1698,42 @@
         .month-grid {
             display: grid;
             grid-template-columns: repeat(7, 1fr);
-            gap: 2px;
-            background: var(--border-light);
-            border: 1px solid var(--border-light);
-            border-radius: var(--radius-md);
-            overflow: hidden;
+            gap: 3px;
+            margin-bottom: 1.5rem;
         }
 
         .month-header-cell {
-            background: var(--accent-green-light);
-            padding: 0.5rem;
+            background: transparent;
+            padding: 0.4rem 0.25rem;
             text-align: center;
             font-weight: 600;
-            font-size: 0.8rem;
-            color: var(--accent-green-dark);
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
         }
 
         .month-day {
             background: var(--bg-white);
-            min-height: 120px;
-            padding: 0.5rem;
+            border: 1px solid var(--border-light);
+            border-radius: var(--radius-sm);
+            min-height: 90px;
+            padding: 0.4rem 0.45rem;
             display: flex;
             flex-direction: column;
             cursor: pointer;
-            transition: background 0.15s ease;
+            transition: border-color 0.15s, background 0.15s;
         }
 
         .month-day:hover {
+            border-color: var(--accent-green);
             background: var(--bg-cream);
         }
 
         .month-day.other-month {
             background: var(--bg-cream);
-            opacity: 0.5;
+            opacity: 0.45;
+            border-color: transparent;
         }
 
         .month-day.past {
@@ -1710,18 +1741,27 @@
         }
 
         .month-day.today {
-            background: var(--accent-green-light);
+            border-color: var(--accent-green);
+            box-shadow: 0 0 0 1px var(--accent-green);
         }
 
         .month-day-number {
             font-weight: 600;
-            font-size: 0.85rem;
-            color: var(--text-primary);
-            margin-bottom: 0.25rem;
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            margin-bottom: 0.2rem;
+            width: 22px;
+            height: 22px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: var(--radius-pill);
+            flex-shrink: 0;
         }
 
         .month-day.today .month-day-number {
-            color: var(--accent-green-dark);
+            background: var(--accent-green);
+            color: white;
         }
 
         .month-day-meals {
@@ -1733,55 +1773,143 @@
         }
 
         .month-meal-pill {
-            font-size: 0.72rem;
-            padding: 2px 5px;
-            border-radius: 3px;
+            font-size: 0.68rem;
+            padding: 1px 4px;
+            border-radius: var(--radius-pill);
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
-            line-height: 1.4;
+            line-height: 1.5;
+            display: flex;
+            align-items: center;
+            gap: 3px;
         }
 
-        .pill-initial {
-            font-weight: 700;
-            opacity: 0.75;
+        .month-meal-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            flex-shrink: 0;
         }
 
         .month-meal-pill.breakfast {
             background: #FEF3C7;
             color: #92400E;
         }
+        .month-meal-pill.breakfast .month-meal-dot { background: #D97706; }
 
         .month-meal-pill.lunch {
             background: #DBEAFE;
             color: #1E40AF;
         }
+        .month-meal-pill.lunch .month-meal-dot { background: #3B82F6; }
 
         .month-meal-pill.dinner {
             background: #FCE7F3;
             color: #9D174D;
         }
+        .month-meal-pill.dinner .month-meal-dot { background: #EC4899; }
+
+        /* Generic fallback for custom meal types */
+        .month-meal-pill:not(.breakfast):not(.lunch):not(.dinner) {
+            background: var(--accent-green-light);
+            color: var(--accent-green-dark);
+        }
+        .month-meal-pill:not(.breakfast):not(.lunch):not(.dinner) .month-meal-dot {
+            background: var(--accent-green);
+        }
 
         .month-day-more {
-            font-size: 0.7rem;
+            font-size: 0.65rem;
             color: var(--text-secondary);
-            margin-top: 2px;
+            margin-top: 1px;
         }
 
         @media (max-width: 768px) {
             .month-day {
-                min-height: 60px;
+                min-height: 54px;
+                padding: 0.2rem;
+            }
+
+            .month-meal-pill {
+                font-size: 0.58rem;
+                padding: 0 2px;
+            }
+
+            .month-meal-dot { width: 5px; height: 5px; }
+
+            .month-header-cell {
+                font-size: 0.65rem;
                 padding: 0.25rem;
             }
-            
-            .month-meal-pill {
-                font-size: 0.6rem;
+
+            .month-day-number {
+                width: 18px;
+                height: 18px;
+                font-size: 0.72rem;
             }
-            
-            .month-header-cell {
-                font-size: 0.7rem;
-                padding: 0.35rem;
-            }
+        }
+
+        /* === Phase 5: Week strip + day pills === */
+        .week-strip {
+            display: flex;
+            gap: 0.4rem;
+            overflow-x: auto;
+            padding-bottom: 0.5rem;
+            margin-bottom: 1.25rem;
+            scrollbar-width: none;
+        }
+
+        .week-strip::-webkit-scrollbar { display: none; }
+
+        .day-pill {
+            flex-shrink: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.15rem;
+            padding: 0.5rem 0.75rem;
+            border-radius: var(--radius-pill);
+            border: 1.5px solid var(--border-light);
+            background: var(--bg-white);
+            cursor: pointer;
+            transition: border-color 0.15s, background 0.15s, color 0.15s;
+            min-width: 54px;
+            font-family: var(--font-body);
+            color: var(--text-secondary);
+        }
+
+        .day-pill:hover {
+            border-color: var(--accent-green);
+            color: var(--accent-green);
+        }
+
+        .day-pill.active {
+            background: var(--accent-green);
+            border-color: var(--accent-green);
+            color: white;
+        }
+
+        .day-pill-name {
+            font-size: 0.7rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+        }
+
+        .day-pill-date {
+            font-family: var(--font-mono);
+            font-size: 0.92rem;
+            font-weight: 700;
+        }
+
+        .day-pill-dot {
+            width: 4px;
+            height: 4px;
+            border-radius: 50%;
+            background: currentColor;
+            opacity: 0.5;
+            margin-top: 1px;
         }
 
         /* Date Range Picker */
@@ -3800,11 +3928,16 @@
                 <!-- Week View -->
                 <div id="week-view-container">
                     <div class="week-nav">
-                        <button class="week-nav-btn" onclick="changeWeek(-1)">← Previous</button>
+                        <button class="week-nav-btn" onclick="changeWeek(-1)">← Prev</button>
                         <span class="week-display" id="week-display"></span>
                         <button class="week-nav-btn" onclick="changeWeek(1)">Next →</button>
                     </div>
-                    
+
+                    <!-- Day strip: pill selector for each day of the week -->
+                    <div class="week-strip" id="week-strip">
+                        <!-- Rendered by JS -->
+                    </div>
+
                     <div id="planner-week" class="planner-week">
                         <!-- Days will be rendered here -->
                     </div>
@@ -3933,6 +4066,11 @@
 
             <!-- FAB: add extra shopping item -->
             <button class="fab" id="shopping-fab" onclick="focusShoppingAdd()" title="Add extra item" style="display:none;">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            </button>
+
+            <!-- FAB: add meal to planner -->
+            <button class="fab" id="planner-fab" onclick="openAddMealFab()" title="Add meal" style="display:none;">
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
             </button>
 
@@ -6053,9 +6191,9 @@ oregano"></textarea>
                 const dayClass = isPast ? 'past' : (isToday ? 'today' : '');
                 
                 html += `
-                    <div class="day-card ${dayClass}">
+                    <div class="day-card ${dayClass}" data-date="${dateStr}">
                         <div class="day-header">
-                            ${getDayName(date)}${isToday ? ' (Today)' : ''}
+                            ${getDayName(date)}${isToday ? ' · Today' : ''}
                             <div class="date">${formatDisplayDate(date)}</div>
                         </div>
                         <div class="day-meals">
@@ -6064,12 +6202,12 @@ oregano"></textarea>
                                 // Check multiple possible key formats for backwards compatibility
                                 const recipeId = dayMeals[mealKey] || dayMeals[meal] || dayMeals[meal.toLowerCase()];
                                 const recipe = recipeId ? recipes.find(r => r.id === recipeId) : null;
-                                
+
                                 return `
-                                    <div class="meal-slot">
+                                    <div class="meal-slot${recipe ? '' : ' meal-empty'}">
                                         <div>
                                             <div class="meal-slot-label">${escapeHtml(meal)}</div>
-                                            ${recipe 
+                                            ${recipe
                                                 ? `<div class="meal-slot-name">${escapeHtml(recipe.name)}</div>`
                                                 : `<div class="meal-slot-empty">Not planned</div>`
                                             }
@@ -6089,7 +6227,7 @@ oregano"></textarea>
                             }).join('')}
                         </div>
                         <div class="day-notes">
-                            ${note 
+                            ${note
                                 ? `<div class="day-notes-preview" onclick="toggleDayNotes('${dateStr}')">${escapeHtml(note.substring(0, 50))}${note.length > 50 ? '...' : ''} <span style="color: var(--accent-green);">✏️</span></div>`
                                 : `<div class="day-notes-toggle" onclick="toggleDayNotes('${dateStr}')">📝 Add note</div>`
                             }
@@ -6100,8 +6238,9 @@ oregano"></textarea>
                     </div>
                 `;
             }
-            
+
             container.innerHTML = html;
+            renderWeekStrip();
         }
         window.renderPlanner = renderPlanner;
 
@@ -6345,6 +6484,7 @@ oregano"></textarea>
         function changeWeek(direction) {
             currentWeekStart.setDate(currentWeekStart.getDate() + (direction * 7));
             renderPlanner();
+            renderWeekStrip();
             renderShoppingList();
         }
         window.changeWeek = changeWeek;
@@ -6434,7 +6574,7 @@ oregano"></textarea>
                         <div class="month-day-number">${currentDate.getDate()}</div>
                         <div class="month-day-meals">
                             ${meals.slice(0, 3).map(m => `
-                                <div class="month-meal-pill ${m.type}"><span class="pill-initial">${escapeHtml(m.label[0])}</span> ${escapeHtml(m.name)}</div>
+                                <div class="month-meal-pill ${m.type}"><span class="month-meal-dot"></span>${escapeHtml(m.name)}</div>
                             `).join('')}
                             ${meals.length > 3 ? `<div class="month-day-more">+${meals.length - 3} more</div>` : ''}
                         </div>
@@ -6456,6 +6596,64 @@ oregano"></textarea>
             renderPlanner();
         }
         window.jumpToDate = jumpToDate;
+
+        // Render the horizontal week strip of day pills
+        function renderWeekStrip() {
+            const strip = document.getElementById('week-strip');
+            if (!strip) return;
+            const today = getToday();
+            let html = '';
+            for (let i = 0; i < 7; i++) {
+                const date = new Date(currentWeekStart);
+                date.setDate(date.getDate() + i);
+                const dateStr = formatDate(date);
+                const dayMeals = mealPlan[dateStr] || {};
+                const isToday = date.getTime() === today.getTime();
+                const hasMeals = Object.values(dayMeals).some(v => v);
+                const dayName = getDayName(date).substring(0, 3);
+                const dayNum = date.getDate();
+                html += `
+                    <button class="day-pill${isToday ? ' active' : ''}"
+                            id="day-pill-${dateStr}"
+                            onclick="scrollToDayCard('${dateStr}')">
+                        <span class="day-pill-name">${dayName}</span>
+                        <span class="day-pill-date">${dayNum}</span>
+                        ${hasMeals ? '<span class="day-pill-dot"></span>' : ''}
+                    </button>
+                `;
+            }
+            strip.innerHTML = html;
+        }
+        window.renderWeekStrip = renderWeekStrip;
+
+        // Scroll to a day card and highlight its pill
+        function scrollToDayCard(dateStr) {
+            const card = document.querySelector(`.day-card[data-date="${dateStr}"]`);
+            if (card) card.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            document.querySelectorAll('.day-pill').forEach(p => p.classList.remove('active'));
+            const pill = document.getElementById(`day-pill-${dateStr}`);
+            if (pill) pill.classList.add('active');
+        }
+        window.scrollToDayCard = scrollToDayCard;
+
+        // FAB: open recipe selector for today's first empty meal slot
+        function openAddMealFab() {
+            const today = getToday();
+            const todayStr = formatDate(today);
+            const mealTypes = getMealTypes();
+            const todayMeals = mealPlan[todayStr] || {};
+            let targetMeal = mealTypes[0];
+            for (const mt of mealTypes) {
+                const mk = mt.toLowerCase().replace(/[^a-z0-9]/g, '_');
+                if (!todayMeals[mk] && !todayMeals[mt] && !todayMeals[mt.toLowerCase()]) {
+                    targetMeal = mt;
+                    break;
+                }
+            }
+            const mealKey = targetMeal.toLowerCase().replace(/[^a-z0-9]/g, '_');
+            openSelectRecipeModal(todayStr, mealKey);
+        }
+        window.openAddMealFab = openAddMealFab;
 
         function openSelectRecipeModal(date, meal) {
             document.getElementById('select-recipe-date').value = date;
@@ -8383,9 +8581,11 @@ oregano"></textarea>
                 setTimeout(setupAdhocAutocomplete, 100);
             }
 
-            // Show FAB and clear pill only on shopping view
-            const fab = document.getElementById('shopping-fab');
-            if (fab) fab.style.display = viewName === 'shopping' ? 'flex' : 'none';
+            // Show FAB and clear pill only on their respective views
+            const shoppingFab = document.getElementById('shopping-fab');
+            if (shoppingFab) shoppingFab.style.display = viewName === 'shopping' ? 'flex' : 'none';
+            const plannerFab = document.getElementById('planner-fab');
+            if (plannerFab) plannerFab.style.display = viewName === 'planner' ? 'flex' : 'none';
             const clearPill = document.getElementById('clear-checked-pill');
             if (clearPill && viewName !== 'shopping') clearPill.style.display = 'none';
 
