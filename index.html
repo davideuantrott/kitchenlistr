@@ -5818,38 +5818,7 @@ oregano"></textarea>
         // =====================
 
         document.querySelectorAll('.nav-btn').forEach(btn => {
-            btn.addEventListener('click', () => {
-                const view = btn.dataset.view;
-
-                // Update nav buttons
-                document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-                btn.classList.add('active');
-
-                // Update views
-                document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
-                document.getElementById(`${view}-view`).classList.add('active');
-
-                // Refresh view data
-                if (view === 'recipes') renderRecipes();
-                if (view === 'planner') renderPlanner();
-                if (view === 'shopping') renderShoppingList();
-                if (view === 'settings') {
-                    renderIngredientDictionary();
-                    renderIngredientManager();
-                    renderMealCategories();
-                    applyCollapsedSections();
-                }
-                if (view === 'account') {
-                    renderHouseholdSettings();
-                    applyCollapsedSections();
-                    if (currentUser) {
-                        const avatarEl = document.getElementById('account-user-avatar');
-                        const emailEl = document.getElementById('account-user-email');
-                        if (avatarEl) avatarEl.textContent = (currentUser.email || '?')[0].toUpperCase();
-                        if (emailEl) emailEl.textContent = currentUser.email || '';
-                    }
-                }
-            });
+            btn.addEventListener('click', () => showView(btn.dataset.view));
         });
 
         // =====================
@@ -8928,9 +8897,19 @@ oregano"></textarea>
             document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
             document.getElementById(`${viewName}-view`).classList.add('active');
 
-            // Render recipe category chips when switching to recipes
+            // Render view-specific content
             if (viewName === 'recipes') {
+                renderRecipes();
                 renderRecipeCategoryChips();
+            }
+
+            if (viewName === 'planner') {
+                renderPlanner();
+            }
+
+            if (viewName === 'shopping') {
+                renderShoppingList();
+                setTimeout(setupAdhocAutocomplete, 100);
             }
 
             // Render settings components when switching to settings
@@ -8951,11 +8930,6 @@ oregano"></textarea>
                     if (avatarEl) avatarEl.textContent = (currentUser.email || '?')[0].toUpperCase();
                     if (emailEl) emailEl.textContent = currentUser.email || '';
                 }
-            }
-
-            // Setup adhoc autocomplete when switching to shopping
-            if (viewName === 'shopping') {
-                setTimeout(setupAdhocAutocomplete, 100);
             }
 
             // Show FAB and clear pill only on their respective views
