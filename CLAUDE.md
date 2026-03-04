@@ -202,12 +202,27 @@ New brand colour variables also added (not yet widely used): `--color-tomato`, `
 - Profile card: email truncates with ellipsis; Sign Out button has `flex-shrink: 0`
 - Household member rows: `flex-wrap: wrap`; email truncates; role badge and remove button don't shrink
 
+#### ✅ Phase 10 — Personal / household visual differentiation & bug fixes
+
+**Personal vs household theming**
+- `body[data-mode="household"]` CSS block overrides accent and glow variables; `updateContextSwitcher()` sets `document.body.dataset.mode`
+- Household accent: teal (`--accent-green: #2A7A8C`, dark `#1F6070`, light `#C2E6ED`) vs personal tomato (`#F2654A`)
+- Household background: `--bg-cream: #EFF4F5` (subtle cool tint) vs personal `#F5F5F0` (warm off-white)
+- Three glow shadow variables added to `:root` — `--accent-glow-soft`, `--accent-glow-mid`, `--accent-glow-strong` — replacing 6 hardcoded `rgba(242,101,74,…)` values; all overridden in household mode with teal-tinted equivalents. Affects: focus rings, form inputs, day-card today halo, week/month toggle glow, button hover shadow, FAB shadow
+
+**Mobile nav fix (Safari/WebKit)**
+- `backdrop-filter` moved from `.header` to `.header::before` pseudo-element; Safari treats `backdrop-filter` on an ancestor as a containing block for `position: fixed` children, causing the bottom nav to render inside the header instead of at the bottom of the viewport
+
+**Clear-checked pill fix**
+- Two parallel navigation systems existed: nav button click handlers managed view-switching independently (no pill logic), while `showView()` had the pill-hiding code but was only called from the logo and a few in-app links
+- Fix: nav buttons now call `showView(btn.dataset.view)` directly; `showView()` extended with `renderRecipes()`, `renderPlanner()`, `renderShoppingList()` calls previously only in the old handler — all navigation now flows through one function
+
 ### Theme picker
 The legacy theme picker (Garden / Terracotta / Nordic / Berry / Amber / Ink) has been **removed** from the redesign branch. The app ships with Warm Pantry only. Themes will be reintroduced in a future iteration designed specifically for the Warm Pantry token system.
 
 What was removed: `[data-theme]` CSS blocks, Theme Selector UI CSS, Appearance section in account view, localStorage theme loader, `themes` object, `applyTheme` / `renderThemeSelector` / `selectTheme` functions, `theme` field from `saveUserPrefs`. Any `theme` value previously stored in Firestore `settings/userPrefs` is harmlessly ignored.
 
-When reintroducing themes, each theme block should override: `--bg-cream`, `--bg-white`, `--text-primary`, `--text-secondary`, `--accent-green`, `--accent-green-light`, `--accent-green-dark`, `--accent-mint`, `--border-light`, `--border-medium`, `--shadow-*`, `--font-heading`, `--font-body`. The `--color-*` pastel variables and `--radius-*` values should remain fixed.
+When reintroducing themes, each theme block should override: `--bg-cream`, `--bg-white`, `--text-primary`, `--text-secondary`, `--accent-green`, `--accent-green-light`, `--accent-green-dark`, `--accent-mint`, `--border-light`, `--border-medium`, `--shadow-*`, `--accent-glow-soft`, `--accent-glow-mid`, `--accent-glow-strong`, `--font-heading`, `--font-body`. The `--color-*` pastel variables and `--radius-*` values should remain fixed.
 
 ### Deploy checklist (before merging redesign → main)
 1. Increment `CACHE_NAME` in `sw.js` (currently `kitchenlistr-v1` → `kitchenlistr-v2`) to force cache refresh for all users
