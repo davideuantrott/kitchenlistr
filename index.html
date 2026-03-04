@@ -48,6 +48,9 @@
             --accent-sage: #8C8C8C;        /* slate — muted/secondary */
             --border-light: #E8E4DC;       /* warm grey border */
             --border-medium: #3D3D3D;      /* charcoal border */
+            --accent-glow-soft:   rgba(242, 101, 74, 0.15); /* focus rings, day-card today */
+            --accent-glow-mid:    rgba(242, 101, 74, 0.35); /* button hover, toggle active */
+            --accent-glow-strong: rgba(242, 101, 74, 0.50); /* FAB shadow */
             --shadow-sm: 0 2px 8px rgba(0,0,0,0.06);
             --shadow-md: 0 4px 20px rgba(0,0,0,0.06);
             --shadow-lg: 0 8px 32px rgba(0,0,0,0.10);
@@ -715,7 +718,7 @@
         .btn-primary:hover {
             background: var(--accent-green-dark);
             transform: translateY(-1px);
-            box-shadow: 0 4px 16px rgba(242, 101, 74, 0.35);
+            box-shadow: 0 4px 16px var(--accent-glow-mid);
         }
 
         .btn-primary:disabled {
@@ -916,7 +919,7 @@
         .form-input:focus, .form-textarea:focus, .form-select:focus {
             outline: none;
             border-color: var(--accent-green);
-            box-shadow: 0 0 0 3px rgba(242, 101, 74, 0.15);
+            box-shadow: 0 0 0 3px var(--accent-glow-soft);
             background: var(--bg-white);
         }
 
@@ -1422,7 +1425,7 @@
         }
 
         .day-card.today {
-            box-shadow: 0 0 0 2px var(--accent-green), 0 4px 14px rgba(242,101,74,0.12);
+            box-shadow: 0 0 0 2px var(--accent-green), 0 4px 14px var(--accent-glow-soft);
         }
 
         .day-card.today .day-header {
@@ -1878,7 +1881,7 @@
         .view-toggle-btn.active {
             background: var(--accent-green);
             color: white;
-            box-shadow: 0 2px 8px rgba(242, 101, 74, 0.3);
+            box-shadow: 0 2px 8px var(--accent-glow-mid);
         }
 
         /* Month View */
@@ -2410,14 +2413,14 @@
             align-items: center;
             justify-content: center;
             cursor: pointer;
-            box-shadow: 0 4px 16px rgba(242, 101, 74, 0.45);
+            box-shadow: 0 4px 16px var(--accent-glow-strong);
             z-index: 200;
             transition: transform 0.15s ease, box-shadow 0.15s ease;
         }
 
         .fab:hover {
             transform: scale(1.08);
-            box-shadow: 0 6px 20px rgba(242, 101, 74, 0.55);
+            box-shadow: 0 6px 20px var(--accent-glow-strong);
         }
 
         .fab:active {
@@ -3720,6 +3723,10 @@
             --accent-green:       #2A7A8C;
             --accent-green-dark:  #1F6070;
             --accent-green-light: #C2E6ED;
+            --bg-cream:           #EFF4F5;
+            --accent-glow-soft:   rgba(42, 122, 140, 0.15);
+            --accent-glow-mid:    rgba(42, 122, 140, 0.35);
+            --accent-glow-strong: rgba(42, 122, 140, 0.50);
         }
 
         /* ── Context Switcher (Personal / Household toggle in header) ── */
