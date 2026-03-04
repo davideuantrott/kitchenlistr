@@ -4819,8 +4819,9 @@ oregano"></textarea>
             } catch (e) {
                 console.error('Error loading user profile:', e);
             }
-            // Always start in personal mode on login; user may switch via header toggle
-            currentDataMode = 'personal';
+            // Restore last-used mode if the user still has a household, else default to personal
+            const savedMode = localStorage.getItem('dataMode');
+            currentDataMode = (savedMode === 'household' && currentHouseholdId) ? 'household' : 'personal';
             updateContextSwitcher();
             renderHouseholdSettings();
         }
@@ -4854,6 +4855,7 @@ oregano"></textarea>
         async function switchDataMode(mode) {
             if (mode === currentDataMode) return;
             currentDataMode = mode;
+            localStorage.setItem('dataMode', mode);
             currentShopId = null; // reset so the correct default shop is picked
             updateContextSwitcher();
             renderSuggestions(); // update panel visibility immediately
@@ -8880,6 +8882,7 @@ oregano"></textarea>
                 currentHouseholdId   = null;
                 currentHouseholdName = null;
                 currentHouseholdRole = null;
+                localStorage.setItem('dataMode', 'personal');
                 if (currentDataMode === 'household') {
                     currentDataMode = 'personal';
                     currentShopId = null;
