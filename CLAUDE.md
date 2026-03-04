@@ -217,6 +217,14 @@ New brand colour variables also added (not yet widely used): `--color-tomato`, `
 - Two parallel navigation systems existed: nav button click handlers managed view-switching independently (no pill logic), while `showView()` had the pill-hiding code but was only called from the logo and a few in-app links
 - Fix: nav buttons now call `showView(btn.dataset.view)` directly; `showView()` extended with `renderRecipes()`, `renderPlanner()`, `renderShoppingList()` calls previously only in the old handler — all navigation now flows through one function
 
+#### ✅ Phase 11 — Emoji picker overhaul
+
+- **Full emoji set:** `FOOD_EMOJI` (~80 food-only) replaced with `ALL_EMOJI` — ~400 emoji across 8 categories: Smileys, People, Animals, Food & Drink, Travel & Places, Activities, Objects, Symbols; each entry has a keyword string for search
+- **Search:** text input at top of picker; `filterEmojiPicker()` filters buttons by keyword match and hides category headers during search; clears and autofocuses on each open
+- **Larger UI:** picker widened to 340px, 9-column grid, 34px buttons at 1.2rem, 300px scrollable grid area
+- **Category headers:** span full grid width (`grid-column: 1 / -1`); hidden while search is active
+- **Event delegation:** switched from inline `onclick` to grid-level `click` listener using `data-e` / `data-k` attributes, safely handling compound/ZWJ emoji that can cause HTML attribute parsing issues
+
 ### Theme picker
 The legacy theme picker (Garden / Terracotta / Nordic / Berry / Amber / Ink) has been **removed** from the redesign branch. The app ships with Warm Pantry only. Themes will be reintroduced in a future iteration designed specifically for the Warm Pantry token system.
 
