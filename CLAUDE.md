@@ -125,25 +125,30 @@ New brand colour variables also added (not yet widely used): `--color-tomato`, `
 
 ---
 
-#### 🔲 Phase 4 — Shopping list upgrades
-- Item cards: add meal name + recipe date as second line of text (DM Sans small / DM Mono for date)
-- Sort/filter chip row at top of shopping list
-- Date range navigator (prev/next arrows + label) for selecting which week's meals to include
-- Progress bar (herb green fill, shows X/Y items checked)
-- "Clear checked" floating pill button
-- Tomato FAB for adding ad-hoc extra items
+#### ✅ Phase 4 — Shopping list upgrades
+- Item cards: meal name (DM Sans small) + date (DM Mono) as separate spans in second line
+- Sort chips: pill-shaped chip row replaces `<select>` (A–Z / Aisle / Date / Recipe); hidden `<select>` kept for print compat
+- Date range navigator: `‹ [7 Apr – 13 Apr] ›` replaces raw date inputs; arrows shift by current span; preset chips (Today / 3d / 7d / This week / All) update the label
+- Progress bar: herb-green fill inside summary card, "X of Y checked" label, updates live
+- "Clear checked" floating pill: `position: fixed`, appears only when ≥1 item checked, shows count; hides on non-shopping views
+- Tomato FAB: fixed bottom-right (shopping view only), scrolls to and focuses the add-item input
 
-#### 🔲 Phase 5 — Planner reskin
-- Week strip: pill-shaped day selectors, horizontal scroll, tomato active day
-- Week/month toggle: keep existing logic, restyle toggle as pill pair
-- Month grid: rounded cells, tomato for today/active date, small category-coloured dots for meals
-- Empty meal slot: dashed border, muted style
-- Tomato FAB for adding meals
+#### ✅ Phase 5 — Planner reskin
+- Week/month toggle: pill pair (`--radius-pill`), tomato fill on active button
+- Week nav buttons: pill shape, tomato hover
+- Week strip: horizontal scrollable row of day pills (Mon/1 format) between nav and grid; today = tomato; dot indicator when meals exist; clicking scrolls to that day card
+- Day cards: border removed, `--radius-lg`, shadow-only; today = tomato gradient header + tomato ring
+- Empty meal slots: `.meal-empty` class → dashed border, transparent background
+- Month grid: individual rounded cells with border (no gap-as-divider); today's date number = tomato circle badge
+- Month meal pills: compact dot + recipe name, pill radius; dot colour matches meal type (breakfast/lunch/dinner)
+- Planner FAB: tomato FAB (planner view only) opens recipe selector for today's first empty meal slot
 
-#### 🔲 Phase 6 — Emoji icon system (aisles)
-- Aisle create/edit form: add emoji picker tap target next to name field
-- Shopping list aisle headers: display emoji, fallback to coloured circle with initial letter
-- Simple emoji picker: a popover grid of food-relevant emoji (no third-party library)
+#### ✅ Phase 6 — Emoji icon system (aisles)
+- Emoji picker: `position: fixed` popover, 8-column grid of ~80 food-relevant emoji; no third-party library; closes on outside click; grid built once and cached via `data-built`
+- Aisle settings: each aisle row has an emoji tap target (`+🍽️` placeholder → selected emoji); tapping opens picker and saves to Firestore via `setAisleEmoji(shopId, index, emoji)`
+- Add-aisle row: emoji picker button prefixes name input; selected emoji persisted with new aisle in `addAisle()`
+- Aisle data model: `{ name, emoji?, order }` — `emoji` field added, backward-compatible (undefined = no emoji)
+- Shopping list headers: emoji shown if set; fallback = deterministic colour circle with initial letter (`aisleInitialColor()` — 10-colour brand palette, hash by char code)
 
 #### 🔲 Phase 7 — Recipe screen
 - Hash-based pastel avatar: deterministic colour from recipe name, large emoji centred (or image if URL provided)
