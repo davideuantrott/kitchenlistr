@@ -2574,6 +2574,89 @@
             border-color: var(--accent-green);
         }
 
+        /* === Phase 6: Emoji icon system === */
+
+        /* Emoji button on aisle items and add row */
+        .aisle-emoji-btn {
+            width: 36px;
+            height: 36px;
+            border-radius: var(--radius-sm);
+            border: 1.5px solid var(--border-light);
+            background: var(--bg-cream);
+            cursor: pointer;
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            transition: border-color 0.15s;
+            line-height: 1;
+        }
+
+        .aisle-emoji-btn:hover {
+            border-color: var(--accent-green);
+        }
+
+        /* Initial-letter fallback circle (shown when no emoji set) */
+        .aisle-initial {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: white;
+            flex-shrink: 0;
+            line-height: 1;
+        }
+
+        /* Emoji in shopping list aisle section header */
+        .aisle-section-icon {
+            font-size: 1.1rem;
+            line-height: 1;
+            display: flex;
+            align-items: center;
+        }
+
+        /* Emoji picker popover */
+        .emoji-picker-popover {
+            position: fixed;
+            z-index: 1100;
+            background: var(--bg-white);
+            border: 1px solid var(--border-light);
+            border-radius: var(--radius-md);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.15);
+            padding: 0.6rem;
+            width: 288px;
+        }
+
+        .emoji-picker-grid {
+            display: grid;
+            grid-template-columns: repeat(8, 1fr);
+            gap: 2px;
+        }
+
+        .emoji-option {
+            width: 32px;
+            height: 32px;
+            border: none;
+            background: none;
+            border-radius: var(--radius-sm);
+            font-size: 1.1rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.1s;
+            line-height: 1;
+        }
+
+        .emoji-option:hover {
+            background: var(--accent-green-light);
+        }
+
         /* Empty state for shops */
         .shops-empty {
             text-align: center;
@@ -4073,6 +4156,13 @@
             <button class="fab" id="planner-fab" onclick="openAddMealFab()" title="Add meal" style="display:none;">
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
             </button>
+
+            <!-- Emoji picker popover (shared, positioned by JS) -->
+            <div id="emoji-picker" class="emoji-picker-popover" style="display:none;" role="dialog" aria-label="Pick an emoji">
+                <div class="emoji-picker-grid" id="emoji-picker-grid">
+                    <!-- Populated by JS -->
+                </div>
+            </div>
 
             <!-- Settings View -->
             <section id="settings-view" class="view">
@@ -6952,19 +7042,22 @@ oregano"></textarea>
                         const items = aisleGroups[aisle.name];
                         if (items && items.length > 0) {
                             html += `<div class="aisle-section">`;
-                            html += `<div class="aisle-section-title"><span class="aisle-section-order">${index + 1}</span> ${escapeHtml(aisle.name)}</div>`;
+                            const icon = aisle.emoji
+                                ? `<span class="aisle-section-icon">${aisle.emoji}</span>`
+                                : `<span class="aisle-initial" style="background:${aisleInitialColor(aisle.name)}">${escapeHtml((aisle.name || '?')[0].toUpperCase())}</span>`;
+                            html += `<div class="aisle-section-title">${icon} ${escapeHtml(aisle.name)}</div>`;
                             items.forEach(ing => {
                                 html += renderShoppingItem(ing, false, sortMethod);
                             });
                             html += '</div>';
                         }
                     });
-                    
+
                     // Uncategorised at the end
                     const uncategorised = aisleGroups['__uncategorised__'];
                     if (uncategorised && uncategorised.length > 0) {
                         html += `<div class="aisle-section">`;
-                        html += `<div class="aisle-section-title" style="background: var(--bg-cream); color: var(--text-secondary);">📦 Uncategorised</div>`;
+                        html += `<div class="aisle-section-title" style="background: var(--bg-cream); color: var(--text-secondary);"><span class="aisle-section-icon">📦</span> Uncategorised</div>`;
                         uncategorised.forEach(ing => {
                             html += renderShoppingItem(ing, false, sortMethod);
                         });
@@ -7831,9 +7924,15 @@ oregano"></textarea>
                         </div>
                     </div>
                     <div class="aisle-list" ${isCollapsed ? 'style="display: none;"' : ''}>
-                        ${(shop.aisles || []).map((aisle, index) => `
+                        ${(shop.aisles || []).map((aisle, index) => {
+                            const color = aisleInitialColor(aisle.name);
+                            const icon = aisle.emoji
+                                ? `<button class="aisle-emoji-btn" onclick="openEmojiPicker(this, (e) => setAisleEmoji('${shop.id}', ${index}, e))" title="Change emoji" type="button">${aisle.emoji}</button>`
+                                : `<button class="aisle-emoji-btn" onclick="openEmojiPicker(this, (e) => setAisleEmoji('${shop.id}', ${index}, e))" title="Add emoji" type="button" style="color:var(--text-secondary);font-size:0.85rem;">+🍽️</button>`;
+                            return `
                             <div class="aisle-item">
                                 <span class="aisle-order">${index + 1}</span>
+                                ${icon}
                                 <span class="aisle-name">${escapeHtml(aisle.name)}</span>
                                 <div class="aisle-move-btns">
                                     <button class="aisle-move-btn" onclick="moveAisle('${shop.id}', ${index}, -1)" ${index === 0 ? 'disabled' : ''}>▲</button>
@@ -7841,9 +7940,12 @@ oregano"></textarea>
                                 </div>
                                 <button class="aisle-delete-btn" onclick="deleteAisle('${shop.id}', ${index})" title="Delete aisle">✕</button>
                             </div>
-                        `).join('') || '<p class="text-muted" style="padding: 0.5rem;">No aisles yet. Add your first aisle below.</p>'}
+                        `}).join('') || '<p class="text-muted" style="padding: 0.5rem;">No aisles yet. Add your first aisle below.</p>'}
                         <div class="add-aisle-row">
-                            <input type="text" class="add-aisle-input" id="add-aisle-${shop.id}" placeholder="New aisle name..." onkeypress="handleAddAisleKeypress(event, '${shop.id}')">
+                            <button class="aisle-emoji-btn" id="add-aisle-emoji-${shop.id}" type="button"
+                                onclick="openEmojiPicker(this, (e) => { this.textContent = e; this.dataset.emoji = e; })"
+                                title="Pick emoji" data-emoji="">🍽️</button>
+                            <input type="text" class="add-aisle-input" id="add-aisle-${shop.id}" placeholder="New aisle name…" onkeypress="handleAddAisleKeypress(event, '${shop.id}')">
                             <button class="btn btn-primary btn-small" onclick="addAisle('${shop.id}')">Add</button>
                         </div>
                     </div>
@@ -8016,20 +8118,114 @@ oregano"></textarea>
         }
         window.handleAddAisleKeypress = handleAddAisleKeypress;
 
+        // =====================
+        // Emoji Picker
+        // =====================
+
+        const FOOD_EMOJI = [
+            // Vegetables & herbs
+            '🥦','🥕','🧅','🧄','🌽','🥑','🍅','🥔','🥒','🫑',
+            '🥬','🌿','🌾','🍄','🫛','🥜','🫘','🫚','🧆','🌶️',
+            // Meat, fish & dairy
+            '🍗','🥩','🥓','🌭','🥚','🧀','🥛','🧈','🐟','🦐',
+            '🦞','🦑','🥩','🍖','🦪','🍣','🐠','🦀','🐓','🥩',
+            // Bakery & grains
+            '🍞','🥐','🥨','🫓','🧇','🥞','🍝','🥫','🧆','🥙',
+            // Fruit
+            '🍎','🍋','🍇','🍓','🍌','🍊','🥝','🍑','🫐','🍒',
+            '🍈','🍐','🍏','🫒','🍍','🥭','🍉','🍆','🫙','🥥',
+            // Sweet & snacks
+            '🍰','🍪','🍫','🍬','🧁','🍩','🍦','🧃','🍿','🥜',
+            // Drinks
+            '☕','🍵','🫖','🧃','🥤','🍺','🍷','🥂','🍾','💧',
+            // Household & other
+            '🧹','🧻','🧼','🪥','🧴','🪣','🧺','📦','🛒','✨',
+        ];
+
+        let _emojiCallback = null;
+
+        // Palette for initial-letter fallback (index cycles with char code)
+        const AISLE_COLORS = [
+            '#F2654A','#F0A500','#5BBF7A','#C4B5F4','#3B82F6',
+            '#EC4899','#F59E0B','#10B981','#6366F1','#EF4444',
+        ];
+
+        function aisleInitialColor(name) {
+            const code = (name || ' ').charCodeAt(0);
+            return AISLE_COLORS[code % AISLE_COLORS.length];
+        }
+        window.aisleInitialColor = aisleInitialColor;
+
+        function renderEmojiPicker() {
+            const grid = document.getElementById('emoji-picker-grid');
+            if (!grid || grid.dataset.built === '1') return;
+            grid.innerHTML = FOOD_EMOJI.map(e =>
+                `<button class="emoji-option" onclick="selectEmoji('${e}')" type="button">${e}</button>`
+            ).join('');
+            grid.dataset.built = '1';
+        }
+
+        function openEmojiPicker(triggerEl, callback) {
+            renderEmojiPicker();
+            _emojiCallback = callback;
+            const picker = document.getElementById('emoji-picker');
+            picker.style.display = 'block';
+
+            const rect = triggerEl.getBoundingClientRect();
+            const pickerW = 288;
+            let left = rect.left + window.scrollX;
+            let top = rect.bottom + window.scrollY + 6;
+
+            // Stay inside viewport horizontally
+            if (left + pickerW > window.innerWidth - 8) {
+                left = window.innerWidth - pickerW - 8;
+            }
+            picker.style.left = `${left}px`;
+            picker.style.top = `${top}px`;
+        }
+        window.openEmojiPicker = openEmojiPicker;
+
+        function closeEmojiPicker() {
+            const picker = document.getElementById('emoji-picker');
+            if (picker) picker.style.display = 'none';
+            _emojiCallback = null;
+        }
+        window.closeEmojiPicker = closeEmojiPicker;
+
+        function selectEmoji(emoji) {
+            if (_emojiCallback) _emojiCallback(emoji);
+            closeEmojiPicker();
+        }
+        window.selectEmoji = selectEmoji;
+
+        // Close picker when clicking outside
+        document.addEventListener('click', function(e) {
+            const picker = document.getElementById('emoji-picker');
+            if (picker && picker.style.display !== 'none') {
+                if (!e.target.closest('#emoji-picker') && !e.target.closest('.aisle-emoji-btn')) {
+                    closeEmojiPicker();
+                }
+            }
+        });
+
         async function addAisle(shopId) {
             const input = document.getElementById(`add-aisle-${shopId}`);
             const name = input.value.trim();
-            
+
             if (!name || !currentUser) return;
-            
+
             const shop = shops.find(s => s.id === shopId);
             if (!shop) return;
-            
-            const aisles = shop.aisles || [];
-            aisles.push({ name, order: aisles.length + 1 });
-            
+
+            // Pick up emoji selected for this add row (if any)
+            const emojiBtn = document.getElementById(`add-aisle-emoji-${shopId}`);
+            const emoji = emojiBtn?.dataset.emoji || '';
+
+            const aisles = [...(shop.aisles || [])];
+            aisles.push({ name, emoji, order: aisles.length + 1 });
+
             showSyncStatus('syncing', 'Adding...');
-            
+
             try {
                 await setDoc(doc(db, ...getDataPath(), "shops", shopId), {
                     ...shop,
@@ -8037,6 +8233,7 @@ oregano"></textarea>
                 });
 
                 input.value = '';
+                if (emojiBtn) { emojiBtn.textContent = '🍽️'; emojiBtn.dataset.emoji = ''; }
                 showSyncStatus('success', 'Added!');
             } catch (error) {
                 console.error("Error adding aisle:", error);
@@ -8044,6 +8241,23 @@ oregano"></textarea>
             }
         }
         window.addAisle = addAisle;
+
+        async function setAisleEmoji(shopId, aisleIndex, emoji) {
+            const shop = shops.find(s => s.id === shopId);
+            if (!shop || !currentUser) return;
+
+            const aisles = [...(shop.aisles || [])];
+            if (!aisles[aisleIndex]) return;
+            aisles[aisleIndex] = { ...aisles[aisleIndex], emoji };
+
+            try {
+                await setDoc(doc(db, ...getDataPath(), "shops", shopId), { ...shop, aisles });
+            } catch (error) {
+                console.error("Error setting aisle emoji:", error);
+                showSyncStatus('error', 'Failed to save emoji');
+            }
+        }
+        window.setAisleEmoji = setAisleEmoji;
 
         async function moveAisle(shopId, index, direction) {
             const shop = shops.find(s => s.id === shopId);
