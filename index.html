@@ -555,6 +555,97 @@
             }
         }
 
+        /* =============================================
+           Phase 8 — Blob decorations & animations
+           ============================================= */
+
+        /* Blob shapes on page headers */
+        .page-header {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .page-header::before,
+        .page-header::after {
+            content: '';
+            position: absolute;
+            border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%;
+            opacity: 0.38;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* Ensure header content stays above blobs */
+        .page-header > * { position: relative; z-index: 1; }
+
+        #recipes-view .page-header::before  { width: 120px; height: 100px; background: var(--color-blush);     top: -30px; right: -20px; }
+        #recipes-view .page-header::after   { width:  80px; height:  75px; background: var(--color-buttercup); bottom: -20px; left: 60px; }
+
+        #planner-view .page-header::before  { width: 110px; height:  90px; background: var(--color-sage-pale); top: -25px; right: -15px; }
+        #planner-view .page-header::after   { width:  70px; height:  70px; background: var(--color-lavender);  bottom: -18px; left: 80px; }
+
+        #shopping-view .page-header::before { width: 130px; height: 100px; background: var(--color-blush);     top: -35px; right: -20px; }
+        #shopping-view .page-header::after  { width:  75px; height:  65px; background: var(--color-peach);     bottom: -20px; left: 100px; }
+
+        #settings-view .page-header::before { width: 100px; height:  80px; background: var(--color-sage-pale); top: -20px; right: -15px; }
+        #settings-view .page-header::after  { width:  65px; height:  65px; background: var(--color-sky);       bottom: -15px; left: 70px; }
+
+        #account-view .page-header::before  { width: 110px; height:  85px; background: var(--color-lavender);  top: -25px; right: -15px; }
+        #account-view .page-header::after   { width:  70px; height:  70px; background: var(--color-buttercup); bottom: -18px; left: 65px; }
+
+        @media (prefers-reduced-motion: no-preference) {
+            @keyframes blobMorph {
+                0%   { border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%; }
+                33%  { border-radius: 40% 60% 55% 45% / 45% 55% 45% 55%; }
+                66%  { border-radius: 35% 65% 45% 55% / 55% 40% 60% 45%; }
+                100% { border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%; }
+            }
+
+            @keyframes blobFloat {
+                0%   { transform: translate(0, 0) rotate(0deg); }
+                33%  { transform: translate(4px, -6px) rotate(4deg); }
+                66%  { transform: translate(-4px, 3px) rotate(-3deg); }
+                100% { transform: translate(0, 0) rotate(0deg); }
+            }
+
+            .page-header::before {
+                animation: blobMorph 9s ease-in-out infinite, blobFloat 7s ease-in-out infinite;
+            }
+            .page-header::after {
+                animation: blobMorph 11s ease-in-out infinite reverse, blobFloat 9s ease-in-out infinite reverse;
+            }
+
+            /* Card pop-in with stagger */
+            @keyframes popIn {
+                from { opacity: 0; transform: scale(0.92) translateY(8px); }
+                to   { opacity: 1; transform: scale(1)    translateY(0); }
+            }
+
+            .recipe-card {
+                animation: popIn 0.28s ease both;
+                animation-delay: calc(var(--anim-order, 0) * 50ms);
+            }
+
+            /* Shopping item stagger */
+            .shopping-item {
+                animation: popIn 0.22s ease both;
+                animation-delay: calc(var(--anim-order, 0) * 35ms);
+            }
+
+            /* Spring check animation */
+            @keyframes springCheck {
+                0%   { transform: scale(1); }
+                25%  { transform: scale(0.96); }
+                55%  { transform: scale(1.04); }
+                78%  { transform: scale(0.99); }
+                100% { transform: scale(1); }
+            }
+
+            .shopping-item.spring-check {
+                animation: springCheck 0.38s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+            }
+        }
+
         /* Page Headers */
         .page-header {
             display: flex;
@@ -5133,6 +5224,8 @@ oregano"></textarea>
         let recipes = [];
         let mealPlan = {};
         let shoppingHave = {};
+        let recentlyCheckedKey = null;
+        let _shopAnimOrder = 0;
         let adhocItems = [];
         let currentUser = null;
 
@@ -6008,7 +6101,7 @@ oregano"></textarea>
             }
 
             empty.style.display = 'none';
-            grid.innerHTML = filtered.map(recipe => {
+            grid.innerHTML = filtered.map((recipe, i) => {
                 const color = recipeAvatarColor(recipe.name);
                 const emoji = recipeAvatarEmoji(recipe.name);
                 const avatarContent = recipe.imageUrl
@@ -6018,7 +6111,7 @@ oregano"></textarea>
                     ? `<span>${escapeHtml(recipe.category)}</span> · <span>${recipe.titleOnly ? 'No ingredients' : `${recipe.ingredients.length} ingredient${recipe.ingredients.length !== 1 ? 's' : ''}`}</span>`
                     : (recipe.titleOnly ? 'No ingredients' : `${recipe.ingredients.length} ingredient${recipe.ingredients.length !== 1 ? 's' : ''}`);
                 return `
-                <div class="recipe-card" onclick="viewRecipe('${recipe.id}')">
+                <div class="recipe-card" style="--anim-order:${i}" onclick="viewRecipe('${recipe.id}')">
                     <div class="recipe-card-avatar" style="background:${recipe.imageUrl ? '#f0f0f0' : color}">${avatarContent}</div>
                     <div class="recipe-card-body">
                         ${recipe.titleOnly ? '<span class="recipe-card-badge">Title Only</span>' : ''}
@@ -7012,6 +7105,7 @@ oregano"></textarea>
         // =====================
 
         function renderShoppingList() {
+            _shopAnimOrder = 0;
             const container = document.getElementById('shopping-list');
             const empty = document.getElementById('shopping-empty');
             const summary = document.getElementById('shopping-summary');
@@ -7257,6 +7351,8 @@ oregano"></textarea>
             const escapedKey = ing.key.replace(/'/g, "\\'").replace(/"/g, '&quot;');
             const isAdhoc = ing.isAdhoc;
             const adhocClass = isAdhoc ? 'adhoc' : '';
+            const springClass = (have && ing.key === recentlyCheckedKey) ? 'spring-check' : '';
+            const animOrder = _shopAnimOrder++;
 
             let contextHtml;
             if (isAdhoc) {
@@ -7270,7 +7366,7 @@ oregano"></textarea>
             const escapedText = escapeHtml(ing.text).replace(/'/g, "\\'");
 
             return `
-                <div class="shopping-item ${have ? 'have' : ''} ${adhocClass}">
+                <div class="shopping-item ${have ? 'have' : ''} ${adhocClass} ${springClass}" style="--anim-order:${animOrder}">
                     <input type="checkbox"
                            ${have ? 'checked' : ''}
                            onchange="toggleShoppingItem('${escapedKey}', this.checked)">
@@ -7287,11 +7383,14 @@ oregano"></textarea>
         async function toggleShoppingItem(key, have) {
             if (have) {
                 shoppingHave[key] = true;
+                recentlyCheckedKey = key;
             } else {
                 delete shoppingHave[key];
+                recentlyCheckedKey = null;
             }
             await saveShoppingHaveToFirebase();
             renderShoppingList();
+            recentlyCheckedKey = null;
         }
         window.toggleShoppingItem = toggleShoppingItem;
 
