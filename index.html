@@ -4664,7 +4664,9 @@ oregano"></textarea>
                     error.code === 'auth/popup-closed-by-user' ||
                     error.code === 'auth/cancelled-popup-request') {
                     try {
-                        // Use redirect method as fallback
+                        // Preserve invite/import params across the redirect
+                        const pendingParams = window.location.search;
+                        if (pendingParams) sessionStorage.setItem('pendingRedirectParams', pendingParams);
                         await signInWithRedirect(auth, googleProvider);
                     } catch (redirectError) {
                         showAuthError(getAuthErrorMessage(redirectError.code));
@@ -8629,7 +8631,10 @@ oregano"></textarea>
         // ── Join via link ──────────────────────────────────────────────────
 
         async function checkForJoin() {
-            const params = new URLSearchParams(window.location.search);
+            // Recover params saved before a Google redirect sign-in
+            const savedParams = sessionStorage.getItem('pendingRedirectParams');
+            if (savedParams) sessionStorage.removeItem('pendingRedirectParams');
+            const params = new URLSearchParams(savedParams || window.location.search);
             const token = params.get('join');
             const hid   = params.get('hid');
             if (!token || !hid) return;
