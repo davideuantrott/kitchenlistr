@@ -1,5 +1,5 @@
 // KitchenListr Service Worker
-const CACHE_NAME = 'kitchenlistr-v1';
+const CACHE_NAME = 'kitchenlistr-v2';
 const OFFLINE_URL = '/kitchenlistr/offline.html';
 
 // Assets to cache immediately on install
