@@ -1,0 +1,1889 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>KitchenListr – Design Mockup</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,700;0,9..144,900;1,9..144,300&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&family=Caveat:wght@400;600&display=swap" rel="stylesheet" />
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <style>
+    /* ============================================================
+       DESIGN TOKENS
+    ============================================================ */
+    :root {
+      /* Brand */
+      --tomato:      #F2654A;
+      --tomato-dark: #D94E35;
+      --saffron:     #F5C842;
+      --herb:        #5BBF7A;
+
+      /* Pastels */
+      --blush:       #FAD4C0;
+      --buttercup:   #FBF0B2;
+      --sage:        #C8E6C9;
+      --lavender:    #DDD6FE;
+      --peach:       #FFE0CC;
+      --sky:         #BFE3F5;
+
+      /* Neutrals */
+      --ink:         #1A1A1A;
+      --charcoal:    #3D3D3D;
+      --slate:       #8C8C8C;
+      --mist:        #F5F5F0;
+      --cloud:       #FFFFFF;
+      --border:      #E8E4DC;
+
+      /* Radius */
+      --r-sm:   8px;
+      --r-md:   16px;
+      --r-lg:   24px;
+      --r-pill: 999px;
+      --r-blob: 60% 40% 55% 45% / 45% 55% 40% 60%;
+
+      /* Shadows */
+      --shadow-card:  0 4px 20px rgba(0,0,0,0.06);
+      --shadow-float: 0 8px 32px rgba(0,0,0,0.10);
+
+      /* Fonts */
+      --font-display: 'Fraunces', serif;
+      --font-body:    'DM Sans', sans-serif;
+      --font-mono:    'DM Mono', monospace;
+      --font-accent:  'Caveat', cursive;
+
+      /* Nav */
+      --nav-h: 72px;
+    }
+
+    /* ============================================================
+       RESET & BASE
+    ============================================================ */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { font-size: 16px; }
+
+    body {
+      font-family: var(--font-body);
+      background: #EEECE6;
+      color: var(--ink);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    /* ============================================================
+       PHONE FRAME
+    ============================================================ */
+    .phone-frame {
+      width: 100%;
+      max-width: 480px;
+      min-height: 100vh;
+      background: var(--mist);
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ============================================================
+       STATUS BAR (decorative)
+    ============================================================ */
+    .status-bar {
+      height: 44px;
+      background: var(--cloud);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 24px;
+      flex-shrink: 0;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .status-bar-time {
+      font-family: var(--font-mono);
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--ink);
+    }
+    .status-bar-icons {
+      display: flex;
+      gap: 6px;
+      align-items: center;
+    }
+    .status-bar-icons svg {
+      width: 16px;
+      height: 16px;
+      color: var(--ink);
+    }
+
+    /* ============================================================
+       VIEWS / SCREENS
+    ============================================================ */
+    .view {
+      display: none;
+      flex: 1;
+      overflow-y: auto;
+      overflow-x: hidden;
+      padding-bottom: calc(var(--nav-h) + 16px);
+      position: relative;
+    }
+    .view.active {
+      display: block;
+    }
+
+    /* ============================================================
+       BOTTOM NAV
+    ============================================================ */
+    .bottom-nav {
+      position: sticky;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: var(--nav-h);
+      background: var(--cloud);
+      border-top: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-around;
+      padding: 0 8px;
+      z-index: 200;
+      box-shadow: 0 -4px 20px rgba(0,0,0,0.06);
+      flex-shrink: 0;
+    }
+    .nav-tab {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      flex: 1;
+      padding: 8px 4px;
+      cursor: pointer;
+      border: none;
+      background: transparent;
+      color: var(--slate);
+      font-family: var(--font-body);
+      font-size: 11px;
+      font-weight: 500;
+      transition: color 0.2s;
+      position: relative;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .nav-tab svg {
+      width: 22px;
+      height: 22px;
+      stroke-width: 1.8;
+      transition: stroke 0.2s;
+    }
+    .nav-tab.active {
+      color: var(--tomato);
+    }
+    .nav-tab.active svg {
+      stroke: var(--tomato);
+    }
+    .nav-tab.active::after {
+      content: '';
+      position: absolute;
+      bottom: 2px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 4px;
+      height: 4px;
+      border-radius: 50%;
+      background: var(--tomato);
+    }
+    .nav-tab-icon-wrap {
+      position: relative;
+    }
+
+    /* ============================================================
+       TYPOGRAPHY HELPERS
+    ============================================================ */
+    .text-display {
+      font-family: var(--font-display);
+      font-weight: 700;
+    }
+    .text-accent {
+      font-family: var(--font-accent);
+      font-size: 18px;
+    }
+    .text-mono {
+      font-family: var(--font-mono);
+    }
+
+    /* ============================================================
+       BUTTONS
+    ============================================================ */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      height: 56px;
+      padding: 0 28px;
+      border-radius: var(--r-pill);
+      border: none;
+      cursor: pointer;
+      font-family: var(--font-body);
+      font-size: 15px;
+      font-weight: 600;
+      transition: transform 0.15s, box-shadow 0.15s;
+    }
+    .btn:active { transform: scale(0.97); }
+
+    .btn-primary {
+      background: var(--ink);
+      color: var(--cloud);
+    }
+    .btn-primary:hover { box-shadow: 0 4px 16px rgba(26,26,26,0.25); }
+
+    .btn-accent {
+      background: var(--tomato);
+      color: var(--cloud);
+    }
+    .btn-accent:hover { box-shadow: 0 4px 16px rgba(242,101,74,0.35); }
+
+    .btn-ghost {
+      background: transparent;
+      color: var(--charcoal);
+      border: 1.5px solid var(--border);
+    }
+
+    .btn-sm {
+      height: 40px;
+      padding: 0 18px;
+      font-size: 13px;
+    }
+
+    /* FAB */
+    .fab {
+      position: fixed;
+      bottom: calc(var(--nav-h) + 20px);
+      right: 20px;
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      background: var(--tomato);
+      color: var(--cloud);
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: var(--shadow-float);
+      z-index: 150;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .fab:hover {
+      transform: scale(1.08);
+      box-shadow: 0 12px 40px rgba(242,101,74,0.35);
+    }
+    .fab:active { transform: scale(0.96); }
+    .fab svg { width: 24px; height: 24px; stroke: white; }
+
+    /* ============================================================
+       TAGS / CHIPS
+    ============================================================ */
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 4px 12px;
+      border-radius: var(--r-pill);
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.3px;
+      text-transform: uppercase;
+    }
+    .tag-breakfast  { background: var(--buttercup); color: #7A6B00; }
+    .tag-lunch      { background: var(--sage);       color: #2D6B3A; }
+    .tag-dinner     { background: var(--blush);      color: #9A4020; }
+    .tag-snack      { background: var(--lavender);   color: #5B21B6; }
+
+    /* ============================================================
+       INPUTS
+    ============================================================ */
+    .input-wrap {
+      position: relative;
+    }
+    .input {
+      width: 100%;
+      height: 52px;
+      background: var(--cloud);
+      border: 1.5px solid transparent;
+      border-radius: var(--r-md);
+      padding: 0 16px;
+      font-family: var(--font-body);
+      font-size: 15px;
+      color: var(--ink);
+      transition: border-color 0.2s;
+      outline: none;
+    }
+    .input::placeholder { color: var(--slate); }
+    .input:focus { border-color: var(--tomato); }
+
+    .search-input-wrap {
+      position: relative;
+    }
+    .search-input {
+      width: 100%;
+      height: 52px;
+      background: var(--cloud);
+      border: 1.5px solid transparent;
+      border-radius: var(--r-pill);
+      padding: 0 16px 0 48px;
+      font-family: var(--font-body);
+      font-size: 15px;
+      color: var(--ink);
+      transition: border-color 0.2s;
+      outline: none;
+      box-shadow: var(--shadow-card);
+    }
+    .search-input::placeholder { color: var(--slate); }
+    .search-input:focus { border-color: var(--tomato); }
+    .search-icon {
+      position: absolute;
+      left: 16px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--slate);
+      pointer-events: none;
+    }
+    .search-icon svg { width: 18px; height: 18px; }
+
+    /* ============================================================
+       CARDS
+    ============================================================ */
+    .card {
+      background: var(--cloud);
+      border-radius: var(--r-lg);
+      box-shadow: var(--shadow-card);
+      overflow: hidden;
+    }
+
+    /* ============================================================
+       BLOBS
+    ============================================================ */
+    .blob {
+      position: absolute;
+      border-radius: var(--r-blob);
+      pointer-events: none;
+      z-index: 0;
+      opacity: 0.7;
+    }
+    @keyframes blob-float {
+      0%   { transform: translate(0, 0) rotate(0deg);    border-radius: 60% 40% 55% 45% / 45% 55% 40% 60%; }
+      33%  { transform: translate(6px, -8px) rotate(3deg);  border-radius: 50% 50% 60% 40% / 55% 45% 55% 45%; }
+      66%  { transform: translate(-4px, 5px) rotate(-2deg); border-radius: 65% 35% 50% 50% / 40% 60% 45% 55%; }
+      100% { transform: translate(0, 0) rotate(0deg);    border-radius: 60% 40% 55% 45% / 45% 55% 40% 60%; }
+    }
+    .blob-animate { animation: blob-float 8s ease-in-out infinite; }
+    .blob-animate-slow { animation: blob-float 12s ease-in-out infinite reverse; }
+
+    /* ============================================================
+       SHIMMER SKELETON
+    ============================================================ */
+    @keyframes shimmer {
+      0%   { background-position: -400px 0; }
+      100% { background-position: 400px 0; }
+    }
+    .skeleton {
+      background: linear-gradient(90deg, #EEECE6 25%, #E8E4DC 50%, #EEECE6 75%);
+      background-size: 800px 100%;
+      animation: shimmer 1.6s infinite;
+      border-radius: var(--r-sm);
+    }
+
+    /* ============================================================
+       CHECKBOX (shopping list)
+    ============================================================ */
+    .check-item {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 14px 0;
+      border-bottom: 1px solid var(--border);
+      cursor: pointer;
+      transition: opacity 0.2s;
+    }
+    .check-item:last-child { border-bottom: none; }
+    .check-item.checked { opacity: 0.45; }
+    .checkbox {
+      width: 24px;
+      height: 24px;
+      border-radius: var(--r-sm);
+      border: 2px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      transition: background 0.2s, border-color 0.2s;
+    }
+    .checkbox.checked-box {
+      background: var(--tomato);
+      border-color: var(--tomato);
+    }
+    .checkbox.checked-box svg { opacity: 1; }
+    .checkbox svg {
+      width: 14px;
+      height: 14px;
+      stroke: white;
+      opacity: 0;
+      transition: opacity 0.15s;
+    }
+    .check-label {
+      flex: 1;
+      font-size: 15px;
+      font-weight: 400;
+    }
+    .check-item.checked .check-label {
+      text-decoration: line-through;
+      color: var(--slate);
+    }
+    .check-qty {
+      font-family: var(--font-mono);
+      font-size: 13px;
+      color: var(--slate);
+    }
+
+    /* ============================================================
+       SECTION HEADER
+    ============================================================ */
+    .section-header {
+      padding: 24px 20px 12px;
+      position: relative;
+      z-index: 1;
+    }
+    .section-title {
+      font-family: var(--font-display);
+      font-size: 28px;
+      font-weight: 700;
+      line-height: 1.15;
+      color: var(--ink);
+    }
+    .section-subtitle {
+      font-size: 14px;
+      color: var(--slate);
+      margin-top: 4px;
+    }
+
+    /* ============================================================
+       ══════════════════════════════════
+       SCREEN 1: MEAL PLANNER
+       ══════════════════════════════════
+    ============================================================ */
+    #view-planner {
+      background: var(--mist);
+    }
+
+    /* Week strip */
+    .week-strip-wrap {
+      overflow-x: auto;
+      padding: 0 20px 12px;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+      position: relative;
+      z-index: 1;
+    }
+    .week-strip-wrap::-webkit-scrollbar { display: none; }
+    .week-strip {
+      display: flex;
+      gap: 8px;
+      width: max-content;
+    }
+    .day-pill {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 2px;
+      padding: 10px 14px;
+      border-radius: var(--r-pill);
+      cursor: pointer;
+      transition: background 0.2s, color 0.2s;
+      border: none;
+      background: var(--cloud);
+      font-family: var(--font-body);
+      min-width: 52px;
+    }
+    .day-pill-label {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      color: var(--slate);
+    }
+    .day-pill-num {
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--charcoal);
+    }
+    .day-pill.active {
+      background: var(--tomato);
+    }
+    .day-pill.active .day-pill-label,
+    .day-pill.active .day-pill-num {
+      color: var(--cloud);
+    }
+    .day-pill.has-meals::after {
+      content: '';
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      background: var(--herb);
+      display: block;
+      margin-top: 2px;
+    }
+    .day-pill.active.has-meals::after {
+      background: rgba(255,255,255,0.7);
+    }
+
+    /* Day view */
+    .planner-day-view {
+      padding: 0 20px 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .meal-slot-label {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
+      color: var(--slate);
+      margin-bottom: 6px;
+    }
+
+    .meal-slot-card {
+      background: var(--cloud);
+      border-radius: 20px;
+      box-shadow: var(--shadow-card);
+      overflow: hidden;
+    }
+    .meal-slot-card-empty {
+      background: transparent;
+      border: 2px dashed var(--border);
+      border-radius: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      padding: 18px;
+      cursor: pointer;
+      transition: border-color 0.2s, background 0.2s;
+    }
+    .meal-slot-card-empty:hover {
+      border-color: var(--tomato);
+      background: rgba(242,101,74,0.03);
+    }
+    .meal-slot-card-empty svg {
+      width: 18px;
+      height: 18px;
+      stroke: var(--slate);
+    }
+    .meal-slot-card-empty span {
+      font-size: 14px;
+      color: var(--slate);
+    }
+
+    .meal-card-inner {
+      padding: 16px 18px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+    .meal-card-thumb {
+      width: 52px;
+      height: 52px;
+      border-radius: var(--r-md);
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+    }
+    .meal-card-info { flex: 1; min-width: 0; }
+    .meal-card-name {
+      font-family: var(--font-display);
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--ink);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .meal-card-meta {
+      font-size: 12px;
+      color: var(--slate);
+      margin-top: 2px;
+    }
+    .meal-card-action {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: var(--mist);
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .meal-card-action svg { width: 16px; height: 16px; stroke: var(--slate); }
+
+    /* Planner summary pill */
+    .planner-summary {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 16px;
+      background: var(--cloud);
+      border-radius: var(--r-pill);
+      box-shadow: var(--shadow-card);
+      margin: 0 20px 16px;
+      position: relative;
+      z-index: 1;
+    }
+    .planner-summary svg { width: 16px; height: 16px; stroke: var(--herb); }
+    .planner-summary span {
+      font-size: 13px;
+      color: var(--charcoal);
+    }
+    .planner-summary strong { color: var(--herb); }
+
+    /* ============================================================
+       ══════════════════════════════════
+       SCREEN 2: SHOPPING LIST
+       ══════════════════════════════════
+    ============================================================ */
+    #view-shopping { background: var(--mist); }
+
+    .shopping-header-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 24px 20px 4px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .shopping-progress {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 20px;
+      position: relative;
+      z-index: 1;
+    }
+    .progress-bar-track {
+      flex: 1;
+      height: 6px;
+      background: var(--border);
+      border-radius: var(--r-pill);
+      overflow: hidden;
+    }
+    .progress-bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--herb), #7DD9A0);
+      border-radius: var(--r-pill);
+      transition: width 0.5s ease;
+    }
+    .progress-label {
+      font-family: var(--font-mono);
+      font-size: 13px;
+      color: var(--slate);
+      white-space: nowrap;
+    }
+
+    .aisle-section {
+      margin: 0 20px 16px;
+      position: relative;
+      z-index: 1;
+    }
+    .aisle-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 8px;
+    }
+    .aisle-icon {
+      width: 32px;
+      height: 32px;
+      border-radius: var(--r-sm);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+    }
+    .aisle-name {
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.6px;
+      text-transform: uppercase;
+      color: var(--slate);
+    }
+    .aisle-count {
+      margin-left: auto;
+      font-family: var(--font-mono);
+      font-size: 12px;
+      color: var(--slate);
+    }
+    .aisle-card {
+      background: var(--cloud);
+      border-radius: var(--r-lg);
+      padding: 4px 18px;
+      box-shadow: var(--shadow-card);
+    }
+
+    /* Clear checked pill */
+    .clear-checked-fab {
+      position: fixed;
+      bottom: calc(var(--nav-h) + 16px);
+      left: 50%;
+      transform: translateX(-50%);
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 0 22px;
+      height: 44px;
+      background: var(--ink);
+      color: var(--cloud);
+      border: none;
+      border-radius: var(--r-pill);
+      font-family: var(--font-body);
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      box-shadow: var(--shadow-float);
+      z-index: 150;
+      transition: transform 0.2s, opacity 0.3s;
+      white-space: nowrap;
+    }
+    .clear-checked-fab:hover { transform: translateX(-50%) scale(1.04); }
+    .clear-checked-fab svg { width: 15px; height: 15px; stroke: white; }
+    .clear-checked-fab.hidden {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    /* ============================================================
+       ══════════════════════════════════
+       SCREEN 3: RECIPES
+       ══════════════════════════════════
+    ============================================================ */
+    #view-recipes { background: var(--mist); }
+
+    .recipes-search-wrap {
+      padding: 8px 20px 16px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .recipes-filter-row {
+      display: flex;
+      gap: 8px;
+      padding: 0 20px 16px;
+      overflow-x: auto;
+      scrollbar-width: none;
+      position: relative;
+      z-index: 1;
+    }
+    .recipes-filter-row::-webkit-scrollbar { display: none; }
+    .filter-chip {
+      padding: 8px 16px;
+      border-radius: var(--r-pill);
+      border: 1.5px solid var(--border);
+      background: var(--cloud);
+      font-family: var(--font-body);
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--charcoal);
+      cursor: pointer;
+      white-space: nowrap;
+      transition: background 0.2s, border-color 0.2s, color 0.2s;
+    }
+    .filter-chip.active {
+      background: var(--ink);
+      border-color: var(--ink);
+      color: var(--cloud);
+    }
+
+    .recipes-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      padding: 0 20px 20px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .recipe-card {
+      background: var(--cloud);
+      border-radius: var(--r-lg);
+      box-shadow: var(--shadow-card);
+      overflow: hidden;
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .recipe-card:active { transform: scale(0.97); }
+    .recipe-card:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-float);
+    }
+    .recipe-card-thumb {
+      width: 100%;
+      aspect-ratio: 4/3;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 40px;
+      position: relative;
+    }
+    .recipe-card-body {
+      padding: 12px 14px 14px;
+    }
+    .recipe-card-name {
+      font-family: var(--font-display);
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--ink);
+      line-height: 1.25;
+      margin-bottom: 8px;
+    }
+    .recipe-card-meta {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .recipe-time {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 11px;
+      color: var(--slate);
+    }
+    .recipe-time svg { width: 12px; height: 12px; }
+
+    /* Tall card for featured */
+    .recipe-card-featured {
+      grid-column: span 2;
+      display: flex;
+      align-items: center;
+      gap: 0;
+      background: var(--cloud);
+      border-radius: var(--r-lg);
+      box-shadow: var(--shadow-card);
+      overflow: hidden;
+      cursor: pointer;
+      transition: transform 0.2s;
+    }
+    .recipe-card-featured:hover { transform: translateY(-2px); }
+    .recipe-card-featured .recipe-card-thumb {
+      width: 120px;
+      height: 100%;
+      aspect-ratio: unset;
+      flex-shrink: 0;
+      border-radius: 0;
+    }
+    .recipe-card-featured .recipe-card-body {
+      flex: 1;
+    }
+    .recipe-card-featured .recipe-card-name {
+      font-size: 17px;
+    }
+
+    /* Skeleton card */
+    .recipe-card-skeleton {
+      background: var(--cloud);
+      border-radius: var(--r-lg);
+      box-shadow: var(--shadow-card);
+      overflow: hidden;
+    }
+    .skeleton-thumb {
+      width: 100%;
+      aspect-ratio: 4/3;
+    }
+    .skeleton-body {
+      padding: 12px 14px 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .skeleton-line { height: 14px; }
+    .skeleton-line-short { width: 60%; height: 11px; }
+
+    /* ============================================================
+       ══════════════════════════════════
+       SCREEN 4: ACCOUNT
+       ══════════════════════════════════
+    ============================================================ */
+    #view-account { background: var(--mist); }
+
+    .account-hero {
+      padding: 24px 20px 0;
+      position: relative;
+      z-index: 1;
+    }
+
+    .profile-card {
+      background: var(--ink);
+      border-radius: var(--r-lg);
+      padding: 28px 24px;
+      color: var(--cloud);
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 8px 32px rgba(26,26,26,0.18);
+    }
+    .profile-card-blob {
+      position: absolute;
+      width: 160px;
+      height: 160px;
+      background: rgba(242,101,74,0.18);
+      border-radius: var(--r-blob);
+      top: -40px;
+      right: -40px;
+      animation: blob-float 10s ease-in-out infinite;
+    }
+    .profile-card-blob2 {
+      position: absolute;
+      width: 100px;
+      height: 100px;
+      background: rgba(245,200,66,0.12);
+      border-radius: var(--r-blob);
+      bottom: -20px;
+      left: 30px;
+      animation: blob-float 14s ease-in-out infinite reverse;
+    }
+    .profile-avatar {
+      width: 64px;
+      height: 64px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--tomato), var(--saffron));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--font-display);
+      font-size: 26px;
+      font-weight: 700;
+      color: white;
+      margin-bottom: 16px;
+    }
+    .profile-name {
+      font-family: var(--font-display);
+      font-size: 24px;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+    .profile-email {
+      font-size: 13px;
+      color: rgba(255,255,255,0.55);
+    }
+    .profile-badges {
+      display: flex;
+      gap: 8px;
+      margin-top: 16px;
+    }
+    .profile-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 6px 14px;
+      background: rgba(255,255,255,0.1);
+      border-radius: var(--r-pill);
+      font-size: 12px;
+      font-weight: 500;
+      color: rgba(255,255,255,0.85);
+    }
+    .profile-badge svg { width: 13px; height: 13px; stroke: rgba(255,255,255,0.7); }
+
+    .account-section {
+      padding: 20px 20px 0;
+      position: relative;
+      z-index: 1;
+    }
+    .account-section-title {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
+      color: var(--slate);
+      margin-bottom: 12px;
+    }
+    .account-card {
+      background: var(--cloud);
+      border-radius: var(--r-lg);
+      box-shadow: var(--shadow-card);
+      overflow: hidden;
+    }
+    .account-row {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 16px 18px;
+      border-bottom: 1px solid var(--border);
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+    .account-row:last-child { border-bottom: none; }
+    .account-row:hover { background: var(--mist); }
+    .account-row-icon {
+      width: 38px;
+      height: 38px;
+      border-radius: var(--r-sm);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .account-row-icon svg { width: 18px; height: 18px; }
+    .account-row-label {
+      flex: 1;
+      font-size: 15px;
+      font-weight: 500;
+    }
+    .account-row-value {
+      font-size: 13px;
+      color: var(--slate);
+    }
+    .account-row-chevron {
+      color: var(--border);
+    }
+    .account-row-chevron svg { width: 16px; height: 16px; stroke: var(--border); }
+
+    .household-card {
+      background: linear-gradient(135deg, var(--sage) 0%, #A8D8AA 100%);
+      border-radius: var(--r-lg);
+      padding: 20px;
+      position: relative;
+      overflow: hidden;
+    }
+    .household-card-label {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
+      color: #2D6B3A;
+      margin-bottom: 6px;
+    }
+    .household-card-name {
+      font-family: var(--font-display);
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--ink);
+      margin-bottom: 12px;
+    }
+    .household-members {
+      display: flex;
+      gap: -8px;
+    }
+    .member-avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      border: 2px solid white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: 700;
+      color: white;
+      margin-right: -8px;
+    }
+    .household-member-count {
+      font-size: 13px;
+      color: #2D6B3A;
+      margin-top: 10px;
+      font-weight: 500;
+    }
+
+    /* Theme swatches */
+    .theme-row {
+      display: flex;
+      gap: 10px;
+      padding: 16px 18px;
+    }
+    .theme-swatch {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      cursor: pointer;
+      position: relative;
+      transition: transform 0.2s;
+    }
+    .theme-swatch.active::after {
+      content: '';
+      position: absolute;
+      inset: -3px;
+      border-radius: 50%;
+      border: 2px solid var(--ink);
+    }
+    .theme-swatch:hover { transform: scale(1.15); }
+
+    /* Stats row */
+    .stats-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 10px;
+      padding: 0 20px 20px;
+      position: relative;
+      z-index: 1;
+    }
+    .stat-card {
+      background: var(--cloud);
+      border-radius: var(--r-md);
+      padding: 16px 12px;
+      text-align: center;
+      box-shadow: var(--shadow-card);
+    }
+    .stat-value {
+      font-family: var(--font-display);
+      font-size: 28px;
+      font-weight: 900;
+      color: var(--ink);
+      line-height: 1;
+    }
+    .stat-label {
+      font-size: 11px;
+      color: var(--slate);
+      margin-top: 4px;
+    }
+
+    /* ============================================================
+       DESKTOP LABEL (outer wrap)
+    ============================================================ */
+    .desktop-label {
+      font-family: var(--font-display);
+      font-size: 14px;
+      color: rgba(255,255,255,0.5);
+      text-align: center;
+      padding: 16px 0 8px;
+      letter-spacing: 1px;
+      font-style: italic;
+    }
+
+    /* ============================================================
+       DECORATIVE ANNOTATIONS
+    ============================================================ */
+    .handwritten-note {
+      font-family: var(--font-accent);
+      font-size: 14px;
+      color: var(--tomato);
+      transform: rotate(-2deg);
+      display: inline-block;
+    }
+  </style>
+</head>
+<body>
+
+  <p class="desktop-label">KitchenListr – Design Mockup</p>
+
+  <div class="phone-frame">
+
+    <!-- STATUS BAR -->
+    <div class="status-bar">
+      <span class="status-bar-time">9:41</span>
+      <div class="status-bar-icons">
+        <i data-lucide="signal" style="width:16px;height:16px;color:var(--ink)"></i>
+        <i data-lucide="wifi" style="width:16px;height:16px;color:var(--ink)"></i>
+        <i data-lucide="battery" style="width:16px;height:16px;color:var(--ink)"></i>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════
+         VIEW: PLANNER
+    ══════════════════════════════════ -->
+    <div id="view-planner" class="view active">
+
+      <!-- Decorative blobs -->
+      <div class="blob blob-animate" style="width:180px;height:160px;background:var(--blush);top:-30px;right:-40px;opacity:0.6;"></div>
+      <div class="blob blob-animate-slow" style="width:120px;height:110px;background:var(--buttercup);top:200px;left:-30px;opacity:0.55;"></div>
+      <div class="blob blob-animate" style="width:90px;height:90px;background:var(--peach);bottom:200px;right:-20px;opacity:0.45;animation-delay:3s;"></div>
+
+      <!-- Header -->
+      <div class="section-header">
+        <div style="display:flex;align-items:baseline;gap:10px;">
+          <h1 class="section-title">This Week</h1>
+          <span class="handwritten-note">3 meals planned</span>
+        </div>
+        <p class="section-subtitle">Mon 2 – Sun 8 March</p>
+      </div>
+
+      <!-- Week strip -->
+      <div class="week-strip-wrap">
+        <div class="week-strip">
+          <button class="day-pill active has-meals" onclick="selectDay(this, 'mon')">
+            <span class="day-pill-label">Mon</span>
+            <span class="day-pill-num">2</span>
+          </button>
+          <button class="day-pill has-meals" onclick="selectDay(this, 'tue')">
+            <span class="day-pill-label">Tue</span>
+            <span class="day-pill-num">3</span>
+          </button>
+          <button class="day-pill has-meals" onclick="selectDay(this, 'wed')">
+            <span class="day-pill-label">Wed</span>
+            <span class="day-pill-num">4</span>
+          </button>
+          <button class="day-pill" onclick="selectDay(this, 'thu')">
+            <span class="day-pill-label">Thu</span>
+            <span class="day-pill-num">5</span>
+          </button>
+          <button class="day-pill" onclick="selectDay(this, 'fri')">
+            <span class="day-pill-label">Fri</span>
+            <span class="day-pill-num">6</span>
+          </button>
+          <button class="day-pill" onclick="selectDay(this, 'sat')">
+            <span class="day-pill-label">Sat</span>
+            <span class="day-pill-num">7</span>
+          </button>
+          <button class="day-pill" onclick="selectDay(this, 'sun')">
+            <span class="day-pill-label">Sun</span>
+            <span class="day-pill-num">8</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Summary pill -->
+      <div class="planner-summary">
+        <i data-lucide="check-circle" style="width:16px;height:16px;stroke:var(--herb)"></i>
+        <span>Monday · <strong>3 meals</strong> planned · 5 ingredients needed</span>
+      </div>
+
+      <!-- Day meal slots -->
+      <div class="planner-day-view" id="planner-day-slots">
+        <!-- Populated by JS -->
+      </div>
+
+    </div>
+
+    <!-- ══════════════════════════════════
+         VIEW: SHOPPING LIST
+    ══════════════════════════════════ -->
+    <div id="view-shopping" class="view">
+
+      <!-- Decorative blobs -->
+      <div class="blob blob-animate" style="width:150px;height:130px;background:var(--sage);top:60px;right:-30px;opacity:0.55;"></div>
+      <div class="blob blob-animate-slow" style="width:100px;height:90px;background:var(--sky);bottom:180px;left:-20px;opacity:0.45;animation-delay:2s;"></div>
+
+      <!-- Header -->
+      <div class="shopping-header-row">
+        <div>
+          <h1 class="section-title">Shopping</h1>
+          <p class="section-subtitle">Week of 2 March</p>
+        </div>
+        <button class="btn btn-ghost btn-sm">
+          <i data-lucide="plus" style="width:14px;height:14px;stroke:var(--charcoal)"></i>
+          Add item
+        </button>
+      </div>
+
+      <!-- Progress -->
+      <div class="shopping-progress">
+        <div class="progress-bar-track">
+          <div class="progress-bar-fill" id="progress-fill" style="width:25%;"></div>
+        </div>
+        <span class="progress-label" id="progress-label">3 / 12</span>
+      </div>
+
+      <!-- Aisles -->
+      <div id="shopping-list-wrap">
+        <!-- Populated by JS -->
+      </div>
+
+    </div>
+
+    <!-- ══════════════════════════════════
+         VIEW: RECIPES
+    ══════════════════════════════════ -->
+    <div id="view-recipes" class="view">
+
+      <!-- Decorative blobs -->
+      <div class="blob blob-animate-slow" style="width:130px;height:120px;background:var(--lavender);top:80px;right:-20px;opacity:0.5;"></div>
+      <div class="blob blob-animate" style="width:90px;height:80px;background:var(--buttercup);bottom:200px;left:-15px;opacity:0.4;animation-delay:4s;"></div>
+
+      <!-- Header -->
+      <div class="section-header">
+        <h1 class="section-title">Recipes</h1>
+        <p class="section-subtitle">Your collection · <span style="color:var(--tomato);font-weight:600;">24 recipes</span></p>
+      </div>
+
+      <!-- Search -->
+      <div class="recipes-search-wrap">
+        <div class="search-input-wrap">
+          <div class="search-icon"><i data-lucide="search"></i></div>
+          <input type="text" class="search-input" placeholder="Search your recipes…" />
+        </div>
+      </div>
+
+      <!-- Filters -->
+      <div class="recipes-filter-row">
+        <button class="filter-chip active">All</button>
+        <button class="filter-chip">Breakfast</button>
+        <button class="filter-chip">Lunch</button>
+        <button class="filter-chip">Dinner</button>
+        <button class="filter-chip">Snack</button>
+        <button class="filter-chip">Favourites</button>
+      </div>
+
+      <!-- Grid -->
+      <div class="recipes-grid" id="recipes-grid">
+        <!-- Populated by JS -->
+      </div>
+
+    </div>
+
+    <!-- ══════════════════════════════════
+         VIEW: SETTINGS (placeholder)
+    ══════════════════════════════════ -->
+    <div id="view-settings" class="view">
+      <div class="section-header">
+        <h1 class="section-title">Settings</h1>
+        <p class="section-subtitle">Shops, aisles & ingredients</p>
+      </div>
+      <div style="padding:0 20px;position:relative;z-index:1;display:flex;flex-direction:column;gap:12px;">
+
+        <div class="account-section-title" style="margin-top:8px;">Shops &amp; Aisles</div>
+        <div class="account-card">
+          <div class="account-row">
+            <div class="account-row-icon" style="background:var(--peach)">
+              <i data-lucide="shopping-cart" style="width:18px;height:18px;stroke:var(--tomato)"></i>
+            </div>
+            <span class="account-row-label">Manage Shops</span>
+            <span class="account-row-chevron"><i data-lucide="chevron-right"></i></span>
+          </div>
+          <div class="account-row">
+            <div class="account-row-icon" style="background:var(--sky)">
+              <i data-lucide="layout-grid" style="width:18px;height:18px;stroke:#2A7FAF"></i>
+            </div>
+            <span class="account-row-label">Aisle Order</span>
+            <span class="account-row-chevron"><i data-lucide="chevron-right"></i></span>
+          </div>
+        </div>
+
+        <div class="account-section-title" style="margin-top:8px;">Ingredients</div>
+        <div class="account-card">
+          <div class="account-row">
+            <div class="account-row-icon" style="background:var(--sage)">
+              <i data-lucide="book" style="width:18px;height:18px;stroke:var(--herb)"></i>
+            </div>
+            <span class="account-row-label">Ingredient Dictionary</span>
+            <span class="account-row-value">142 items</span>
+            <span class="account-row-chevron"><i data-lucide="chevron-right"></i></span>
+          </div>
+          <div class="account-row">
+            <div class="account-row-icon" style="background:var(--buttercup)">
+              <i data-lucide="tag" style="width:18px;height:18px;stroke:#7A6B00"></i>
+            </div>
+            <span class="account-row-label">Meal Categories</span>
+            <span class="account-row-chevron"><i data-lucide="chevron-right"></i></span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════
+         VIEW: ACCOUNT
+    ══════════════════════════════════ -->
+    <div id="view-account" class="view">
+
+      <!-- Decorative blobs -->
+      <div class="blob blob-animate" style="width:140px;height:130px;background:var(--blush);top:100px;right:-30px;opacity:0.5;"></div>
+      <div class="blob blob-animate-slow" style="width:100px;height:90px;background:var(--lavender);bottom:250px;left:-20px;opacity:0.4;animation-delay:5s;"></div>
+
+      <div class="account-hero">
+        <!-- Profile card -->
+        <div class="profile-card">
+          <div class="profile-card-blob"></div>
+          <div class="profile-card-blob2"></div>
+          <div class="profile-avatar">D</div>
+          <div class="profile-name">David</div>
+          <div class="profile-email">david@example.com</div>
+          <div class="profile-badges">
+            <span class="profile-badge">
+              <i data-lucide="crown" style="width:13px;height:13px;stroke:var(--saffron)"></i>
+              Owner
+            </span>
+            <span class="profile-badge">
+              <i data-lucide="home" style="width:13px;height:13px;stroke:rgba(255,255,255,0.7)"></i>
+              The Smiths
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Stats -->
+      <div class="stats-row" style="margin-top:20px;">
+        <div class="stat-card">
+          <div class="stat-value" style="color:var(--tomato);">24</div>
+          <div class="stat-label">Recipes</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value" style="color:var(--herb);">7</div>
+          <div class="stat-label">This week</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value" style="color:var(--saffron);">3</div>
+          <div class="stat-label">Members</div>
+        </div>
+      </div>
+
+      <!-- Household -->
+      <div class="account-section">
+        <div class="account-section-title">Household</div>
+        <div class="household-card">
+          <div class="household-card-label">Your household</div>
+          <div class="household-card-name">The Smiths</div>
+          <div class="household-members">
+            <div class="member-avatar" style="background:var(--tomato);">D</div>
+            <div class="member-avatar" style="background:var(--herb);">S</div>
+            <div class="member-avatar" style="background:var(--saffron);color:var(--ink);">E</div>
+          </div>
+          <div class="household-member-count">3 members · You are the owner</div>
+        </div>
+      </div>
+
+      <!-- Account settings -->
+      <div class="account-section" style="margin-top:20px;">
+        <div class="account-section-title">Account</div>
+        <div class="account-card">
+          <div class="account-row">
+            <div class="account-row-icon" style="background:var(--peach)">
+              <i data-lucide="user" style="width:18px;height:18px;stroke:var(--tomato)"></i>
+            </div>
+            <span class="account-row-label">Edit Profile</span>
+            <span class="account-row-chevron"><i data-lucide="chevron-right"></i></span>
+          </div>
+          <div class="account-row">
+            <div class="account-row-icon" style="background:var(--sky)">
+              <i data-lucide="bell" style="width:18px;height:18px;stroke:#2A7FAF"></i>
+            </div>
+            <span class="account-row-label">Notifications</span>
+            <span class="account-row-value">On</span>
+            <span class="account-row-chevron"><i data-lucide="chevron-right"></i></span>
+          </div>
+          <div class="account-row">
+            <div class="account-row-icon" style="background:var(--sage)">
+              <i data-lucide="palette" style="width:18px;height:18px;stroke:var(--herb)"></i>
+            </div>
+            <span class="account-row-label">Theme</span>
+            <div class="theme-swatch active" style="background:var(--tomato);width:20px;height:20px;border-radius:50%;"></div>
+            <span class="account-row-chevron"><i data-lucide="chevron-right"></i></span>
+          </div>
+          <div class="account-row" style="color:var(--tomato);">
+            <div class="account-row-icon" style="background:#FEE2E2">
+              <i data-lucide="log-out" style="width:18px;height:18px;stroke:var(--tomato)"></i>
+            </div>
+            <span class="account-row-label" style="color:var(--tomato);">Sign Out</span>
+          </div>
+        </div>
+      </div>
+
+      <div style="height:20px;"></div>
+
+    </div>
+
+    <!-- ══════════════════════════════════
+         BOTTOM NAV
+    ══════════════════════════════════ -->
+    <nav class="bottom-nav">
+      <button class="nav-tab active" onclick="switchTab('planner', this)">
+        <div class="nav-tab-icon-wrap">
+          <i data-lucide="calendar"></i>
+        </div>
+        <span>Planner</span>
+      </button>
+      <button class="nav-tab" onclick="switchTab('shopping', this)">
+        <div class="nav-tab-icon-wrap">
+          <i data-lucide="shopping-bag"></i>
+        </div>
+        <span>Shopping</span>
+      </button>
+      <button class="nav-tab" onclick="switchTab('recipes', this)">
+        <div class="nav-tab-icon-wrap">
+          <i data-lucide="book-open"></i>
+        </div>
+        <span>Recipes</span>
+      </button>
+      <button class="nav-tab" onclick="switchTab('settings', this)">
+        <div class="nav-tab-icon-wrap">
+          <i data-lucide="settings"></i>
+        </div>
+        <span>Settings</span>
+      </button>
+      <button class="nav-tab" onclick="switchTab('account', this)">
+        <div class="nav-tab-icon-wrap">
+          <i data-lucide="user"></i>
+        </div>
+        <span>Account</span>
+      </button>
+    </nav>
+
+  </div><!-- /phone-frame -->
+
+  <!-- FAB (planner) -->
+  <button class="fab" id="planner-fab" title="Add meal" onclick="alert('Add meal modal would open here')">
+    <i data-lucide="plus" style="width:24px;height:24px;stroke:white;stroke-width:2.5"></i>
+  </button>
+
+  <!-- Clear checked FAB (shopping) -->
+  <button class="clear-checked-fab hidden" id="clear-checked-btn" onclick="clearChecked()">
+    <i data-lucide="trash-2"></i>
+    Clear checked
+  </button>
+
+  <script>
+    /* ============================================================
+       DATA
+    ============================================================ */
+    const PLANNER_DATA = {
+      mon: {
+        breakfast: { name: 'Greek Yoghurt Parfait', emoji: '🍓', time: '10 min', serves: 1 },
+        lunch:     { name: 'Tomato Soup',           emoji: '🍅', time: '25 min', serves: 2 },
+        dinner:    { name: 'Chicken Stir Fry',      emoji: '🥢', time: '30 min', serves: 4 },
+      },
+      tue: {
+        breakfast: null,
+        lunch:     { name: 'Caesar Salad',    emoji: '🥗', time: '15 min', serves: 2 },
+        dinner:    { name: 'Pasta Carbonara', emoji: '🍝', time: '20 min', serves: 2 },
+      },
+      wed: {
+        breakfast: null,
+        lunch:     null,
+        dinner:    { name: 'Fish Tacos', emoji: '🌮', time: '25 min', serves: 3 },
+      },
+      thu: { breakfast: null, lunch: null, dinner: null },
+      fri: { breakfast: null, lunch: null, dinner: null },
+      sat: { breakfast: null, lunch: null, dinner: null },
+      sun: { breakfast: null, lunch: null, dinner: null },
+    };
+
+    const MEAL_TAG_COLORS = {
+      breakfast: { bg: 'var(--buttercup)', color: '#7A6B00' },
+      lunch:     { bg: 'var(--sage)',       color: '#2D6B3A' },
+      dinner:    { bg: 'var(--blush)',      color: '#9A4020' },
+    };
+
+    const MEAL_THUMB_COLORS = {
+      breakfast: '#FBF0B2',
+      lunch:     '#C8E6C9',
+      dinner:    '#FAD4C0',
+    };
+
+    let currentDay = 'mon';
+
+    const SHOPPING_DATA = [
+      {
+        aisle: 'Produce',
+        emoji: '🥦',
+        color: '#E8F5E9',
+        items: [
+          { name: 'Spinach',         qty: '200g', checked: true  },
+          { name: 'Cherry Tomatoes', qty: '250g', checked: false },
+          { name: 'Avocados',        qty: 'x2',   checked: false },
+          { name: 'Lemon',           qty: 'x3',   checked: false },
+        ]
+      },
+      {
+        aisle: 'Dairy',
+        emoji: '🥛',
+        color: '#E3F2FD',
+        items: [
+          { name: 'Greek Yoghurt',   qty: '500g', checked: true  },
+          { name: 'Cheddar',         qty: '200g', checked: false },
+          { name: 'Butter',          qty: '250g', checked: false },
+        ]
+      },
+      {
+        aisle: 'Meat & Fish',
+        emoji: '🥩',
+        color: '#FCE4EC',
+        items: [
+          { name: 'Chicken Breast',  qty: '600g', checked: false },
+          { name: 'Salmon Fillet',   qty: 'x2',   checked: false },
+        ]
+      },
+      {
+        aisle: 'Pantry',
+        emoji: '🫙',
+        color: '#FFF8E1',
+        items: [
+          { name: 'Pasta',           qty: '500g', checked: false },
+          { name: 'Olive Oil',       qty: '500ml', checked: false },
+          { name: 'Garlic',          qty: '1 bulb', checked: false },
+        ]
+      },
+    ];
+
+    const RECIPES_DATA = [
+      { name: 'Chicken Stir Fry',     category: 'dinner',    emoji: '🥢', time: '30 min', featured: true  },
+      { name: 'Avocado Toast',        category: 'breakfast', emoji: '🥑', time: '10 min', featured: false },
+      { name: 'Caesar Salad',         category: 'lunch',     emoji: '🥗', time: '15 min', featured: false },
+      { name: 'Fish Tacos',           category: 'dinner',    emoji: '🌮', time: '25 min', featured: false },
+      { name: 'Berry Smoothie Bowl',  category: 'breakfast', emoji: '🫐', time: '8 min',  featured: false },
+      { name: 'Pasta Carbonara',      category: 'dinner',    emoji: '🍝', time: '20 min', featured: false },
+    ];
+
+    /* ============================================================
+       TAB SWITCHING
+    ============================================================ */
+    function switchTab(tab, btn) {
+      // Hide all views
+      document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+      document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+
+      // Show target
+      document.getElementById('view-' + tab).classList.add('active');
+      btn.classList.add('active');
+
+      // Toggle FABs
+      document.getElementById('planner-fab').style.display = (tab === 'planner') ? 'flex' : 'none';
+
+      const clearBtn = document.getElementById('clear-checked-btn');
+      if (tab === 'shopping') {
+        updateClearCheckedVisibility();
+      } else {
+        clearBtn.classList.add('hidden');
+      }
+    }
+
+    /* ============================================================
+       DAY SELECTION (PLANNER)
+    ============================================================ */
+    function selectDay(pill, day) {
+      document.querySelectorAll('.day-pill').forEach(p => p.classList.remove('active'));
+      pill.classList.add('active');
+      currentDay = day;
+
+      const summary = document.querySelector('.planner-summary span');
+      const dayNames = { mon:'Monday',tue:'Tuesday',wed:'Wednesday',thu:'Thursday',fri:'Friday',sat:'Saturday',sun:'Sunday' };
+      const meals = PLANNER_DATA[day];
+      const count = Object.values(meals).filter(m => m !== null).length;
+      const ingCount = count * 5;
+      summary.innerHTML = `${dayNames[day]} · <strong>${count} meal${count !== 1 ? 's' : ''}</strong> planned · ${ingCount} ingredients needed`;
+
+      renderPlannerSlots(day);
+    }
+
+    /* ============================================================
+       RENDER: PLANNER
+    ============================================================ */
+    function renderPlannerSlots(day) {
+      const container = document.getElementById('planner-day-slots');
+      const data = PLANNER_DATA[day];
+      const mealTypes = ['breakfast', 'lunch', 'dinner'];
+      const mealLabels = { breakfast: 'Breakfast', lunch: 'Lunch', dinner: 'Dinner' };
+
+      container.innerHTML = mealTypes.map(type => {
+        const meal = data[type];
+        const tag = MEAL_TAG_COLORS[type];
+        const thumbBg = MEAL_THUMB_COLORS[type];
+
+        if (meal) {
+          return `
+            <div>
+              <div class="meal-slot-label">${mealLabels[type]}</div>
+              <div class="meal-slot-card">
+                <div class="meal-card-inner">
+                  <div class="meal-card-thumb" style="background:${thumbBg}">
+                    ${meal.emoji}
+                  </div>
+                  <div class="meal-card-info">
+                    <div class="meal-card-name">${meal.name}</div>
+                    <div class="meal-card-meta" style="display:flex;align-items:center;gap:10px;margin-top:6px;">
+                      <span class="tag tag-${type}">${mealLabels[type]}</span>
+                      <span style="display:flex;align-items:center;gap:3px;font-size:12px;color:var(--slate);">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                        ${meal.time}
+                      </span>
+                    </div>
+                  </div>
+                  <button class="meal-card-action">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--slate)" stroke-width="2"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg>
+                  </button>
+                </div>
+              </div>
+            </div>
+          `;
+        } else {
+          return `
+            <div>
+              <div class="meal-slot-label">${mealLabels[type]}</div>
+              <div class="meal-slot-card-empty" onclick="alert('Add ${mealLabels[type]} modal')">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--slate)" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                <span>Add ${mealLabels[type]}</span>
+              </div>
+            </div>
+          `;
+        }
+      }).join('');
+    }
+
+    /* ============================================================
+       RENDER: SHOPPING LIST
+    ============================================================ */
+    function renderShoppingList() {
+      const container = document.getElementById('shopping-list-wrap');
+      container.innerHTML = SHOPPING_DATA.map((aisle, ai) => `
+        <div class="aisle-section">
+          <div class="aisle-header">
+            <div class="aisle-icon" style="background:${aisle.color}">${aisle.emoji}</div>
+            <span class="aisle-name">${aisle.aisle}</span>
+            <span class="aisle-count">${aisle.items.filter(i=>!i.checked).length} left</span>
+          </div>
+          <div class="aisle-card">
+            ${aisle.items.map((item, ii) => `
+              <div class="check-item ${item.checked ? 'checked' : ''}" onclick="toggleCheck(${ai}, ${ii})">
+                <div class="checkbox ${item.checked ? 'checked-box' : ''}">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+                </div>
+                <span class="check-label">${item.name}</span>
+                <span class="check-qty text-mono">${item.qty}</span>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+      `).join('');
+
+      updateProgress();
+      updateClearCheckedVisibility();
+    }
+
+    function toggleCheck(aisleIdx, itemIdx) {
+      SHOPPING_DATA[aisleIdx].items[itemIdx].checked = !SHOPPING_DATA[aisleIdx].items[itemIdx].checked;
+      renderShoppingList();
+    }
+
+    function clearChecked() {
+      SHOPPING_DATA.forEach(aisle => {
+        aisle.items = aisle.items.filter(item => !item.checked);
+      });
+      renderShoppingList();
+    }
+
+    function updateProgress() {
+      const all = SHOPPING_DATA.flatMap(a => a.items);
+      const checked = all.filter(i => i.checked).length;
+      const pct = all.length === 0 ? 100 : Math.round((checked / all.length) * 100);
+      document.getElementById('progress-fill').style.width = pct + '%';
+      document.getElementById('progress-label').textContent = `${checked} / ${all.length}`;
+    }
+
+    function updateClearCheckedVisibility() {
+      const hasChecked = SHOPPING_DATA.flatMap(a => a.items).some(i => i.checked);
+      const btn = document.getElementById('clear-checked-btn');
+      const isShoppingActive = document.getElementById('view-shopping').classList.contains('active');
+      if (hasChecked && isShoppingActive) {
+        btn.classList.remove('hidden');
+      } else {
+        btn.classList.add('hidden');
+      }
+    }
+
+    /* ============================================================
+       RENDER: RECIPES
+    ============================================================ */
+    function renderRecipes() {
+      const grid = document.getElementById('recipes-grid');
+
+      const featured = RECIPES_DATA[0];
+
+      grid.innerHTML = `
+        <!-- Featured card (full width) -->
+        <div class="recipe-card recipe-card-featured">
+          <div class="recipe-card-thumb" style="background:var(--blush)">
+            ${featured.emoji}
+          </div>
+          <div class="recipe-card-body">
+            <div class="recipe-card-name">${featured.name}</div>
+            <div class="recipe-card-meta">
+              <span class="tag tag-${featured.category}">${featured.category.charAt(0).toUpperCase() + featured.category.slice(1)}</span>
+              <span class="recipe-time">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                ${featured.time}
+              </span>
+            </div>
+            <div style="margin-top:10px;font-size:12px;color:var(--slate);line-height:1.5;">
+              A quick weeknight favourite — tender chicken, crisp veg, savory sauce.
+            </div>
+          </div>
+        </div>
+
+        ${RECIPES_DATA.slice(1).map((r, i) => {
+          if (i === 2) {
+            // Insert skeleton card
+            return `
+              <div class="recipe-card-skeleton">
+                <div class="skeleton skeleton-thumb"></div>
+                <div class="skeleton-body">
+                  <div class="skeleton skeleton-line" style="width:80%"></div>
+                  <div class="skeleton skeleton-line-short skeleton"></div>
+                </div>
+              </div>
+              ${recipeCard(r)}
+            `;
+          }
+          return recipeCard(r);
+        }).join('')}
+      `;
+
+      // Re-run lucide on dynamically created elements
+      lucide.createIcons();
+    }
+
+    function recipeCard(r) {
+      const thumbColors = {
+        breakfast: 'var(--buttercup)',
+        lunch:     'var(--sage)',
+        dinner:    'var(--blush)',
+        snack:     'var(--lavender)',
+      };
+      return `
+        <div class="recipe-card">
+          <div class="recipe-card-thumb" style="background:${thumbColors[r.category] || 'var(--mist)'}">
+            ${r.emoji}
+          </div>
+          <div class="recipe-card-body">
+            <div class="recipe-card-name">${r.name}</div>
+            <div class="recipe-card-meta">
+              <span class="tag tag-${r.category}">${r.category.charAt(0).toUpperCase() + r.category.slice(1)}</span>
+              <span class="recipe-time">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                ${r.time}
+              </span>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    /* ============================================================
+       FILTER CHIPS
+    ============================================================ */
+    document.addEventListener('click', e => {
+      if (e.target.classList.contains('filter-chip')) {
+        document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+        e.target.classList.add('active');
+      }
+    });
+
+    /* ============================================================
+       INIT
+    ============================================================ */
+    // Init Lucide icons
+    lucide.createIcons();
+
+    // Render all data
+    renderPlannerSlots('mon');
+    renderShoppingList();
+    renderRecipes();
+
+    // Re-run lucide after dynamic content
+    setTimeout(() => lucide.createIcons(), 50);
+  </script>
+
+</body>
+</html>
