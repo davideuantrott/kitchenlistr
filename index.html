@@ -40,6 +40,21 @@
             --radius-lg: 16px;
             --font-heading: 'Fraunces', Georgia, serif;
             --font-body: 'Source Sans 3', -apple-system, BlinkMacSystemFont, sans-serif;
+
+            /* Typography scale */
+            --text-xs:   0.75rem;
+            --text-sm:   0.875rem;
+            --text-base: 1rem;
+            --text-lg:   1.125rem;
+            --text-xl:   1.375rem;
+            --text-2xl:  1.75rem;
+
+            /* Semantic status colours (theme-neutral) */
+            --color-error:      #DC2626;
+            --color-error-bg:   #FEE2E2;
+            --color-warning:    #D97706;
+            --color-warning-bg: #FEF3C7;
+            --color-info-bg:    #DBEAFE;
         }
 
         * {
@@ -419,6 +434,10 @@
             padding: 2rem 1.5rem;
         }
 
+        @media (max-width: 500px) {
+            .main { padding: 1rem; }
+        }
+
         .view {
             display: none;
         }
@@ -431,6 +450,14 @@
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
         }
 
         /* Page Headers */
@@ -1455,6 +1482,16 @@
             color: var(--text-secondary);
         }
 
+        @media (max-width: 600px) {
+            .shopping-summary {
+                justify-content: space-around;
+                padding: 0.75rem 1rem;
+                gap: 0.5rem;
+            }
+            .shopping-summary-number { font-size: 1.25rem; }
+            .shopping-summary-label { font-size: 0.7rem; }
+        }
+
         /* Sort Controls */
         .sort-controls {
             display: flex;
@@ -1852,6 +1889,32 @@
 
         .print-option-row:last-child {
             margin-bottom: 0;
+        }
+
+        /* Account View */
+        .account-profile-card {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            background: var(--bg-white);
+            border: 1px solid var(--border-light);
+            border-radius: var(--radius-md);
+            padding: 1.25rem;
+            margin-bottom: 1.5rem;
+        }
+        .account-profile-card .user-avatar {
+            width: 48px;
+            height: 48px;
+            font-size: 1.25rem;
+            flex-shrink: 0;
+        }
+        .account-profile-info {
+            flex: 1;
+        }
+        .account-user-email {
+            font-size: var(--text-base);
+            font-weight: 500;
+            color: var(--text-primary);
         }
 
         /* Settings / Shops & Aisles */
@@ -3372,6 +3435,7 @@
                     <button class="nav-btn" data-view="planner">Meal Plan</button>
                     <button class="nav-btn" data-view="shopping">Shopping List</button>
                     <button class="nav-btn" data-view="settings">Settings</button>
+                    <button class="nav-btn" data-view="account">Account</button>
                 </nav>
 
                 <!-- Context switcher: only visible when user belongs to a household -->
@@ -3381,7 +3445,7 @@
                 </div>
 
                 <div class="header-right">
-                    <button class="help-btn" onclick="openHelpModal()" title="Help">?</button>
+                    <button class="help-btn" onclick="openHelpModal()" title="Help" aria-label="Help">?</button>
                     <div class="user-info">
                         <div class="user-avatar" id="user-avatar">?</div>
                         <span id="user-email"></span>
@@ -3418,7 +3482,8 @@
                 <div id="recipes-empty" class="empty-state" style="display: none;">
                     <div class="empty-state-icon">📖</div>
                     <h3 class="empty-state-title">No recipes yet</h3>
-                    <p>Add your first recipe to get started!</p>
+                    <p>Add your first recipe to get started.</p>
+                    <button class="btn btn-primary" style="margin-top: 1rem;" onclick="openRecipeModal()">+ Add Recipe</button>
                 </div>
             </section>
 
@@ -3556,6 +3621,7 @@
                     <div class="empty-state-icon">🛒</div>
                     <h3 class="empty-state-title">No items to buy</h3>
                     <p>Add meals to your plan or add extra items above.</p>
+                    <button class="btn btn-secondary" style="margin-top: 1rem;" onclick="showView('planner')">Go to Meal Plan</button>
                 </div>
             </section>
 
@@ -3565,24 +3631,12 @@
                     <h1 class="page-title">Settings</h1>
                 </div>
                 
-                <!-- Appearance Section -->
-                <div class="settings-section" id="settings-section-appearance">
-                    <div class="settings-section-header">
-                        <h2 class="settings-section-title">&#127912; Appearance</h2>
-                        <button class="section-toggle-btn" id="toggle-btn-appearance" onclick="toggleSettingsSection('appearance')" title="Collapse">▼</button>
-                    </div>
-                    <div class="settings-section-body">
-                        <p class="text-muted mb-2">Choose a colour theme for KitchenListr.</p>
-                        <div class="theme-grid" id="theme-grid"></div>
-                    </div>
-                </div>
-
                 <!-- Shops & Aisles Section -->
                 <div class="settings-section" id="settings-section-shops">
                     <div class="settings-section-header">
                         <h2 class="settings-section-title">🏪 Shops & Aisles</h2>
                         <div class="section-header-actions">
-                            <button class="section-toggle-btn" id="toggle-btn-shops" onclick="toggleSettingsSection('shops')" title="Collapse">▼</button>
+                            <button class="section-toggle-btn" id="toggle-btn-shops" onclick="toggleSettingsSection('shops')" title="Collapse" aria-expanded="true" aria-controls="shops-section-body">▼</button>
                             <button class="btn btn-primary btn-small" onclick="openAddShopModal()">+ Add Shop</button>
                         </div>
                     </div>
@@ -3604,7 +3658,7 @@
                 <div class="settings-section" id="settings-section-dictionary">
                     <div class="settings-section-header">
                         <h2 class="settings-section-title">📖 Ingredient Dictionary</h2>
-                        <button class="section-toggle-btn" id="toggle-btn-dictionary" onclick="toggleSettingsSection('dictionary')" title="Collapse">▼</button>
+                        <button class="section-toggle-btn" id="toggle-btn-dictionary" onclick="toggleSettingsSection('dictionary')" title="Collapse" aria-expanded="true" aria-controls="dictionary-section-body">▼</button>
                     </div>
                     <div class="settings-section-body">
                         <p class="text-muted mb-2">Manage which aisle each ingredient belongs to. Ingredients are remembered per shop, so "milk" can be in different aisles at different stores.</p>
@@ -3674,7 +3728,7 @@
                 <div class="settings-section" id="settings-section-ingredient-manager">
                     <div class="settings-section-header">
                         <h2 class="settings-section-title">🥕 Ingredient Manager</h2>
-                        <button class="section-toggle-btn" id="toggle-btn-ingredient-manager" onclick="toggleSettingsSection('ingredient-manager')" title="Collapse">▼</button>
+                        <button class="section-toggle-btn" id="toggle-btn-ingredient-manager" onclick="toggleSettingsSection('ingredient-manager')" title="Collapse" aria-expanded="true" aria-controls="ingredient-manager-section-body">▼</button>
                     </div>
                     <div class="settings-section-body">
                         <p class="text-muted mb-2">Edit, rename, or merge ingredients across all your recipes. Changes here will update every recipe that uses the ingredient.</p>
@@ -3697,7 +3751,7 @@
                 <div class="settings-section" id="settings-section-meal-categories">
                     <div class="settings-section-header">
                         <h2 class="settings-section-title">🍽️ Meal Categories</h2>
-                        <button class="section-toggle-btn" id="toggle-btn-meal-categories" onclick="toggleSettingsSection('meal-categories')" title="Collapse">▼</button>
+                        <button class="section-toggle-btn" id="toggle-btn-meal-categories" onclick="toggleSettingsSection('meal-categories')" title="Collapse" aria-expanded="true" aria-controls="meal-categories-section-body">▼</button>
                     </div>
                     <div class="settings-section-body">
                         <p class="text-muted mb-2">Customise the meal categories shown in your meal planner. Add categories like "Kids' Dinner" or "Snack".</p>
@@ -3713,11 +3767,40 @@
                     </div>
                 </div>
 
-                <!-- Household Section -->
+            </section>
+
+            <!-- Account View -->
+            <section id="account-view" class="view">
+                <div class="page-header">
+                    <h1 class="page-title">Account</h1>
+                </div>
+
+                <!-- User Profile Card -->
+                <div class="account-profile-card">
+                    <div class="user-avatar" id="account-user-avatar">?</div>
+                    <div class="account-profile-info">
+                        <div class="account-user-email" id="account-user-email"></div>
+                    </div>
+                    <button class="btn btn-secondary" onclick="handleSignOut()">Sign Out</button>
+                </div>
+
+                <!-- Theme & Appearance Section (moved from Settings) -->
+                <div class="settings-section" id="settings-section-appearance">
+                    <div class="settings-section-header">
+                        <h2 class="settings-section-title">&#127912; Appearance</h2>
+                        <button class="section-toggle-btn" id="toggle-btn-appearance" onclick="toggleSettingsSection('appearance')" title="Collapse" aria-expanded="true" aria-controls="account-appearance-body">▼</button>
+                    </div>
+                    <div class="settings-section-body" id="account-appearance-body">
+                        <p class="text-muted mb-2">Choose a colour theme for KitchenListr.</p>
+                        <div class="theme-grid" id="theme-grid"></div>
+                    </div>
+                </div>
+
+                <!-- Household Section (moved from Settings) -->
                 <div class="settings-section" id="settings-section-household">
                     <div class="settings-section-header">
                         <h2 class="settings-section-title">👨‍👩‍👧 Household</h2>
-                        <button class="section-toggle-btn" id="toggle-btn-household" onclick="toggleSettingsSection('household')" title="Collapse">▼</button>
+                        <button class="section-toggle-btn" id="toggle-btn-household" onclick="toggleSettingsSection('household')" title="Collapse" aria-expanded="true" aria-controls="account-household-body">▼</button>
                     </div>
                     <div class="settings-section-body" id="household-settings-body">
                         <!-- Rendered by renderHouseholdSettings() -->
@@ -3728,11 +3811,11 @@
     </div>
 
     <!-- Add/Edit Recipe Modal -->
-    <div class="modal-overlay" id="recipe-modal">
+    <div class="modal-overlay" id="recipe-modal" role="dialog" aria-modal="true" aria-labelledby="recipe-modal-title">
         <div class="modal">
             <div class="modal-header">
                 <h2 class="modal-title" id="recipe-modal-title">Add Recipe</h2>
-                <button class="modal-close" onclick="closeRecipeModal()">&times;</button>
+                <button class="modal-close" onclick="closeRecipeModal()" aria-label="Close">&times;</button>
             </div>
             <div class="modal-body">
                 <form id="recipe-form" onsubmit="saveRecipe(event)">
@@ -3798,11 +3881,11 @@ oregano"></textarea>
     </div>
 
     <!-- View Recipe Modal -->
-    <div class="modal-overlay" id="view-recipe-modal">
+    <div class="modal-overlay" id="view-recipe-modal" role="dialog" aria-modal="true" aria-labelledby="view-recipe-title">
         <div class="modal">
             <div class="modal-header">
                 <h2 class="modal-title" id="view-recipe-title"></h2>
-                <button class="modal-close" onclick="closeViewRecipeModal()">&times;</button>
+                <button class="modal-close" onclick="closeViewRecipeModal()" aria-label="Close">&times;</button>
             </div>
             <div class="modal-body" id="view-recipe-body">
                 <!-- Recipe details will be rendered here -->
@@ -3817,11 +3900,11 @@ oregano"></textarea>
     </div>
 
     <!-- Select Recipe Modal -->
-    <div class="modal-overlay" id="select-recipe-modal">
+    <div class="modal-overlay" id="select-recipe-modal" role="dialog" aria-modal="true" aria-labelledby="select-recipe-modal-title">
         <div class="modal">
             <div class="modal-header">
-                <h2 class="modal-title">Select a Recipe</h2>
-                <button class="modal-close" onclick="closeSelectRecipeModal()">&times;</button>
+                <h2 class="modal-title" id="select-recipe-modal-title">Select a Recipe</h2>
+                <button class="modal-close" onclick="closeSelectRecipeModal()" aria-label="Close">&times;</button>
             </div>
             <div class="modal-body">
                 <input type="hidden" id="select-recipe-date">
@@ -3862,11 +3945,11 @@ oregano"></textarea>
     </div>
 
     <!-- Print Options Modal -->
-    <div class="modal-overlay" id="print-modal">
+    <div class="modal-overlay" id="print-modal" role="dialog" aria-modal="true" aria-labelledby="print-modal-title">
         <div class="modal" style="max-width: 400px;">
             <div class="modal-header">
-                <h2 class="modal-title">Print Shopping List</h2>
-                <button class="modal-close" onclick="closePrintModal()">&times;</button>
+                <h2 class="modal-title" id="print-modal-title">Print Shopping List</h2>
+                <button class="modal-close" onclick="closePrintModal()" aria-label="Close">&times;</button>
             </div>
             <div class="modal-body">
                 <div class="print-options">
@@ -3887,11 +3970,11 @@ oregano"></textarea>
     </div>
 
     <!-- Add/Edit Shop Modal -->
-    <div class="modal-overlay" id="shop-modal">
+    <div class="modal-overlay" id="shop-modal" role="dialog" aria-modal="true" aria-labelledby="shop-modal-title">
         <div class="modal" style="max-width: 500px;">
             <div class="modal-header">
                 <h2 class="modal-title" id="shop-modal-title">Add Shop</h2>
-                <button class="modal-close" onclick="closeShopModal()">&times;</button>
+                <button class="modal-close" onclick="closeShopModal()" aria-label="Close">&times;</button>
             </div>
             <div class="modal-body">
                 <form id="shop-form" onsubmit="saveShop(event)">
@@ -3918,11 +4001,11 @@ oregano"></textarea>
     </div>
 
     <!-- Edit Ingredient Modal -->
-    <div class="modal-overlay" id="edit-ingredient-modal">
+    <div class="modal-overlay" id="edit-ingredient-modal" role="dialog" aria-modal="true" aria-labelledby="edit-ingredient-modal-title">
         <div class="modal" style="max-width: 450px;">
             <div class="modal-header">
-                <h2 class="modal-title">Edit Ingredient</h2>
-                <button class="modal-close" onclick="closeEditIngredientModal()">&times;</button>
+                <h2 class="modal-title" id="edit-ingredient-modal-title">Edit Ingredient</h2>
+                <button class="modal-close" onclick="closeEditIngredientModal()" aria-label="Close">&times;</button>
             </div>
             <div class="modal-body">
                 <input type="hidden" id="edit-ingredient-original">
@@ -3956,10 +4039,10 @@ oregano"></textarea>
     </div>
 
     <!-- Welcome Modal -->
-    <div class="modal-overlay" id="welcome-modal">
+    <div class="modal-overlay" id="welcome-modal" role="dialog" aria-modal="true" aria-labelledby="welcome-modal-title">
         <div class="modal welcome-modal">
             <div class="modal-header">
-                <h2 class="modal-title">👋 Welcome to KitchenListr!</h2>
+                <h2 class="modal-title" id="welcome-modal-title">👋 Welcome to KitchenListr!</h2>
             </div>
             <div class="modal-body">
                 <p class="mb-2">Your meal planning made simple. Here's how to get started:</p>
@@ -4005,11 +4088,11 @@ oregano"></textarea>
     </div>
 
     <!-- Help Modal -->
-    <div class="modal-overlay" id="help-modal">
+    <div class="modal-overlay" id="help-modal" role="dialog" aria-modal="true" aria-labelledby="help-modal-title">
         <div class="modal help-modal">
             <div class="modal-header">
-                <h2 class="modal-title">❓ Help & FAQ</h2>
-                <button class="modal-close" onclick="closeHelpModal()">&times;</button>
+                <h2 class="modal-title" id="help-modal-title">❓ Help & FAQ</h2>
+                <button class="modal-close" onclick="closeHelpModal()" aria-label="Close">&times;</button>
             </div>
             <div class="modal-body">
                 
@@ -4225,11 +4308,11 @@ oregano"></textarea>
     </div>
 
     <!-- Share Modal -->
-    <div class="modal-overlay" id="share-modal">
+    <div class="modal-overlay" id="share-modal" role="dialog" aria-modal="true" aria-labelledby="share-modal-title">
         <div class="modal" style="max-width: 500px;">
             <div class="modal-header">
                 <h2 class="modal-title" id="share-modal-title">Share</h2>
-                <button class="modal-close" onclick="closeShareModal()">&times;</button>
+                <button class="modal-close" onclick="closeShareModal()" aria-label="Close">&times;</button>
             </div>
             <div class="modal-body">
                 <p id="share-modal-description">Anyone with this link can import this to their account.</p>
@@ -4248,11 +4331,11 @@ oregano"></textarea>
     </div>
 
     <!-- Bulk Share Recipes Modal -->
-    <div class="modal-overlay" id="bulk-share-modal">
+    <div class="modal-overlay" id="bulk-share-modal" role="dialog" aria-modal="true" aria-labelledby="bulk-share-modal-title">
         <div class="modal" style="max-width: 500px;">
             <div class="modal-header">
-                <h2 class="modal-title">Share Multiple Recipes</h2>
-                <button class="modal-close" onclick="closeBulkShareModal()">&times;</button>
+                <h2 class="modal-title" id="bulk-share-modal-title">Share Multiple Recipes</h2>
+                <button class="modal-close" onclick="closeBulkShareModal()" aria-label="Close">&times;</button>
             </div>
             <div class="modal-body">
                 <div id="bulk-share-list">
@@ -4267,11 +4350,11 @@ oregano"></textarea>
     </div>
 
     <!-- Import Modal -->
-    <div class="modal-overlay" id="import-modal">
+    <div class="modal-overlay" id="import-modal" role="dialog" aria-modal="true" aria-labelledby="import-modal-title">
         <div class="modal" style="max-width: 500px;">
             <div class="modal-header">
-                <h2 class="modal-title">Import Shared Item</h2>
-                <button class="modal-close" onclick="closeImportModal()">&times;</button>
+                <h2 class="modal-title" id="import-modal-title">Import Shared Item</h2>
+                <button class="modal-close" onclick="closeImportModal()" aria-label="Close">&times;</button>
             </div>
             <div class="modal-body">
                 <div id="import-loading" style="text-align: center; padding: 2rem;">
@@ -4301,11 +4384,11 @@ oregano"></textarea>
     </div>
 
     <!-- Suggest Recipe Modal -->
-    <div class="modal-overlay" id="suggest-recipe-modal">
+    <div class="modal-overlay" id="suggest-recipe-modal" role="dialog" aria-modal="true" aria-labelledby="suggest-recipe-modal-title">
         <div class="modal" style="max-width: 480px;">
             <div class="modal-header">
-                <h2 class="modal-title">Suggest a Meal</h2>
-                <button class="modal-close" onclick="closeSuggestRecipeModal()">&times;</button>
+                <h2 class="modal-title" id="suggest-recipe-modal-title">Suggest a Meal</h2>
+                <button class="modal-close" onclick="closeSuggestRecipeModal()" aria-label="Close">&times;</button>
             </div>
             <div class="modal-body">
                 <div class="form-group">
@@ -4329,11 +4412,11 @@ oregano"></textarea>
     </div>
 
     <!-- Assign Suggestion to Meal Plan Modal -->
-    <div class="modal-overlay" id="assign-suggestion-modal">
+    <div class="modal-overlay" id="assign-suggestion-modal" role="dialog" aria-modal="true" aria-labelledby="assign-suggestion-modal-title">
         <div class="modal" style="max-width: 400px;">
             <div class="modal-header">
-                <h2 class="modal-title">Add to Meal Plan</h2>
-                <button class="modal-close" onclick="closeAssignSuggestionModal()">&times;</button>
+                <h2 class="modal-title" id="assign-suggestion-modal-title">Add to Meal Plan</h2>
+                <button class="modal-close" onclick="closeAssignSuggestionModal()" aria-label="Close">&times;</button>
             </div>
             <div class="modal-body">
                 <p style="margin-bottom: 1rem; font-weight: 600; font-family: var(--font-heading);" id="assign-suggestion-recipe-name"></p>
@@ -4358,11 +4441,11 @@ oregano"></textarea>
     </div>
 
     <!-- Meal Plan Print Modal -->
-    <div class="modal-overlay" id="planner-print-modal">
+    <div class="modal-overlay" id="planner-print-modal" role="dialog" aria-modal="true" aria-labelledby="planner-print-modal-title">
         <div class="modal" style="max-width: 420px;">
             <div class="modal-header">
-                <h2 class="modal-title">Print Meal Plan</h2>
-                <button class="modal-close" onclick="closePlannerPrintModal()">&times;</button>
+                <h2 class="modal-title" id="planner-print-modal-title">Print Meal Plan</h2>
+                <button class="modal-close" onclick="closePlannerPrintModal()" aria-label="Close">&times;</button>
             </div>
             <div class="modal-body">
                 <p class="text-muted mb-2">Choose the layout to print:</p>
@@ -5196,24 +5279,35 @@ oregano"></textarea>
         document.querySelectorAll('.nav-btn').forEach(btn => {
             btn.addEventListener('click', () => {
                 const view = btn.dataset.view;
-                
+
                 // Update nav buttons
                 document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
                 btn.classList.add('active');
-                
+
                 // Update views
                 document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
                 document.getElementById(`${view}-view`).classList.add('active');
-                
+
                 // Refresh view data
                 if (view === 'recipes') renderRecipes();
                 if (view === 'planner') renderPlanner();
                 if (view === 'shopping') renderShoppingList();
                 if (view === 'settings') {
-                    renderThemeSelector();
                     renderIngredientDictionary();
                     renderIngredientManager();
                     renderMealCategories();
+                    applyCollapsedSections();
+                }
+                if (view === 'account') {
+                    renderThemeSelector();
+                    renderHouseholdSettings();
+                    applyCollapsedSections();
+                    if (currentUser) {
+                        const avatarEl = document.getElementById('account-user-avatar');
+                        const emailEl = document.getElementById('account-user-email');
+                        if (avatarEl) avatarEl.textContent = (currentUser.email || '?')[0].toUpperCase();
+                        if (emailEl) emailEl.textContent = currentUser.email || '';
+                    }
                 }
             });
         });
@@ -7871,12 +7965,23 @@ oregano"></textarea>
 
             // Render settings components when switching to settings
             if (viewName === 'settings') {
-                renderThemeSelector();
                 renderIngredientDictionary();
                 renderIngredientManager();
                 renderMealCategories();
+                applyCollapsedSections();
+            }
+
+            // Render account components when switching to account
+            if (viewName === 'account') {
+                renderThemeSelector();
                 renderHouseholdSettings();
                 applyCollapsedSections();
+                if (currentUser) {
+                    const avatarEl = document.getElementById('account-user-avatar');
+                    const emailEl = document.getElementById('account-user-email');
+                    if (avatarEl) avatarEl.textContent = (currentUser.email || '?')[0].toUpperCase();
+                    if (emailEl) emailEl.textContent = currentUser.email || '';
+                }
             }
 
             // Setup adhoc autocomplete when switching to shopping
