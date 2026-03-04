@@ -166,6 +166,13 @@ New brand colour variables also added (not yet widely used): `--color-tomato`, `
 - **Spring check:** `springCheck` keyframe applied as `.spring-check` class on the newly checked shopping item; `recentlyCheckedKey` module variable set in `toggleShoppingItem()` before re-render, cleared after; class applied in `renderShoppingItem()` when `ing.key === recentlyCheckedKey`
 - **Reduced motion:** all new animations inside `@media (prefers-reduced-motion: no-preference)`; existing `reduce` block kills them as second safety net
 
+### Theme picker
+The legacy theme picker (Garden / Terracotta / Nordic / Berry / Amber / Ink) has been **removed** from the redesign branch. The app ships with Warm Pantry only. Themes will be reintroduced in a future iteration designed specifically for the Warm Pantry token system.
+
+What was removed: `[data-theme]` CSS blocks, Theme Selector UI CSS, Appearance section in account view, localStorage theme loader, `themes` object, `applyTheme` / `renderThemeSelector` / `selectTheme` functions, `theme` field from `saveUserPrefs`. Any `theme` value previously stored in Firestore `settings/userPrefs` is harmlessly ignored.
+
+When reintroducing themes, each theme block should override: `--bg-cream`, `--bg-white`, `--text-primary`, `--text-secondary`, `--accent-green`, `--accent-green-light`, `--accent-green-dark`, `--accent-mint`, `--border-light`, `--border-medium`, `--shadow-*`, `--font-heading`, `--font-body`. The `--color-*` pastel variables and `--radius-*` values should remain fixed.
+
 ### Deploy checklist (before merging redesign → main)
 1. Increment `CACHE_NAME` in `sw.js` (currently `kitchenlistr-v1` → `kitchenlistr-v2`) to force cache refresh for all users
 2. Merge `redesign` branch into `main` via PR
