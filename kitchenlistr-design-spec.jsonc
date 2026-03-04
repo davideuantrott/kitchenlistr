@@ -1,0 +1,541 @@
+/**
+ * KitchenListr — Design System Specification
+ * Inspired by: EasyLearn app aesthetic
+ * Vibe: Clean, warm, colourful with organic pastel shapes and playful confidence
+ * Version: 1.0.0
+ */
+{
+  "meta": {
+    "app": "KitchenListr",
+    "version": "1.0.0",
+    "theme": "Warm Pantry",
+    "description": "A clean, joyful design system rooted in organic shapes, warm pastels, and confident typography — making meal planning feel like a pleasure, not a chore."
+  },
+
+  // ─────────────────────────────────────────────
+  // COLOUR PALETTE
+  // ─────────────────────────────────────────────
+  "colors": {
+
+    // Brand primaries — warm, food-inspired
+    "primary": {
+      "tomato":     "#F2654A",   // CTA buttons, key accents
+      "saffron":    "#F5C842",   // Highlights, badge backgrounds
+      "herb":       "#5BBF7A"    // Success states, dietary tags
+    },
+
+    // Pastel fills — used for blob shapes and card backgrounds
+    "pastels": {
+      "blush":      "#FAD4C0",   // Soft pink blob, card tint
+      "buttercup":  "#FBF0B2",   // Warm yellow blob, empty states
+      "sage":       "#C8E6C9",   // Green blob, dietary/veggie context
+      "lavender":   "#DDD6FE",   // Purple blob, meal planning days
+      "peach":      "#FFE0CC",   // Ingredient card background
+      "sky":        "#BFE3F5"    // Info states, search highlights
+    },
+
+    // Neutrals
+    "neutral": {
+      "ink":        "#1A1A1A",   // Primary text
+      "charcoal":   "#3D3D3D",   // Secondary text
+      "slate":      "#8C8C8C",   // Placeholder / muted text
+      "mist":       "#F5F5F0",   // Page background (off-white, not stark)
+      "cloud":      "#FFFFFF",   // Card surfaces
+      "border":     "#E8E4DC"    // Subtle dividers
+    },
+
+    // Semantic
+    "semantic": {
+      "error":      "#E84545",
+      "warning":    "#F5A623",
+      "success":    "#5BBF7A",
+      "info":       "#3B9ECC"
+    },
+
+    // CTA / interactive
+    "interactive": {
+      "ctaFill":    "#1A1A1A",   // Primary button (dark pill, à la EasyLearn)
+      "ctaText":    "#FFFFFF",
+      "ctaHover":   "#3D3D3D",
+      "linkActive": "#F2654A"
+    }
+  },
+
+  // ─────────────────────────────────────────────
+  // TYPOGRAPHY
+  // ─────────────────────────────────────────────
+  "typography": {
+
+    // Font families
+    "fonts": {
+      "display":  "Fraunces",         // Organic, slightly quirky serif — for hero headings and brand moments
+      "body":     "DM Sans",          // Clean, friendly, highly legible — everyday UI text
+      "mono":     "DM Mono",          // Quantities, measurements, nutritional data
+      "accent":   "Caveat"            // Handwritten feel — for day labels, fun annotations, empty states
+    },
+
+    // CDN imports (Google Fonts)
+    "fontImports": [
+      "https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,300;0,700;0,900;1,300&display=swap",
+      "https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&display=swap",
+      "https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&display=swap",
+      "https://fonts.googleapis.com/css2?family=Caveat:wght@400;600&display=swap"
+    ],
+
+    // Type scale (rem, base 16px)
+    "scale": {
+      "hero":     { "size": "2.75rem", "lineHeight": "1.1",  "weight": "900", "font": "display", "tracking": "-0.03em" },
+      "h1":       { "size": "2rem",    "lineHeight": "1.2",  "weight": "700", "font": "display", "tracking": "-0.02em" },
+      "h2":       { "size": "1.5rem",  "lineHeight": "1.3",  "weight": "600", "font": "body",    "tracking": "-0.01em" },
+      "h3":       { "size": "1.125rem","lineHeight": "1.4",  "weight": "600", "font": "body",    "tracking": "0" },
+      "body":     { "size": "0.9375rem","lineHeight": "1.6", "weight": "400", "font": "body",    "tracking": "0" },
+      "small":    { "size": "0.8125rem","lineHeight": "1.5", "weight": "400", "font": "body",    "tracking": "0.01em" },
+      "label":    { "size": "0.75rem", "lineHeight": "1.4",  "weight": "500", "font": "body",    "tracking": "0.05em", "transform": "uppercase" },
+      "quantity": { "size": "1rem",    "lineHeight": "1.4",  "weight": "500", "font": "mono",    "tracking": "0" },
+      "annotation":{ "size": "1.1rem", "lineHeight": "1.3",  "weight": "600", "font": "accent",  "tracking": "0" }
+    }
+  },
+
+  // ─────────────────────────────────────────────
+  // SPACING & LAYOUT
+  // ─────────────────────────────────────────────
+  "spacing": {
+    "base": "8px",
+    "scale": {
+      "xs":   "4px",
+      "sm":   "8px",
+      "md":   "16px",
+      "lg":   "24px",
+      "xl":   "32px",
+      "2xl":  "48px",
+      "3xl":  "64px"
+    },
+    "pagePadding":     "20px",
+    "cardPadding":     "20px",
+    "sectionGap":      "32px"
+  },
+
+  "layout": {
+    "maxContentWidth": "480px",       // Mobile-first PWA — single column
+    "borderRadius": {
+      "sm":     "8px",
+      "md":     "16px",
+      "lg":     "24px",
+      "xl":     "32px",
+      "pill":   "999px",              // Tags, chips, CTA buttons
+      "blob":   "60% 40% 55% 45% / 45% 55% 40% 60%" // Organic CSS blob shape
+    },
+    "shadows": {
+      "card":   "0 4px 20px rgba(0,0,0,0.06)",
+      "float":  "0 8px 32px rgba(0,0,0,0.10)",
+      "cta":    "0 4px 16px rgba(242,101,74,0.30)"   // Coloured shadow on tomato elements
+    },
+    "grid": {
+      "mealWeek": "repeat(7, 1fr)",   // 7-day planning strip
+      "categories": "repeat(2, 1fr)", // 2-col category tiles
+      "shopList":   "1fr"             // Single column for checklist feel
+    }
+  },
+
+  // ─────────────────────────────────────────────
+  // COMPONENT TOKENS
+  // ─────────────────────────────────────────────
+  "components": {
+
+    "button": {
+      "primary": {
+        "background": "#1A1A1A",
+        "color":      "#FFFFFF",
+        "borderRadius": "999px",
+        "padding":    "16px 32px",
+        "font":       "DM Sans 600",
+        "fontSize":   "1rem",
+        "height":     "56px",
+        "shadow":     "none",
+        "hover": {
+          "background": "#3D3D3D",
+          "transform":  "translateY(-1px)"
+        },
+        "active": {
+          "transform":  "scale(0.97)"
+        }
+      },
+      "accent": {
+        "background": "#F2654A",
+        "color":      "#FFFFFF",
+        "borderRadius": "999px",
+        "shadow":     "0 4px 16px rgba(242,101,74,0.35)"
+      },
+      "ghost": {
+        "background": "transparent",
+        "color":      "#1A1A1A",
+        "border":     "1.5px solid #E8E4DC",
+        "borderRadius": "999px"
+      },
+      "icon": {
+        "size":       "44px",
+        "borderRadius": "50%",
+        "background": "#F5F5F0"
+      }
+    },
+
+    "card": {
+      "default": {
+        "background":   "#FFFFFF",
+        "borderRadius": "24px",
+        "padding":      "20px",
+        "shadow":       "0 4px 20px rgba(0,0,0,0.06)",
+        "border":       "none"
+      },
+      "mealSlot": {
+        "background":   "#FFFFFF",
+        "borderRadius": "20px",
+        "padding":      "14px 16px",
+        "minHeight":    "80px",
+        "border":       "1.5px dashed #E8E4DC",  // Dashed when empty
+        "emptyState": {
+          "background": "#FAFAF7",
+          "borderColor": "#E8E4DC"
+        }
+      },
+      "recipe": {
+        "background":   "#FFFFFF",
+        "borderRadius": "24px",
+        "overflow":     "hidden",
+        "imageAspect":  "4/3",
+        "tagPosition":  "top-left"
+      },
+      "shopItem": {
+        "background":   "#FFFFFF",
+        "borderRadius": "16px",
+        "height":       "60px",
+        "padding":      "0 16px",
+        "checkedOpacity": "0.45",
+        "checkedTextDecoration": "line-through"
+      }
+    },
+
+    "tag": {
+      "category": {
+        "borderRadius": "999px",
+        "padding":      "4px 12px",
+        "fontSize":     "0.75rem",
+        "fontWeight":   "500",
+        "colorMap": {
+          "breakfast": { "bg": "#FBF0B2", "text": "#9A7C0A" },
+          "lunch":     { "bg": "#C8E6C9", "text": "#2E7D32" },
+          "dinner":    { "bg": "#FAD4C0", "text": "#B54A20" },
+          "snack":     { "bg": "#DDD6FE", "text": "#5B21B6" },
+          "custom":    { "bg": "#BFE3F5", "text": "#1565C0" }
+        }
+      },
+      "dietary": {
+        "borderRadius": "999px",
+        "padding":      "3px 10px",
+        "fontSize":     "0.6875rem",
+        "fontWeight":   "500"
+      }
+    },
+
+    "input": {
+      "default": {
+        "background":   "#F5F5F0",
+        "border":       "1.5px solid transparent",
+        "borderRadius": "16px",
+        "height":       "52px",
+        "padding":      "0 16px",
+        "fontSize":     "0.9375rem",
+        "focusBorder":  "#F2654A",
+        "focusShadow":  "0 0 0 3px rgba(242,101,74,0.15)"
+      },
+      "search": {
+        "background":   "#F5F5F0",
+        "borderRadius": "999px",
+        "height":       "48px",
+        "paddingLeft":  "48px",             // Space for search icon
+        "icon":         { "color": "#8C8C8C", "size": "18px" }
+      }
+    },
+
+    "checkbox": {
+      "size":           "24px",
+      "borderRadius":   "8px",
+      "unchecked": {
+        "border":       "1.5px solid #E8E4DC",
+        "background":   "#FFFFFF"
+      },
+      "checked": {
+        "background":   "#F2654A",
+        "border":       "none",
+        "iconColor":    "#FFFFFF"
+      }
+    },
+
+    "bottomNav": {
+      "height":         "72px",
+      "background":     "#FFFFFF",
+      "borderTop":      "1px solid #F0EDE6",
+      "activeColor":    "#F2654A",
+      "inactiveColor":  "#8C8C8C",
+      "activeIndicator": {
+        "type":         "dot",
+        "size":         "4px",
+        "color":        "#F2654A"
+      }
+    },
+
+    "header": {
+      "height":         "60px",
+      "background":     "rgba(255,255,255,0.90)",
+      "backdropBlur":   "12px",
+      "borderBottom":   "1px solid rgba(0,0,0,0.04)"
+    },
+
+    // Organic blob decorations (positioned absolutely, purely decorative)
+    "blobs": {
+      "description": "CSS border-radius blobs, rotated and blurred slightly for softness",
+      "usage":       "Background decoration on screen headers and empty states",
+      "examples": [
+        {
+          "name":    "blobTopRight",
+          "color":   "#FAD4C0",             // blush
+          "size":    "260px",
+          "opacity": "0.7",
+          "blur":    "0px",
+          "position": { "top": "-60px", "right": "-80px" }
+        },
+        {
+          "name":    "blobMidLeft",
+          "color":   "#FBF0B2",             // buttercup
+          "size":    "200px",
+          "opacity": "0.65",
+          "blur":    "0px",
+          "position": { "top": "120px", "left": "-70px" }
+        },
+        {
+          "name":    "blobBottomRight",
+          "color":   "#C8E6C9",             // sage
+          "size":    "180px",
+          "opacity": "0.6",
+          "blur":    "0px",
+          "position": { "bottom": "40px", "right": "-50px" }
+        }
+      ]
+    }
+  },
+
+  // ─────────────────────────────────────────────
+  // MOTION DESIGN
+  // ─────────────────────────────────────────────
+  "motion": {
+
+    "philosophy": "Motion should feel organic and food-like — things ease in softly, bounce gently, never jarring. Think of steam rising or dough stretching, not mechanical snaps.",
+
+    // Core easings
+    "easings": {
+      "standard":   "cubic-bezier(0.34, 1.56, 0.64, 1)",   // Springy overshoot — used for appears and pops
+      "smooth":     "cubic-bezier(0.25, 0.1, 0.25, 1)",    // Standard ease — page transitions
+      "decelerate": "cubic-bezier(0, 0, 0.2, 1)",          // Elements entering from off-screen
+      "accelerate": "cubic-bezier(0.4, 0, 1, 1)"           // Elements leaving to off-screen
+    },
+
+    // Duration tokens
+    "durations": {
+      "instant":  "80ms",   // Checkbox tick, immediate feedback
+      "fast":     "150ms",  // Button press, icon swap
+      "base":     "250ms",  // Most UI transitions
+      "medium":   "350ms",  // Card appear, slide-in panels
+      "slow":     "500ms",  // Page transitions, blob morphs
+      "crawl":    "800ms"   // Onboarding reveals, empty state animations
+    },
+
+    // Named animations
+    "animations": {
+
+      "pageEnter": {
+        "description": "Screen slides up and fades in",
+        "keyframes":   "translateY(24px) → translateY(0), opacity 0 → 1",
+        "duration":    "350ms",
+        "easing":      "decelerate"
+      },
+
+      "cardPop": {
+        "description": "Card scales up from 94% with spring",
+        "keyframes":   "scale(0.94) → scale(1), opacity 0 → 1",
+        "duration":    "250ms",
+        "easing":      "standard"
+      },
+
+      "listItemStagger": {
+        "description": "Shopping/meal list items cascade in with delay",
+        "keyframes":   "translateX(-12px) → translateX(0), opacity 0 → 1",
+        "duration":    "200ms",
+        "easing":      "decelerate",
+        "staggerDelay": "40ms",          // Per item
+        "maxItems":    12                // Cap stagger so it doesn't drag
+      },
+
+      "checkItem": {
+        "description": "Checkbox tick + item fades/strikes through",
+        "sequence": [
+          { "element": "checkbox",  "animation": "scale(0.8) → scale(1.1) → scale(1)", "duration": "200ms", "easing": "standard" },
+          { "element": "label",     "animation": "opacity 1 → 0.45, text-decoration line-through", "duration": "300ms", "easing": "smooth", "delay": "80ms" }
+        ]
+      },
+
+      "blobFloat": {
+        "description": "Background blobs gently drift — ambient life",
+        "keyframes":   "translateY(0px) → translateY(-12px) → translateY(0px)",
+        "duration":    "6000ms",
+        "easing":      "ease-in-out",
+        "iteration":   "infinite",
+        "staggerByBlob": "2000ms"
+      },
+
+      "blobMorph": {
+        "description": "Blob border-radius subtly shifts shape over time",
+        "keyframes":   "60% 40% 55% 45%/45% 55% 40% 60% → 45% 55% 60% 40%/60% 40% 55% 45%",
+        "duration":    "8000ms",
+        "easing":      "ease-in-out",
+        "iteration":   "infinite",
+        "alternates":  true
+      },
+
+      "shimmer": {
+        "description": "Skeleton loading shimmer for cards while data loads",
+        "keyframes":   "background-position: -400px 0 → 400px 0",
+        "gradient":    "linear-gradient(90deg, #F5F5F0 25%, #EBEBEB 50%, #F5F5F0 75%)",
+        "duration":    "1400ms",
+        "iteration":   "infinite"
+      },
+
+      "toastSlide": {
+        "description": "Toast notification slides up from bottom",
+        "enter":       "translateY(80px) → translateY(0), opacity 0 → 1, duration 300ms, easing decelerate",
+        "exit":        "translateY(0) → translateY(80px), opacity 1 → 0, duration 200ms, easing accelerate"
+      },
+
+      "quantityPop": {
+        "description": "Ingredient quantity numbers pop when edited",
+        "keyframes":   "scale(1) → scale(1.3) → scale(1)",
+        "duration":    "200ms",
+        "easing":      "standard",
+        "trigger":     "on value change"
+      },
+
+      "emptyStateWiggle": {
+        "description": "Friendly wiggle on empty states — kitchen utensil icon",
+        "keyframes":   "rotate(-8deg) → rotate(8deg) → rotate(-4deg) → rotate(0deg)",
+        "duration":    "600ms",
+        "easing":      "ease-in-out",
+        "trigger":     "on mount, delay 800ms"
+      },
+
+      "fabScale": {
+        "description": "FAB (add meal / add item) expands into form",
+        "keyframes":   "scale(1) → scale(0.9), then form slides up",
+        "duration":    "300ms",
+        "easing":      "standard"
+      }
+    },
+
+    // Reduced motion — respect prefers-reduced-motion
+    "accessibilityOverride": {
+      "rule":           "@media (prefers-reduced-motion: reduce)",
+      "overrides":      "All durations → 0ms or 1ms. Transforms disabled. Opacity fades only where essential."
+    }
+  },
+
+  // ─────────────────────────────────────────────
+  // ICONOGRAPHY
+  // ─────────────────────────────────────────────
+  "icons": {
+    "library":    "Lucide",
+    "style":      "stroke, rounded caps",
+    "strokeWidth": "1.75",
+    "size": {
+      "sm":  "16px",
+      "md":  "20px",
+      "lg":  "24px",
+      "xl":  "32px"
+    },
+    "decorativeAccents": {
+      "description": "Sparkle/star/dash motifs (like EasyLearn) sprinkled near key UI moments",
+      "usage":       "Empty states, onboarding, milestone celebrations",
+      "style":       "SVG, hand-drawn weight, tomato or saffron colour"
+    }
+  },
+
+  // ─────────────────────────────────────────────
+  // SCREEN-SPECIFIC DESIGN NOTES
+  // ─────────────────────────────────────────────
+  "screens": {
+
+    "mealPlanner": {
+      "headerBlobs":  ["blush top-right", "buttercup left"],
+      "weekStrip":    "Horizontal scroll, 7 day pills, active day = tomato fill",
+      "dayCards":     "White cards, dashed border when empty, category tags coloured",
+      "addButton":    "FAB — tomato, bottom-right, scale animation on tap"
+    },
+
+    "shoppingList": {
+      "headerBlobs":  ["sage bottom-right", "peach top-left"],
+      "grouping":     "Aisle/category sections with collapsible headers",
+      "items":        "shopItem card, red checkbox, staggered list enter",
+      "bulkClear":    "Floating pill button appears when items are checked — 'Clear X checked'"
+    },
+
+    "recipeDetail": {
+      "heroImage":    "Full-bleed top, 4:3, rounded bottom corners",
+      "ingredients":  "Quantity in DM Mono, ingredient name in DM Sans",
+      "tags":         "Dietary pill tags below title — sage bg",
+      "shareButton":  "Ghost pill button, slides up on scroll past hero"
+    },
+
+    "settings": {
+      "headerBlobs":  ["lavender", "buttercup"],
+      "sections":     "Grouped cards with section headers in label style",
+      "categories":   "Collapsible aisles — chevron rotates 180° on toggle"
+    }
+  },
+
+  // ─────────────────────────────────────────────
+  // CSS CUSTOM PROPERTIES (ready to drop in)
+  // ─────────────────────────────────────────────
+  "cssVariables": {
+    "comment": "Paste into :root {} in your main stylesheet",
+    "variables": {
+      "--color-tomato":       "#F2654A",
+      "--color-saffron":      "#F5C842",
+      "--color-herb":         "#5BBF7A",
+      "--color-blush":        "#FAD4C0",
+      "--color-buttercup":    "#FBF0B2",
+      "--color-sage":         "#C8E6C9",
+      "--color-lavender":     "#DDD6FE",
+      "--color-peach":        "#FFE0CC",
+      "--color-sky":          "#BFE3F5",
+      "--color-ink":          "#1A1A1A",
+      "--color-charcoal":     "#3D3D3D",
+      "--color-slate":        "#8C8C8C",
+      "--color-mist":         "#F5F5F0",
+      "--color-cloud":        "#FFFFFF",
+      "--color-border":       "#E8E4DC",
+      "--font-display":       "'Fraunces', serif",
+      "--font-body":          "'DM Sans', sans-serif",
+      "--font-mono":          "'DM Mono', monospace",
+      "--font-accent":        "'Caveat', cursive",
+      "--radius-sm":          "8px",
+      "--radius-md":          "16px",
+      "--radius-lg":          "24px",
+      "--radius-pill":        "999px",
+      "--shadow-card":        "0 4px 20px rgba(0,0,0,0.06)",
+      "--shadow-float":       "0 8px 32px rgba(0,0,0,0.10)",
+      "--ease-spring":        "cubic-bezier(0.34, 1.56, 0.64, 1)",
+      "--ease-smooth":        "cubic-bezier(0.25, 0.1, 0.25, 1)",
+      "--ease-decelerate":    "cubic-bezier(0, 0, 0.2, 1)",
+      "--duration-fast":      "150ms",
+      "--duration-base":      "250ms",
+      "--duration-medium":    "350ms"
+    }
+  }
+}
