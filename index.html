@@ -1927,6 +1927,192 @@
             color: #DC3545;
         }
 
+        /* === Phase 4: Shopping List Upgrades === */
+
+        /* Sort / filter chips */
+        .sort-chips {
+            display: flex;
+            gap: 0.375rem;
+            flex-wrap: wrap;
+        }
+
+        .sort-chip {
+            padding: 0.35rem 0.85rem;
+            border: 1.5px solid var(--border-light);
+            border-radius: var(--radius-pill);
+            background: var(--bg-white);
+            font-family: var(--font-body);
+            font-size: 0.82rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: border-color 0.15s, color 0.15s, background 0.15s;
+            white-space: nowrap;
+        }
+
+        .sort-chip:hover {
+            border-color: var(--accent-green);
+            color: var(--accent-green);
+        }
+
+        .sort-chip.active {
+            background: var(--accent-green);
+            border-color: var(--accent-green);
+            color: white;
+        }
+
+        /* Date range navigator */
+        .date-range-nav {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .date-nav-btn {
+            width: 32px;
+            height: 32px;
+            border: 1.5px solid var(--border-light);
+            border-radius: var(--radius-pill);
+            background: var(--bg-white);
+            color: var(--text-secondary);
+            font-size: 1.2rem;
+            line-height: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: border-color 0.15s, color 0.15s;
+            flex-shrink: 0;
+        }
+
+        .date-nav-btn:hover {
+            border-color: var(--accent-green);
+            color: var(--accent-green);
+        }
+
+        .date-range-label {
+            font-size: 0.88rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            white-space: nowrap;
+            min-width: 130px;
+            text-align: center;
+        }
+
+        /* Shopping progress bar (inside summary) */
+        .shopping-progress-wrap {
+            width: 100%;
+            margin-top: 0.75rem;
+        }
+
+        .shopping-progress-bar-track {
+            height: 6px;
+            background: rgba(255,255,255,0.55);
+            border-radius: var(--radius-pill);
+            overflow: hidden;
+        }
+
+        .shopping-progress-bar-fill {
+            height: 100%;
+            background: var(--accent-mint);
+            border-radius: var(--radius-pill);
+            transition: width 0.35s ease;
+        }
+
+        .shopping-progress-text {
+            margin-top: 0.3rem;
+            font-size: 0.78rem;
+            color: var(--accent-green-dark);
+            text-align: center;
+        }
+
+        /* Floating clear-checked pill */
+        .clear-checked-pill {
+            position: fixed;
+            bottom: calc(72px + 1.5rem);
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 200;
+            display: none;
+            pointer-events: none;
+        }
+
+        .clear-checked-pill button {
+            background: var(--text-primary);
+            color: white;
+            border: none;
+            border-radius: var(--radius-pill);
+            padding: 0.6rem 1.4rem;
+            font-family: var(--font-body);
+            font-size: 0.88rem;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.25);
+            transition: transform 0.15s ease, box-shadow 0.15s ease;
+            white-space: nowrap;
+            pointer-events: auto;
+        }
+
+        .clear-checked-pill button:hover {
+            transform: scale(1.04);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+        }
+
+        /* FAB */
+        .fab {
+            position: fixed;
+            bottom: calc(72px + 1rem);
+            right: 1.25rem;
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            border: none;
+            background: var(--accent-green);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 4px 16px rgba(242, 101, 74, 0.45);
+            z-index: 200;
+            transition: transform 0.15s ease, box-shadow 0.15s ease;
+        }
+
+        .fab:hover {
+            transform: scale(1.08);
+            box-shadow: 0 6px 20px rgba(242, 101, 74, 0.55);
+        }
+
+        .fab:active {
+            transform: scale(0.95);
+        }
+
+        @media (min-width: 768px) {
+            .fab {
+                bottom: 1.5rem;
+            }
+            .clear-checked-pill {
+                bottom: 1.75rem;
+                left: auto;
+                right: calc(56px + 2rem);
+                transform: none;
+            }
+        }
+
+        /* Shopping item: separate meal name and date */
+        .shopping-item-meal {
+            font-family: var(--font-body);
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+        }
+
+        .shopping-item-date {
+            font-family: var(--font-mono);
+            font-size: 0.74rem;
+            color: var(--text-secondary);
+            opacity: 0.8;
+        }
+
         /* Export dropdown */
         .export-dropdown {
             position: relative;
@@ -3657,7 +3843,6 @@
                 <div class="page-header">
                     <h1 class="page-title">Shopping List</h1>
                     <div>
-                        <button class="btn btn-secondary" onclick="clearHaveItems()">Clear Checked</button>
                         <div class="export-dropdown">
                             <button class="btn btn-secondary" onclick="toggleExportMenu()">Export ▾</button>
                             <div class="export-menu" id="export-menu">
@@ -3665,28 +3850,14 @@
                                 <button class="export-menu-item" onclick="exportAsCSV()">📊 Download CSV</button>
                             </div>
                         </div>
-                        <button class="btn btn-primary" onclick="openPrintModal()">Print List</button>
+                        <button class="btn btn-secondary" onclick="openPrintModal()">Print</button>
                     </div>
                 </div>
-                
-                <div class="shopping-summary" id="shopping-summary">
+
+                <div class="shopping-summary" id="shopping-summary" style="display:none;">
                     <!-- Summary will be rendered here -->
                 </div>
-                
-                <!-- Add Item Section -->
-                <div class="add-item-section">
-                    <div class="add-item-header">
-                        <h4>➕ Add extra item</h4>
-                        <button class="btn btn-secondary btn-small" onclick="clearCheckedAdhocItems()">Remove checked extras</button>
-                    </div>
-                    <div class="add-item-row">
-                        <div class="add-item-input-wrapper">
-                            <input type="text" class="add-item-input" id="add-item-input" placeholder="e.g., Kitchen roll, Bin bags..." onkeypress="handleAddItemKeypress(event)" oninput="showAdHocAutocomplete(this)" onblur="hideAdHocAutocomplete(this)" autocomplete="off">
-                        </div>
-                        <button class="btn btn-primary btn-small" onclick="addAdHocItem()">Add</button>
-                    </div>
-                </div>
-                
+
                 <!-- Shop Selector -->
                 <div class="shop-selector" id="shop-selector-container" style="display: none;">
                     <span class="shop-selector-label">🏪 Shopping at:</span>
@@ -3695,39 +3866,58 @@
                     </select>
                     <a href="#" onclick="event.preventDefault(); showView('settings');" style="font-size: 0.85rem; color: var(--accent-green);">Manage shops</a>
                 </div>
-                
-                <!-- Controls Row -->
+
+                <!-- Controls: sort chips + date range nav -->
                 <div class="shopping-controls">
                     <div class="shopping-controls-group">
-                        <span class="sort-label">Sort by:</span>
-                        <select class="sort-select" id="sort-select" onchange="renderShoppingList()">
-                            <option value="alpha">A-Z (Alphabetical)</option>
-                            <option value="aisle">Aisle order</option>
-                            <option value="day">Date order</option>
-                            <option value="recipe">Recipe</option>
-                        </select>
-                    </div>
-                    <div class="shopping-controls-group">
-                        <span class="sort-label">Date range:</span>
-                        <div class="date-range-picker">
-                            <input type="date" class="date-input" id="date-from" onchange="onDateRangeChange()">
-                            <span class="date-range-separator">to</span>
-                            <input type="date" class="date-input" id="date-to" onchange="onDateRangeChange()">
+                        <div class="sort-chips" id="sort-chips">
+                            <button class="sort-chip active" data-sort="alpha" onclick="setSortMethod('alpha')">A–Z</button>
+                            <button class="sort-chip" data-sort="aisle" onclick="setSortMethod('aisle')">Aisle</button>
+                            <button class="sort-chip" data-sort="day" onclick="setSortMethod('day')">Date</button>
+                            <button class="sort-chip" data-sort="recipe" onclick="setSortMethod('recipe')">Recipe</button>
                         </div>
                     </div>
                     <div class="shopping-controls-group">
-                        <button class="date-preset-btn" data-preset="today" onclick="setDatePreset('today')">Today</button>
-                        <button class="date-preset-btn" data-preset="3days" onclick="setDatePreset('3days')">3 days</button>
-                        <button class="date-preset-btn active" data-preset="7days" onclick="setDatePreset('7days')">7 days</button>
-                        <button class="date-preset-btn" data-preset="week" onclick="setDatePreset('week')">This week</button>
-                        <button class="date-preset-btn" data-preset="all" onclick="setDatePreset('all')">All</button>
+                        <div class="date-range-nav">
+                            <button class="date-nav-btn" onclick="shiftDateRange(-1)" title="Previous period">‹</button>
+                            <span class="date-range-label" id="date-range-label">7 days</span>
+                            <button class="date-nav-btn" onclick="shiftDateRange(1)" title="Next period">›</button>
+                        </div>
+                    </div>
+                    <div class="shopping-controls-group">
+                        <button class="sort-chip date-preset-btn" data-preset="today" onclick="setDatePreset('today')">Today</button>
+                        <button class="sort-chip date-preset-btn" data-preset="3days" onclick="setDatePreset('3days')">3 days</button>
+                        <button class="sort-chip date-preset-btn active" data-preset="7days" onclick="setDatePreset('7days')">7 days</button>
+                        <button class="sort-chip date-preset-btn" data-preset="week" onclick="setDatePreset('week')">This week</button>
+                        <button class="sort-chip date-preset-btn" data-preset="all" onclick="setDatePreset('all')">All</button>
                     </div>
                 </div>
-                
+
+                <!-- Hidden date inputs (used by existing JS logic) -->
+                <div style="display:none;">
+                    <input type="date" id="date-from" onchange="onDateRangeChange()">
+                    <input type="date" id="date-to" onchange="onDateRangeChange()">
+                    <select id="sort-select"><option value="alpha">alpha</option><option value="aisle">aisle</option><option value="day">day</option><option value="recipe">recipe</option></select>
+                </div>
+
+                <!-- Add Item Section -->
+                <div class="add-item-section" id="add-item-section">
+                    <div class="add-item-header">
+                        <h4>Add extra item</h4>
+                        <button class="btn btn-secondary btn-small" onclick="clearCheckedAdhocItems()">Remove checked extras</button>
+                    </div>
+                    <div class="add-item-row">
+                        <div class="add-item-input-wrapper">
+                            <input type="text" class="add-item-input" id="add-item-input" placeholder="e.g., Kitchen roll, Bin bags…" onkeypress="handleAddItemKeypress(event)" oninput="showAdHocAutocomplete(this)" onblur="hideAdHocAutocomplete(this)" autocomplete="off">
+                        </div>
+                        <button class="btn btn-primary btn-small" onclick="addAdHocItem()">Add</button>
+                    </div>
+                </div>
+
                 <div id="shopping-list">
                     <!-- Shopping list will be rendered here -->
                 </div>
-                
+
                 <div id="shopping-empty" class="empty-state" style="display: none;">
                     <div class="empty-state-icon">🛒</div>
                     <h3 class="empty-state-title">No items to buy</h3>
@@ -3735,6 +3925,16 @@
                     <button class="btn btn-secondary" style="margin-top: 1rem;" onclick="showView('planner')">Go to Meal Plan</button>
                 </div>
             </section>
+
+            <!-- Floating clear-checked pill (shopping view only) -->
+            <div class="clear-checked-pill" id="clear-checked-pill">
+                <button onclick="clearHaveItems()" id="clear-checked-text">Clear checked</button>
+            </div>
+
+            <!-- FAB: add extra shopping item -->
+            <button class="fab" id="shopping-fab" onclick="focusShoppingAdd()" title="Add extra item" style="display:none;">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            </button>
 
             <!-- Settings View -->
             <section id="settings-view" class="view">
@@ -6497,20 +6697,35 @@ oregano"></textarea>
                 printDateEl.textContent = `${formatDisplayDate(shoppingDateFrom)} - ${formatDisplayDate(shoppingDateTo)} • Printed ${new Date().toLocaleDateString('en-GB')}`;
             }
             
+            const progressPct = total > 0 ? Math.round((haveCount / total) * 100) : 0;
             summary.innerHTML = `
                 <div class="shopping-summary-stat">
                     <div class="shopping-summary-number">${total}</div>
-                    <div class="shopping-summary-label">Total Items</div>
+                    <div class="shopping-summary-label">Total</div>
                 </div>
                 <div class="shopping-summary-stat">
                     <div class="shopping-summary-number">${haveCount}</div>
-                    <div class="shopping-summary-label">Already Have</div>
+                    <div class="shopping-summary-label">Have</div>
                 </div>
                 <div class="shopping-summary-stat">
                     <div class="shopping-summary-number">${needCount}</div>
-                    <div class="shopping-summary-label">Need to Buy</div>
+                    <div class="shopping-summary-label">Need</div>
+                </div>
+                <div class="shopping-progress-wrap">
+                    <div class="shopping-progress-bar-track">
+                        <div class="shopping-progress-bar-fill" style="width:${progressPct}%"></div>
+                    </div>
+                    <div class="shopping-progress-text">${haveCount} of ${total} checked</div>
                 </div>
             `;
+
+            // Show / hide floating clear-checked pill
+            const clearPill = document.getElementById('clear-checked-pill');
+            if (clearPill) {
+                clearPill.style.display = haveCount > 0 ? 'block' : 'none';
+                const clearBtn = document.getElementById('clear-checked-text');
+                if (clearBtn) clearBtn.textContent = `Clear ${haveCount} checked`;
+            }
             
             // Render list
             const needItems = sortedIngredients.filter(ing => !shoppingHave[ing.key]);
@@ -6586,20 +6801,26 @@ oregano"></textarea>
             const escapedKey = ing.key.replace(/'/g, "\\'").replace(/"/g, '&quot;');
             const isAdhoc = ing.isAdhoc;
             const adhocClass = isAdhoc ? 'adhoc' : '';
-            const contextText = isAdhoc ? 'Extra item' : `${escapeHtml(ing.dateDisplay || ing.dayName)} · ${escapeHtml(ing.recipeName)}`;
-            
+
+            let contextHtml;
+            if (isAdhoc) {
+                contextHtml = '<span class="shopping-item-meal">Extra item</span>';
+            } else {
+                contextHtml = `<span class="shopping-item-meal">${escapeHtml(ing.recipeName)}</span><span class="shopping-item-date"> · ${escapeHtml(ing.dateDisplay || ing.dayName)}</span>`;
+            }
+
             // Show set aisle button if sorting by aisle and item has no aisle
             const showSetAisle = sortMethod === 'aisle' && !ing.aisle && currentShopId && shops.find(s => s.id === currentShopId)?.aisles?.length > 0;
             const escapedText = escapeHtml(ing.text).replace(/'/g, "\\'");
-            
+
             return `
                 <div class="shopping-item ${have ? 'have' : ''} ${adhocClass}">
-                    <input type="checkbox" 
-                           ${have ? 'checked' : ''} 
+                    <input type="checkbox"
+                           ${have ? 'checked' : ''}
                            onchange="toggleShoppingItem('${escapedKey}', this.checked)">
                     <div class="shopping-item-text">
                         ${escapeHtml(ing.text)}
-                        <div class="shopping-item-recipe">${contextText}</div>
+                        <div class="shopping-item-recipe">${contextHtml}</div>
                     </div>
                     ${showSetAisle ? `<button class="set-aisle-btn" onclick="showAisleSelector('${escapedText}', this)">Set aisle</button>` : ''}
                     ${isAdhoc ? `<button class="shopping-item-remove" onclick="removeAdhocItem('${ing.adhocId}')" title="Remove item">✕</button>` : ''}
@@ -7246,6 +7467,8 @@ oregano"></textarea>
             document.querySelectorAll('.date-preset-btn').forEach(btn => {
                 btn.classList.toggle('active', btn.dataset.preset === '7days');
             });
+
+            updateDateRangeLabel();
         }
 
         function onDateRangeChange() {
@@ -7309,10 +7532,70 @@ oregano"></textarea>
             document.querySelectorAll('.date-preset-btn').forEach(btn => {
                 btn.classList.toggle('active', btn.dataset.preset === preset);
             });
-            
+
+            updateDateRangeLabel();
             renderShoppingList();
         }
         window.setDatePreset = setDatePreset;
+
+        // Update the date range label shown in the nav
+        function updateDateRangeLabel() {
+            const label = document.getElementById('date-range-label');
+            if (!label) return;
+            if (!shoppingDateFrom || !shoppingDateTo) {
+                label.textContent = 'All dates';
+                return;
+            }
+            const opts = { day: 'numeric', month: 'short' };
+            const fromStr = shoppingDateFrom.toLocaleDateString('en-GB', opts);
+            const toStr = shoppingDateTo.toLocaleDateString('en-GB', opts);
+            label.textContent = `${fromStr} – ${toStr}`;
+        }
+        window.updateDateRangeLabel = updateDateRangeLabel;
+
+        // Shift the date range forward/backward by its current span
+        function shiftDateRange(direction) {
+            if (!shoppingDateFrom || !shoppingDateTo) {
+                initDateRangePicker();
+            }
+            const spanMs = shoppingDateTo.getTime() - shoppingDateFrom.getTime() + 24 * 60 * 60 * 1000;
+            shoppingDateFrom = new Date(shoppingDateFrom.getTime() + direction * spanMs);
+            shoppingDateTo = new Date(shoppingDateTo.getTime() + direction * spanMs);
+
+            const fromInput = document.getElementById('date-from');
+            const toInput = document.getElementById('date-to');
+            if (fromInput) fromInput.value = formatDate(shoppingDateFrom);
+            if (toInput) toInput.value = formatDate(shoppingDateTo);
+
+            // Clear preset active state
+            document.querySelectorAll('.date-preset-btn').forEach(btn => btn.classList.remove('active'));
+
+            updateDateRangeLabel();
+            renderShoppingList();
+        }
+        window.shiftDateRange = shiftDateRange;
+
+        // Set sort method via chip buttons
+        function setSortMethod(method) {
+            const select = document.getElementById('sort-select');
+            if (select) select.value = method;
+
+            document.querySelectorAll('#sort-chips .sort-chip').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.sort === method);
+            });
+
+            renderShoppingList();
+        }
+        window.setSortMethod = setSortMethod;
+
+        // FAB: scroll to and focus the add-item input
+        function focusShoppingAdd() {
+            const section = document.getElementById('add-item-section');
+            const input = document.getElementById('add-item-input');
+            if (section) section.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            if (input) setTimeout(() => input.focus(), 250);
+        }
+        window.focusShoppingAdd = focusShoppingAdd;
 
         // =====================
         // Shops & Aisles Management
@@ -8099,6 +8382,12 @@ oregano"></textarea>
             if (viewName === 'shopping') {
                 setTimeout(setupAdhocAutocomplete, 100);
             }
+
+            // Show FAB and clear pill only on shopping view
+            const fab = document.getElementById('shopping-fab');
+            if (fab) fab.style.display = viewName === 'shopping' ? 'flex' : 'none';
+            const clearPill = document.getElementById('clear-checked-pill');
+            if (clearPill && viewName !== 'shopping') clearPill.style.display = 'none';
 
             // Render suggestions panel when switching to planner
             if (viewName === 'planner') {
