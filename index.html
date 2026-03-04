@@ -2,12 +2,12 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>KitchenListr - Meal Planner</title>
     
     <!-- PWA Meta Tags -->
     <meta name="description" content="Plan your meals, build your shopping list automatically">
-    <meta name="theme-color" content="#4FB286">
+    <meta name="theme-color" content="#F2654A">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
@@ -17,29 +17,53 @@
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=DM+Sans:wght@400;500;600&family=DM+Serif+Display&family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Lato:wght@400;700&family=Libre+Baskerville:wght@400;700&family=Nunito:wght@400;600;700&family=Playfair+Display:wght@400;600;700&family=Sora:wght@400;600;700&family=Source+Sans+3:wght@400;500;600&family=Source+Serif+4:wght@400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,700;0,9..144,900;1,9..144,300&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&family=Caveat:wght@400;600&display=swap" rel="stylesheet">
     <style>
         :root {
-            /* Coolors palette: 50FFB1-4FB286-3C896D-546D64-4D685A */
-            --bg-cream: #F4F9F7;
+            /* ── Warm Pantry design system ── */
+
+            /* Brand primaries */
+            --color-tomato:    #F2654A;
+            --color-tomato-dark: #D94E35;
+            --color-saffron:   #F5C842;
+            --color-herb:      #5BBF7A;
+
+            /* Pastels (blob backgrounds, tag fills) */
+            --color-blush:     #FAD4C0;
+            --color-buttercup: #FBF0B2;
+            --color-sage-pale: #C8E6C9;
+            --color-lavender:  #DDD6FE;
+            --color-peach:     #FFE0CC;
+            --color-sky:       #BFE3F5;
+
+            /* Legacy variable names retained — values updated */
+            --bg-cream: #F5F5F0;           /* warm off-white (was cool mint) */
             --bg-white: #FFFFFF;
-            --text-primary: #2A3B35;
-            --text-secondary: #546D64;
-            --accent-green: #4FB286;
-            --accent-green-light: #D9F5E8;
-            --accent-green-dark: #3C896D;
-            --accent-mint: #50FFB1;
-            --accent-sage: #4D685A;
-            --border-light: #D1E0DA;
-            --border-medium: #4D685A;
-            --shadow-sm: 0 1px 3px rgba(60, 137, 109, 0.1);
-            --shadow-md: 0 4px 12px rgba(60, 137, 109, 0.15);
-            --shadow-lg: 0 8px 24px rgba(60, 137, 109, 0.18);
-            --radius-sm: 6px;
-            --radius-md: 10px;
-            --radius-lg: 16px;
+            --text-primary: #1A1A1A;       /* ink (was dark teal) */
+            --text-secondary: #3D3D3D;     /* charcoal (was muted teal) */
+            --accent-green: #F2654A;       /* tomato — primary accent (was green) */
+            --accent-green-light: #FAD4C0; /* blush — light accent bg (was mint) */
+            --accent-green-dark: #D94E35;  /* tomato dark — hover/press states */
+            --accent-mint: #5BBF7A;        /* herb green — success states */
+            --accent-sage: #8C8C8C;        /* slate — muted/secondary */
+            --border-light: #E8E4DC;       /* warm grey border */
+            --border-medium: #3D3D3D;      /* charcoal border */
+            --accent-glow-soft:   rgba(242, 101, 74, 0.15); /* focus rings, day-card today */
+            --accent-glow-mid:    rgba(242, 101, 74, 0.35); /* button hover, toggle active */
+            --accent-glow-strong: rgba(242, 101, 74, 0.50); /* FAB shadow */
+            --shadow-sm: 0 2px 8px rgba(0,0,0,0.06);
+            --shadow-md: 0 4px 20px rgba(0,0,0,0.06);
+            --shadow-lg: 0 8px 32px rgba(0,0,0,0.10);
+            --radius-sm: 8px;              /* was 6px */
+            --radius-md: 16px;             /* was 10px */
+            --radius-lg: 24px;             /* was 16px */
+            --radius-pill: 999px;          /* new — for tags, chips, pill buttons */
+
+            /* Fonts */
             --font-heading: 'Fraunces', Georgia, serif;
-            --font-body: 'Source Sans 3', -apple-system, BlinkMacSystemFont, sans-serif;
+            --font-body: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+            --font-mono: 'DM Mono', monospace;
+            --font-accent: 'Caveat', cursive;
 
             /* Typography scale */
             --text-xs:   0.75rem;
@@ -49,10 +73,10 @@
             --text-xl:   1.375rem;
             --text-2xl:  1.75rem;
 
-            /* Semantic status colours (theme-neutral) */
-            --color-error:      #DC2626;
+            /* Semantic status colours */
+            --color-error:      #E84545;
             --color-error-bg:   #FEE2E2;
-            --color-warning:    #D97706;
+            --color-warning:    #F5A623;
             --color-warning-bg: #FEF3C7;
             --color-info-bg:    #DBEAFE;
         }
@@ -66,6 +90,7 @@
         body {
             font-family: var(--font-body);
             background: var(--bg-cream);
+            -webkit-text-size-adjust: 100%; /* Prevent iOS font size change on rotation */
             color: var(--text-primary);
             line-height: 1.6;
             min-height: 100vh;
@@ -311,13 +336,23 @@
 
         /* Header */
         .header {
-            background: var(--bg-white);
-            border-bottom: 1px solid var(--border-light);
+            border-bottom: 1px solid rgba(0,0,0,0.04);
             padding: 1rem 1.5rem;
             position: sticky;
             top: 0;
             z-index: 100;
-            box-shadow: var(--shadow-sm);
+        }
+        /* Frosted glass on a pseudo-element so backdrop-filter does NOT create
+           a containing block for position:fixed children (Safari WebKit bug) */
+        .header::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: rgba(255,255,255,0.92);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            z-index: -1;
+            pointer-events: none;
         }
 
         .header-content {
@@ -327,7 +362,7 @@
             align-items: center;
             justify-content: space-between;
             flex-wrap: wrap;
-            gap: 1rem;
+            gap: 1.5rem;
         }
 
         .logo {
@@ -377,10 +412,10 @@
         }
 
         .sign-out-btn {
-            padding: 0.4rem 0.8rem;
-            border: 1px solid var(--border-medium);
-            border-radius: var(--radius-sm);
-            background: var(--bg-white);
+            padding: 0.4rem 1rem;
+            border: 1.5px solid var(--border-light);
+            border-radius: var(--radius-pill);
+            background: transparent;
             font-family: var(--font-body);
             font-size: 0.85rem;
             color: var(--text-secondary);
@@ -390,6 +425,7 @@
 
         .sign-out-btn:hover {
             background: var(--bg-cream);
+            border-color: var(--accent-green);
             color: var(--text-primary);
         }
 
@@ -403,12 +439,15 @@
         }
 
         .nav-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
             padding: 0.6rem 1.2rem;
             border: none;
             background: transparent;
             color: var(--text-secondary);
             font-family: var(--font-body);
-            font-size: 0.95rem;
+            font-size: 0.9rem;
             font-weight: 500;
             cursor: pointer;
             border-radius: var(--radius-sm);
@@ -416,23 +455,8 @@
             white-space: nowrap;
         }
 
-        @media (max-width: 768px) {
-            .header { padding: 0.75rem 1rem; }
-            .header-content { gap: 0.5rem; }
-            .nav {
-                order: 10;
-                flex-basis: 100%;
-                overflow-x: auto;
-                -webkit-overflow-scrolling: touch;
-                scrollbar-width: none;
-            }
-            .nav::-webkit-scrollbar { display: none; }
-            .nav-btn {
-                padding: 0.5rem 0.85rem;
-                font-size: 0.875rem;
-                flex-shrink: 0;
-            }
-        }
+        /* Icons hidden on desktop — text-only tabs */
+        .nav-icon { display: none; }
 
         .nav-btn:hover {
             color: var(--text-primary);
@@ -443,7 +467,93 @@
             background: var(--bg-white);
             color: var(--accent-green);
             box-shadow: var(--shadow-sm);
-            border-bottom: 2px solid var(--accent-mint);
+        }
+
+        /* ── Mobile: fixed bottom nav ── */
+        @media (max-width: 768px) {
+            .header { padding: 0.75rem 1rem; }
+            .header-content { gap: 0.5rem; }
+
+            .nav {
+                position: fixed;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                z-index: 200;
+                background: var(--bg-white);
+                border-top: 1px solid var(--border-light);
+                box-shadow: 0 -4px 20px rgba(0,0,0,0.06);
+                height: 72px;
+                padding: 0 4px;
+                border-radius: 0;
+                gap: 0;
+                justify-content: space-around;
+                overflow: visible;
+                flex-wrap: nowrap;
+            }
+
+            .nav-btn {
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                gap: 4px;
+                padding: 8px 4px;
+                flex: 1;
+                height: 100%;
+                border-radius: 0;
+                font-size: 0.625rem;
+                font-weight: 500;
+                position: relative;
+            }
+
+            .nav-icon { display: block; }
+
+            .nav-btn:hover {
+                background: transparent;
+                color: var(--text-primary);
+            }
+
+            .nav-btn.active {
+                color: var(--accent-green);
+                background: transparent;
+                box-shadow: none;
+            }
+
+            /* Tomato line indicator at top of active tab */
+            .nav-btn.active::before {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: 20%;
+                right: 20%;
+                height: 2.5px;
+                background: var(--accent-green);
+                border-radius: 0 0 3px 3px;
+            }
+
+            /* Push main content above the fixed nav */
+            .main { padding-bottom: calc(72px + 1rem + env(safe-area-inset-bottom, 0px)); }
+
+            /* iPhone home indicator safe area */
+            .nav {
+                padding-bottom: env(safe-area-inset-bottom, 0px);
+                height: calc(72px + env(safe-area-inset-bottom, 0px));
+            }
+        }
+
+        /* ── Mobile landscape: compact header & nav ── */
+        @media (max-height: 500px) and (orientation: landscape) {
+            .header { padding: 0.35rem 1rem; }
+            .logo-text { font-size: 1.1rem; }
+            .sign-out-btn { padding: 0.25rem 0.75rem; font-size: 0.8rem; }
+            .nav-btn { padding: 0.35rem 0.75rem; font-size: 0.8rem; }
+            .nav { gap: 0.1rem; }
+            .main { padding-top: 1rem; }
+        }
+
+        /* On landscape mobile (width > 768px but short screen), keep nav in header */
+        @media (min-width: 769px) and (max-height: 500px) {
+            .header-content { flex-wrap: nowrap; gap: 0.5rem; }
         }
 
         /* Main Content */
@@ -479,6 +589,97 @@
             }
         }
 
+        /* =============================================
+           Phase 8 — Blob decorations & animations
+           ============================================= */
+
+        /* Blob shapes on page headers */
+        .page-header {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .page-header::before,
+        .page-header::after {
+            content: '';
+            position: absolute;
+            border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%;
+            opacity: 0.38;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* Ensure header content stays above blobs */
+        .page-header > * { position: relative; z-index: 1; }
+
+        #recipes-view .page-header::before  { width: 120px; height: 100px; background: var(--color-blush);     top: -30px; right: -20px; }
+        #recipes-view .page-header::after   { width:  80px; height:  75px; background: var(--color-buttercup); bottom: -20px; left: 60px; }
+
+        #planner-view .page-header::before  { width:  90px; height:  75px; background: var(--color-sage-pale); top: -35px; right: -45px; }
+        #planner-view .page-header::after   { width:  60px; height:  60px; background: var(--color-lavender);  bottom: -22px; left: 60px; }
+
+        #shopping-view .page-header::before { width: 130px; height: 100px; background: var(--color-blush);     top: -35px; right: -20px; }
+        #shopping-view .page-header::after  { width:  75px; height:  65px; background: var(--color-peach);     bottom: -20px; left: 100px; }
+
+        #settings-view .page-header::before { width: 100px; height:  80px; background: var(--color-sage-pale); top: -20px; right: -15px; }
+        #settings-view .page-header::after  { width:  65px; height:  65px; background: var(--color-sky);       bottom: -15px; left: 70px; }
+
+        #account-view .page-header::before  { width: 110px; height:  85px; background: var(--color-lavender);  top: -25px; right: -15px; }
+        #account-view .page-header::after   { width:  70px; height:  70px; background: var(--color-buttercup); bottom: -18px; left: 65px; }
+
+        @media (prefers-reduced-motion: no-preference) {
+            @keyframes blobMorph {
+                0%   { border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%; }
+                33%  { border-radius: 40% 60% 55% 45% / 45% 55% 45% 55%; }
+                66%  { border-radius: 35% 65% 45% 55% / 55% 40% 60% 45%; }
+                100% { border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%; }
+            }
+
+            @keyframes blobFloat {
+                0%   { transform: translate(0, 0) rotate(0deg); }
+                33%  { transform: translate(4px, -6px) rotate(4deg); }
+                66%  { transform: translate(-4px, 3px) rotate(-3deg); }
+                100% { transform: translate(0, 0) rotate(0deg); }
+            }
+
+            .page-header::before {
+                animation: blobMorph 9s ease-in-out infinite, blobFloat 7s ease-in-out infinite;
+            }
+            .page-header::after {
+                animation: blobMorph 11s ease-in-out infinite reverse, blobFloat 9s ease-in-out infinite reverse;
+            }
+
+            /* Card pop-in with stagger */
+            @keyframes popIn {
+                from { opacity: 0; transform: scale(0.92) translateY(8px); }
+                to   { opacity: 1; transform: scale(1)    translateY(0); }
+            }
+
+            .recipe-card {
+                animation: popIn 0.28s ease both;
+                animation-delay: calc(var(--anim-order, 0) * 50ms);
+            }
+
+            /* Shopping item stagger */
+            .shopping-item {
+                animation: popIn 0.22s ease both;
+                animation-delay: calc(var(--anim-order, 0) * 35ms);
+            }
+
+            /* Spring check animation */
+            @keyframes springCheck {
+                0%   { transform: scale(1); }
+                25%  { transform: scale(0.96); }
+                55%  { transform: scale(1.04); }
+                78%  { transform: scale(0.99); }
+                100% { transform: scale(1); }
+            }
+
+            .shopping-item.spring-check {
+                animation: springCheck 0.38s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+            }
+        }
+
         /* Page Headers */
         .page-header {
             display: flex;
@@ -499,9 +700,9 @@
             display: inline-flex;
             align-items: center;
             gap: 0.5rem;
-            padding: 0.7rem 1.25rem;
+            padding: 0.7rem 1.4rem;
             border: none;
-            border-radius: var(--radius-sm);
+            border-radius: var(--radius-pill);
             font-family: var(--font-body);
             font-size: 0.95rem;
             font-weight: 500;
@@ -517,7 +718,7 @@
         .btn-primary:hover {
             background: var(--accent-green-dark);
             transform: translateY(-1px);
-            box-shadow: 0 4px 12px rgba(79, 178, 134, 0.3);
+            box-shadow: 0 4px 16px var(--accent-glow-mid);
         }
 
         .btn-primary:disabled {
@@ -529,18 +730,18 @@
         }
 
         .btn-secondary {
-            background: var(--bg-white);
+            background: transparent;
             color: var(--text-primary);
-            border: 1px solid var(--border-medium);
+            border: 1.5px solid var(--border-light);
         }
 
         .btn-secondary:hover {
             background: var(--bg-cream);
-            border-color: var(--text-secondary);
+            border-color: var(--accent-green);
         }
 
         .btn-danger {
-            background: #DC3545;
+            background: var(--color-error);
             color: white;
         }
 
@@ -549,7 +750,7 @@
         }
 
         .btn-small {
-            padding: 0.4rem 0.8rem;
+            padding: 0.4rem 1rem;
             font-size: 0.85rem;
         }
 
@@ -557,15 +758,14 @@
         .card {
             background: var(--bg-white);
             border-radius: var(--radius-lg);
-            box-shadow: var(--shadow-sm);
-            border: 1px solid var(--border-light);
+            box-shadow: var(--shadow-md);
             overflow: hidden;
         }
 
         .card-header {
             padding: 1.25rem 1.5rem;
             border-bottom: 1px solid var(--border-light);
-            background: linear-gradient(to bottom, var(--bg-white), var(--bg-cream));
+            background: var(--bg-white);
         }
 
         .card-body {
@@ -575,47 +775,121 @@
         /* Recipe Grid */
         .recipe-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
             gap: 1.25rem;
         }
 
         .recipe-card {
             background: var(--bg-white);
-            border-radius: var(--radius-md);
-            border: 1px solid var(--border-light);
-            padding: 1.25rem;
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-md);
+            padding: 0;
             cursor: pointer;
             transition: all 0.2s ease;
             position: relative;
+            overflow: hidden;
         }
 
         .recipe-card:hover {
-            border-color: var(--accent-mint);
-            box-shadow: var(--shadow-md);
+            box-shadow: var(--shadow-lg);
             transform: translateY(-2px);
         }
 
+        .recipe-card-avatar {
+            width: 100%;
+            height: 100px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.75rem;
+            overflow: hidden;
+            flex-shrink: 0;
+        }
+
+        .recipe-card-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .recipe-card-body {
+            padding: 0.875rem 1rem 1rem;
+            position: relative;
+        }
+
         .recipe-card-title {
-            font-size: 1.1rem;
-            margin-bottom: 0.5rem;
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 0.35rem;
             color: var(--text-primary);
+            line-height: 1.3;
         }
 
         .recipe-card-meta {
-            font-size: 0.85rem;
+            font-size: 0.8rem;
             color: var(--text-secondary);
         }
 
         .recipe-card-badge {
             position: absolute;
-            top: 1rem;
-            right: 1rem;
+            top: 0.625rem;
+            right: 0.75rem;
             background: var(--accent-green-light);
             color: var(--accent-green-dark);
-            padding: 0.2rem 0.5rem;
-            border-radius: var(--radius-sm);
-            font-size: 0.75rem;
+            padding: 0.2rem 0.65rem;
+            border-radius: var(--radius-pill);
+            font-size: 0.7rem;
             font-weight: 600;
+        }
+
+        /* Recipe category chips — multi-select in edit form */
+        .recipe-categories-chips {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.4rem;
+        }
+        .recipe-cat-chip {
+            padding: 0.3rem 0.85rem;
+            border: 1.5px solid var(--border-light);
+            border-radius: var(--radius-pill);
+            background: var(--bg-cream);
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.15s;
+            font-family: var(--font-body);
+            color: var(--text-secondary);
+        }
+        .recipe-cat-chip.selected {
+            background: var(--accent-green);
+            border-color: var(--accent-green);
+            color: white;
+        }
+
+        /* Recipe category filter chips */
+        #recipe-category-filter {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+            margin-bottom: 1rem;
+        }
+
+        /* Recipe view avatar in modal */
+        .recipe-view-avatar {
+            width: 100%;
+            height: 140px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 4rem;
+            border-radius: var(--radius-md);
+            margin-bottom: 1.25rem;
+            overflow: hidden;
+        }
+
+        .recipe-view-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
         }
 
         /* Forms */
@@ -633,19 +907,20 @@
         .form-input, .form-textarea, .form-select {
             width: 100%;
             padding: 0.75rem 1rem;
-            border: 1px solid var(--border-medium);
-            border-radius: var(--radius-sm);
+            border: 1.5px solid transparent;
+            border-radius: var(--radius-md);
             font-family: var(--font-body);
             font-size: 1rem;
             color: var(--text-primary);
-            background: var(--bg-white);
-            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+            background: var(--bg-cream);
+            transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
         }
 
         .form-input:focus, .form-textarea:focus, .form-select:focus {
             outline: none;
             border-color: var(--accent-green);
-            box-shadow: 0 0 0 3px var(--accent-green-light);
+            box-shadow: 0 0 0 3px var(--accent-glow-soft);
+            background: var(--bg-white);
         }
 
         .form-textarea {
@@ -906,7 +1181,7 @@
         /* Day Notes */
         .day-notes {
             margin-top: 0.5rem;
-            padding-top: 0.5rem;
+            padding: 0.5rem 0.75rem 0.6rem;
             border-top: 1px dashed var(--border-light);
         }
 
@@ -1036,19 +1311,25 @@
 
         .day-card {
             background: var(--bg-white);
-            border-radius: var(--radius-md);
-            border: 1px solid var(--border-light);
+            border-radius: var(--radius-lg);
+            border: none;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
             min-height: 200px;
             display: flex;
             flex-direction: column;
+            transition: box-shadow 0.15s;
+        }
+
+        .day-card:hover {
+            box-shadow: 0 4px 14px rgba(0,0,0,0.1);
         }
 
         .day-header {
             padding: 0.75rem 1rem;
-            background: linear-gradient(135deg, var(--accent-green-light) 0%, #c4f0dc 100%);
-            border-bottom: 1px solid var(--border-light);
+            background: var(--bg-cream);
+            border-radius: var(--radius-lg) var(--radius-lg) 0 0;
             font-weight: 600;
-            color: var(--accent-green-dark);
+            color: var(--text-secondary);
             font-size: 0.9rem;
         }
 
@@ -1056,6 +1337,7 @@
             font-weight: 400;
             color: var(--text-secondary);
             font-size: 0.8rem;
+            opacity: 0.8;
         }
 
         .day-meals {
@@ -1075,6 +1357,17 @@
             align-items: center;
             justify-content: space-between;
             gap: 0.5rem;
+            border: 1.5px solid transparent;
+        }
+
+        /* Empty meal slot: dashed border, transparent bg */
+        .meal-slot.meal-empty {
+            background: transparent;
+            border: 1.5px dashed var(--border-light);
+        }
+
+        .meal-slot.meal-empty .meal-slot-label {
+            opacity: 0.6;
         }
 
         .meal-slot-label {
@@ -1117,8 +1410,13 @@
         }
 
         /* Day card states */
+        /* Future days get a slightly stronger border than the default */
+        .day-card:not(.past):not(.today) {
+            border-color: #C8C2B8;
+        }
+
         .day-card.past {
-            opacity: 0.5;
+            opacity: 0.45;
             pointer-events: none;
         }
 
@@ -1127,12 +1425,17 @@
         }
 
         .day-card.today {
-            border-color: var(--accent-green);
-            box-shadow: 0 0 0 2px var(--accent-green-light);
+            box-shadow: 0 0 0 2px var(--accent-green), 0 4px 14px var(--accent-glow-soft);
         }
 
         .day-card.today .day-header {
-            background: linear-gradient(135deg, var(--accent-mint) 0%, var(--accent-green-light) 100%);
+            background: linear-gradient(135deg, var(--accent-green) 0%, var(--accent-green-dark) 100%);
+            color: white;
+        }
+
+        .day-card.today .day-header .date {
+            color: rgba(255,255,255,0.8);
+            opacity: 1;
         }
 
         /* Shopping List */
@@ -1175,9 +1478,11 @@
         }
 
         .shopping-item input[type="checkbox"] {
-            width: 20px;
-            height: 20px;
+            width: 24px;
+            height: 24px;
+            min-width: 24px;
             accent-color: var(--accent-green);
+            cursor: pointer;
         }
 
         .shopping-item-text {
@@ -1314,17 +1619,20 @@
 
         .week-nav-btn {
             background: var(--bg-white);
-            border: 1px solid var(--border-medium);
-            border-radius: var(--radius-sm);
-            padding: 0.5rem 1rem;
+            border: 1.5px solid var(--border-light);
+            border-radius: var(--radius-pill);
+            padding: 0.45rem 1.1rem;
             cursor: pointer;
-            font-size: 1rem;
-            transition: all 0.2s ease;
+            font-size: 0.88rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+            font-family: var(--font-body);
+            transition: border-color 0.15s, color 0.15s;
         }
 
         .week-nav-btn:hover {
-            background: var(--accent-green-light);
             border-color: var(--accent-green);
+            color: var(--accent-green);
         }
 
         .week-display {
@@ -1357,9 +1665,9 @@
 
         .suggestions-tab {
             background: none;
-            border: 1px solid var(--border-medium);
-            border-radius: var(--radius-sm);
-            padding: 0.35rem 0.75rem;
+            border: 1.5px solid var(--border-light);
+            border-radius: var(--radius-pill);
+            padding: 0.35rem 0.9rem;
             font-size: 0.85rem;
             cursor: pointer;
             color: var(--text-secondary);
@@ -1411,9 +1719,9 @@
 
         .suggestion-vote-btn {
             background: none;
-            border: 1px solid var(--border-medium);
-            border-radius: var(--radius-sm);
-            padding: 0.35rem 0.6rem;
+            border: 1.5px solid var(--border-light);
+            border-radius: var(--radius-pill);
+            padding: 0.35rem 0.7rem;
             font-size: 0.85rem;
             cursor: pointer;
             color: var(--text-secondary);
@@ -1473,7 +1781,7 @@
 
         /* Shopping List Summary */
         .shopping-summary {
-            background: linear-gradient(135deg, var(--accent-green-light) 0%, #c4f0dc 100%);
+            background: var(--bg-white);
             border-radius: var(--radius-md);
             padding: 1.25rem 1.5rem;
             margin-bottom: 1.5rem;
@@ -1541,27 +1849,29 @@
             border-color: var(--accent-green);
         }
 
-        /* View Toggle */
+        /* View Toggle — pill pair */
         .view-toggle {
             display: flex;
-            gap: 0.25rem;
+            gap: 0;
             background: var(--bg-cream);
-            padding: 0.25rem;
-            border-radius: var(--radius-sm);
+            padding: 0.2rem;
+            border-radius: var(--radius-pill);
             margin-bottom: 1.5rem;
+            width: fit-content;
+            border: 1.5px solid var(--border-light);
         }
 
         .view-toggle-btn {
-            padding: 0.5rem 1rem;
+            padding: 0.4rem 1.25rem;
             border: none;
             background: transparent;
             color: var(--text-secondary);
             font-family: var(--font-body);
-            font-size: 0.9rem;
+            font-size: 0.88rem;
             font-weight: 500;
             cursor: pointer;
-            border-radius: var(--radius-sm);
-            transition: all 0.2s ease;
+            border-radius: var(--radius-pill);
+            transition: background 0.15s, color 0.15s, box-shadow 0.15s;
         }
 
         .view-toggle-btn:hover {
@@ -1569,9 +1879,9 @@
         }
 
         .view-toggle-btn.active {
-            background: var(--bg-white);
-            color: var(--accent-green);
-            box-shadow: var(--shadow-sm);
+            background: var(--accent-green);
+            color: white;
+            box-shadow: 0 2px 8px var(--accent-glow-mid);
         }
 
         /* Month View */
@@ -1593,39 +1903,42 @@
         .month-grid {
             display: grid;
             grid-template-columns: repeat(7, 1fr);
-            gap: 2px;
-            background: var(--border-light);
-            border: 1px solid var(--border-light);
-            border-radius: var(--radius-md);
-            overflow: hidden;
+            gap: 3px;
+            margin-bottom: 1.5rem;
         }
 
         .month-header-cell {
-            background: var(--accent-green-light);
-            padding: 0.5rem;
+            background: transparent;
+            padding: 0.4rem 0.25rem;
             text-align: center;
             font-weight: 600;
-            font-size: 0.8rem;
-            color: var(--accent-green-dark);
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
         }
 
         .month-day {
             background: var(--bg-white);
-            min-height: 120px;
-            padding: 0.5rem;
+            border: 1px solid var(--border-light);
+            border-radius: var(--radius-sm);
+            min-height: 90px;
+            padding: 0.4rem 0.45rem;
             display: flex;
             flex-direction: column;
             cursor: pointer;
-            transition: background 0.15s ease;
+            transition: border-color 0.15s, background 0.15s;
         }
 
         .month-day:hover {
+            border-color: var(--accent-green);
             background: var(--bg-cream);
         }
 
         .month-day.other-month {
             background: var(--bg-cream);
-            opacity: 0.5;
+            opacity: 0.45;
+            border-color: transparent;
         }
 
         .month-day.past {
@@ -1633,18 +1946,27 @@
         }
 
         .month-day.today {
-            background: var(--accent-green-light);
+            border-color: var(--accent-green);
+            box-shadow: 0 0 0 1px var(--accent-green);
         }
 
         .month-day-number {
             font-weight: 600;
-            font-size: 0.85rem;
-            color: var(--text-primary);
-            margin-bottom: 0.25rem;
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            margin-bottom: 0.2rem;
+            width: 22px;
+            height: 22px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: var(--radius-pill);
+            flex-shrink: 0;
         }
 
         .month-day.today .month-day-number {
-            color: var(--accent-green-dark);
+            background: var(--accent-green);
+            color: white;
         }
 
         .month-day-meals {
@@ -1656,55 +1978,150 @@
         }
 
         .month-meal-pill {
-            font-size: 0.72rem;
-            padding: 2px 5px;
-            border-radius: 3px;
+            font-size: 0.68rem;
+            padding: 1px 4px;
+            border-radius: var(--radius-pill);
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
-            line-height: 1.4;
+            line-height: 1.5;
+            display: flex;
+            align-items: center;
+            gap: 3px;
         }
 
-        .pill-initial {
-            font-weight: 700;
-            opacity: 0.75;
+        .month-meal-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            flex-shrink: 0;
         }
 
         .month-meal-pill.breakfast {
             background: #FEF3C7;
             color: #92400E;
         }
+        .month-meal-pill.breakfast .month-meal-dot { background: #D97706; }
 
         .month-meal-pill.lunch {
             background: #DBEAFE;
             color: #1E40AF;
         }
+        .month-meal-pill.lunch .month-meal-dot { background: #3B82F6; }
 
         .month-meal-pill.dinner {
             background: #FCE7F3;
             color: #9D174D;
         }
+        .month-meal-pill.dinner .month-meal-dot { background: #EC4899; }
+
+        /* Generic fallback for custom meal types */
+        .month-meal-pill:not(.breakfast):not(.lunch):not(.dinner) {
+            background: var(--accent-green-light);
+            color: var(--accent-green-dark);
+        }
+        .month-meal-pill:not(.breakfast):not(.lunch):not(.dinner) .month-meal-dot {
+            background: var(--accent-green);
+        }
 
         .month-day-more {
-            font-size: 0.7rem;
+            font-size: 0.65rem;
             color: var(--text-secondary);
-            margin-top: 2px;
+            margin-top: 1px;
         }
 
         @media (max-width: 768px) {
             .month-day {
-                min-height: 60px;
-                padding: 0.25rem;
+                min-height: 48px;
+                padding: 0.15rem;
             }
-            
+
             .month-meal-pill {
-                font-size: 0.6rem;
+                font-size: 0.55rem;
+                padding: 0 2px;
+                gap: 2px;
             }
-            
+
+            /* On small phones hide meal pill text — just show dots */
+            @media (max-width: 400px) {
+                .month-meal-pill span:not(.month-meal-dot) { display: none; }
+                .month-meal-pill { padding: 2px; justify-content: center; }
+            }
+
+            .month-meal-dot { width: 5px; height: 5px; }
+
             .month-header-cell {
-                font-size: 0.7rem;
-                padding: 0.35rem;
+                font-size: 0.6rem;
+                padding: 0.2rem 0.1rem;
             }
+
+            .month-day-number {
+                width: 16px;
+                height: 16px;
+                font-size: 0.65rem;
+            }
+        }
+
+        /* === Phase 5: Week strip + day pills === */
+        .week-strip {
+            display: flex;
+            gap: 0.4rem;
+            overflow-x: auto;
+            padding-bottom: 0.5rem;
+            margin-bottom: 1.25rem;
+            scrollbar-width: none;
+        }
+
+        .week-strip::-webkit-scrollbar { display: none; }
+
+        .day-pill {
+            flex-shrink: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.15rem;
+            padding: 0.5rem 0.75rem;
+            border-radius: var(--radius-pill);
+            border: 1.5px solid var(--border-light);
+            background: var(--bg-white);
+            cursor: pointer;
+            transition: border-color 0.15s, background 0.15s, color 0.15s;
+            min-width: 54px;
+            font-family: var(--font-body);
+            color: var(--text-secondary);
+        }
+
+        .day-pill:hover {
+            border-color: var(--accent-green);
+            color: var(--accent-green);
+        }
+
+        .day-pill.active {
+            background: var(--accent-green);
+            border-color: var(--accent-green);
+            color: white;
+        }
+
+        .day-pill-name {
+            font-size: 0.7rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+        }
+
+        .day-pill-date {
+            font-family: var(--font-mono);
+            font-size: 0.92rem;
+            font-weight: 700;
+        }
+
+        .day-pill-dot {
+            width: 4px;
+            height: 4px;
+            border-radius: 50%;
+            background: currentColor;
+            opacity: 0.5;
+            margin-top: 1px;
         }
 
         /* Date Range Picker */
@@ -1850,6 +2267,192 @@
             color: #DC3545;
         }
 
+        /* === Phase 4: Shopping List Upgrades === */
+
+        /* Sort / filter chips */
+        .sort-chips {
+            display: flex;
+            gap: 0.375rem;
+            flex-wrap: wrap;
+        }
+
+        .sort-chip {
+            padding: 0.35rem 0.85rem;
+            border: 1.5px solid var(--border-light);
+            border-radius: var(--radius-pill);
+            background: var(--bg-white);
+            font-family: var(--font-body);
+            font-size: 0.82rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: border-color 0.15s, color 0.15s, background 0.15s;
+            white-space: nowrap;
+        }
+
+        .sort-chip:hover {
+            border-color: var(--accent-green);
+            color: var(--accent-green);
+        }
+
+        .sort-chip.active {
+            background: var(--accent-green);
+            border-color: var(--accent-green);
+            color: white;
+        }
+
+        /* Date range navigator */
+        .date-range-nav {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .date-nav-btn {
+            width: 32px;
+            height: 32px;
+            border: 1.5px solid var(--border-light);
+            border-radius: var(--radius-pill);
+            background: var(--bg-white);
+            color: var(--text-secondary);
+            font-size: 1.2rem;
+            line-height: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: border-color 0.15s, color 0.15s;
+            flex-shrink: 0;
+        }
+
+        .date-nav-btn:hover {
+            border-color: var(--accent-green);
+            color: var(--accent-green);
+        }
+
+        .date-range-label {
+            font-size: 0.88rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            white-space: nowrap;
+            min-width: 130px;
+            text-align: center;
+        }
+
+        /* Shopping progress bar (inside summary) */
+        .shopping-progress-wrap {
+            width: 100%;
+            margin-top: 0.75rem;
+        }
+
+        .shopping-progress-bar-track {
+            height: 6px;
+            background: rgba(255,255,255,0.55);
+            border-radius: var(--radius-pill);
+            overflow: hidden;
+        }
+
+        .shopping-progress-bar-fill {
+            height: 100%;
+            background: var(--accent-mint);
+            border-radius: var(--radius-pill);
+            transition: width 0.35s ease;
+        }
+
+        .shopping-progress-text {
+            margin-top: 0.3rem;
+            font-size: 0.78rem;
+            color: var(--accent-green-dark);
+            text-align: center;
+        }
+
+        /* Floating clear-checked pill */
+        .clear-checked-pill {
+            position: fixed;
+            bottom: calc(72px + 1.5rem);
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 200;
+            display: none;
+            pointer-events: none;
+        }
+
+        .clear-checked-pill button {
+            background: var(--text-primary);
+            color: white;
+            border: none;
+            border-radius: var(--radius-pill);
+            padding: 0.6rem 1.4rem;
+            font-family: var(--font-body);
+            font-size: 0.88rem;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.25);
+            transition: transform 0.15s ease, box-shadow 0.15s ease;
+            white-space: nowrap;
+            pointer-events: auto;
+        }
+
+        .clear-checked-pill button:hover {
+            transform: scale(1.04);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+        }
+
+        /* FAB */
+        .fab {
+            position: fixed;
+            bottom: calc(72px + 1rem);
+            right: 1.25rem;
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            border: none;
+            background: var(--accent-green);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 4px 16px var(--accent-glow-strong);
+            z-index: 200;
+            transition: transform 0.15s ease, box-shadow 0.15s ease;
+        }
+
+        .fab:hover {
+            transform: scale(1.08);
+            box-shadow: 0 6px 20px var(--accent-glow-strong);
+        }
+
+        .fab:active {
+            transform: scale(0.95);
+        }
+
+        @media (min-width: 768px) {
+            .fab {
+                bottom: 1.5rem;
+            }
+            .clear-checked-pill {
+                bottom: 1.75rem;
+                left: auto;
+                right: calc(56px + 2rem);
+                transform: none;
+            }
+        }
+
+        /* Shopping item: separate meal name and date */
+        .shopping-item-meal {
+            font-family: var(--font-body);
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+        }
+
+        .shopping-item-date {
+            font-family: var(--font-mono);
+            font-size: 0.74rem;
+            color: var(--text-secondary);
+            opacity: 0.8;
+        }
+
         /* Export dropdown */
         .export-dropdown {
             position: relative;
@@ -1920,6 +2523,7 @@
             border-radius: var(--radius-md);
             padding: 1.25rem;
             margin-bottom: 1.5rem;
+            min-width: 0;
         }
         .account-profile-card .user-avatar {
             width: 48px;
@@ -1927,11 +2531,19 @@
             font-size: 1.25rem;
             flex-shrink: 0;
         }
+        .account-profile-card .btn {
+            flex-shrink: 0;
+        }
         .account-profile-info {
             flex: 1;
+            min-width: 0;
+            overflow: hidden;
         }
         .account-user-email {
             font-size: var(--text-base);
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
             font-weight: 500;
             color: var(--text-primary);
         }
@@ -2038,8 +2650,8 @@
             font-size: 0.7rem;
             background: var(--accent-green);
             color: white;
-            padding: 0.15rem 0.4rem;
-            border-radius: 3px;
+            padding: 0.15rem 0.55rem;
+            border-radius: var(--radius-pill);
             font-weight: 500;
         }
 
@@ -2183,6 +2795,122 @@
             border-color: var(--accent-green);
         }
 
+        /* === Phase 6: Emoji icon system === */
+
+        /* Emoji button on aisle items and add row */
+        .aisle-emoji-btn {
+            width: 36px;
+            height: 36px;
+            border-radius: var(--radius-sm);
+            border: 1.5px solid var(--border-light);
+            background: var(--bg-cream);
+            cursor: pointer;
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            transition: border-color 0.15s;
+            line-height: 1;
+        }
+
+        .aisle-emoji-btn:hover {
+            border-color: var(--accent-green);
+        }
+
+        /* Initial-letter fallback circle (shown when no emoji set) */
+        .aisle-initial {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: white;
+            flex-shrink: 0;
+            line-height: 1;
+        }
+
+        /* Emoji in shopping list aisle section header */
+        .aisle-section-icon {
+            font-size: 1.1rem;
+            line-height: 1;
+            display: flex;
+            align-items: center;
+        }
+
+        /* Emoji picker popover */
+        .emoji-picker-popover {
+            position: fixed;
+            z-index: 1100;
+            background: var(--bg-white);
+            border: 1px solid var(--border-light);
+            border-radius: var(--radius-md);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.15);
+            padding: 0.5rem;
+            width: 340px;
+            display: flex;
+            flex-direction: column;
+            gap: 0.4rem;
+        }
+
+        .emoji-search {
+            width: 100%;
+            box-sizing: border-box;
+            padding: 0.35rem 0.6rem;
+            border: 1px solid var(--border-light);
+            border-radius: var(--radius-sm);
+            font-size: 0.85rem;
+            background: var(--bg-cream);
+            color: var(--text-primary);
+            outline: none;
+        }
+        .emoji-search:focus {
+            border-color: var(--accent-green);
+            box-shadow: 0 0 0 2px var(--accent-glow-soft);
+        }
+
+        .emoji-picker-grid {
+            display: grid;
+            grid-template-columns: repeat(9, 1fr);
+            gap: 1px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .emoji-category-header {
+            grid-column: 1 / -1;
+            font-size: 0.65rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            color: var(--text-secondary);
+            padding: 0.4rem 0.2rem 0.1rem;
+            margin-top: 0.2rem;
+        }
+        .emoji-category-header:first-child { margin-top: 0; }
+
+        .emoji-option {
+            width: 34px;
+            height: 34px;
+            border: none;
+            background: none;
+            border-radius: var(--radius-sm);
+            font-size: 1.2rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.1s;
+            line-height: 1;
+        }
+
+        .emoji-option:hover {
+            background: var(--accent-green-light);
+        }
+
         /* Empty state for shops */
         .shops-empty {
             text-align: center;
@@ -2224,12 +2952,14 @@
 
         .dictionary-stats {
             display: flex;
-            gap: 1.5rem;
+            flex-wrap: wrap;
+            gap: 0.75rem 1.25rem;
             padding: 0.75rem 1rem;
             background: var(--bg-cream);
             border-radius: var(--radius-sm);
             margin-bottom: 1rem;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
+            overflow: hidden;
         }
 
         .dictionary-stat {
@@ -2293,6 +3023,7 @@
             border: 1px solid var(--border-light);
             border-radius: var(--radius-sm);
             font-size: 0.85rem;
+            max-width: 140px;
             background: var(--bg-white);
             min-width: 140px;
         }
@@ -3018,158 +3749,15 @@
            Theme Overrides
            ===================== */
 
-        [data-theme="terracotta"] {
-            --bg-cream: #FDF5F0;
-            --bg-white: #FFFFFF;
-            --text-primary: #3A2217;
-            --text-secondary: #7A4A30;
-            --accent-green: #C1693A;
-            --accent-green-light: #F5DDD1;
-            --accent-green-dark: #A0552D;
-            --accent-mint: #F0A070;
-            --accent-sage: #8B5A3A;
-            --border-light: #E8CFC0;
-            --border-medium: #8B5A3A;
-            --shadow-sm: 0 1px 3px rgba(193, 105, 58, 0.1);
-            --shadow-md: 0 4px 12px rgba(193, 105, 58, 0.15);
-            --shadow-lg: 0 8px 24px rgba(193, 105, 58, 0.18);
-            --font-heading: 'Playfair Display', Georgia, serif;
-            --font-body: 'Lato', -apple-system, BlinkMacSystemFont, sans-serif;
-        }
-
-        [data-theme="nordic"] {
-            --bg-cream: #F0F4F8;
-            --bg-white: #FFFFFF;
-            --text-primary: #1A2B3A;
-            --text-secondary: #3A5570;
-            --accent-green: #4A80A5;
-            --accent-green-light: #C8DCEA;
-            --accent-green-dark: #366080;
-            --accent-mint: #7AABC5;
-            --accent-sage: #3A5570;
-            --border-light: #C5D5E5;
-            --border-medium: #3A5570;
-            --shadow-sm: 0 1px 3px rgba(74, 128, 165, 0.1);
-            --shadow-md: 0 4px 12px rgba(74, 128, 165, 0.15);
-            --shadow-lg: 0 8px 24px rgba(74, 128, 165, 0.18);
-            --font-heading: 'DM Serif Display', Georgia, serif;
-            --font-body: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
-        }
-
-        [data-theme="berry"] {
-            --bg-cream: #F7F0FC;
-            --bg-white: #FFFFFF;
-            --text-primary: #2A1040;
-            --text-secondary: #6A3A8A;
-            --accent-green: #8B4FC8;
-            --accent-green-light: #E5CEFC;
-            --accent-green-dark: #6A3AA0;
-            --accent-mint: #B07AE0;
-            --accent-sage: #6A3A8A;
-            --border-light: #DCCAEE;
-            --border-medium: #6A3A8A;
-            --shadow-sm: 0 1px 3px rgba(139, 79, 200, 0.1);
-            --shadow-md: 0 4px 12px rgba(139, 79, 200, 0.15);
-            --shadow-lg: 0 8px 24px rgba(139, 79, 200, 0.18);
-            --font-heading: 'Cormorant Garamond', Georgia, serif;
-            --font-body: 'Nunito', -apple-system, BlinkMacSystemFont, sans-serif;
-        }
-
-        [data-theme="amber"] {
-            --bg-cream: #FDF8EE;
-            --bg-white: #FFFFFF;
-            --text-primary: #3A2800;
-            --text-secondary: #7A5800;
-            --accent-green: #D4972A;
-            --accent-green-light: #F5E5BC;
-            --accent-green-dark: #A87420;
-            --accent-mint: #F0C060;
-            --accent-sage: #7A5800;
-            --border-light: #E8D8A0;
-            --border-medium: #7A5800;
-            --shadow-sm: 0 1px 3px rgba(212, 151, 42, 0.1);
-            --shadow-md: 0 4px 12px rgba(212, 151, 42, 0.15);
-            --shadow-lg: 0 8px 24px rgba(212, 151, 42, 0.18);
-            --font-heading: 'Sora', -apple-system, BlinkMacSystemFont, sans-serif;
-            --font-body: 'Sora', -apple-system, BlinkMacSystemFont, sans-serif;
-        }
-
-        [data-theme="ink"] {
-            --bg-cream: #F8F3F4;
-            --bg-white: #FFFFFF;
-            --text-primary: #2A0A10;
-            --text-secondary: #6A2030;
-            --accent-green: #8B1A2B;
-            --accent-green-light: #F0C8CC;
-            --accent-green-dark: #6A1020;
-            --accent-mint: #C04060;
-            --accent-sage: #6A2030;
-            --border-light: #E0C0C5;
-            --border-medium: #6A2030;
-            --shadow-sm: 0 1px 3px rgba(139, 26, 43, 0.1);
-            --shadow-md: 0 4px 12px rgba(139, 26, 43, 0.15);
-            --shadow-lg: 0 8px 24px rgba(139, 26, 43, 0.18);
-            --font-heading: 'Libre Baskerville', Georgia, serif;
-            --font-body: 'Source Serif 4', Georgia, serif;
-        }
-
-        /* =====================
-           Theme Selector UI
-           ===================== */
-
-        .theme-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-            gap: 1rem;
-        }
-
-        .theme-card {
-            border: 2px solid var(--border-light);
-            border-radius: var(--radius-md);
-            overflow: hidden;
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-
-        .theme-card:hover {
-            border-color: var(--accent-sage);
-            transform: translateY(-2px);
-        }
-
-        .theme-card.active {
-            border-color: var(--accent-green);
-            box-shadow: 0 0 0 2px var(--accent-green);
-        }
-
-        .theme-swatch {
-            height: 64px;
-            position: relative;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .theme-check {
-            font-size: 1.5rem;
-            color: white;
-            text-shadow: 0 1px 3px rgba(0,0,0,0.4);
-        }
-
-        .theme-info {
-            padding: 0.6rem 0.75rem;
-            background: var(--bg-white);
-        }
-
-        .theme-name {
-            font-weight: 600;
-            font-size: 0.9rem;
-            color: var(--text-primary);
-        }
-
-        .theme-fonts {
-            font-size: 0.75rem;
-            color: var(--text-secondary);
-            margin-top: 0.15rem;
+        /* ── Household mode: teal accent override ── */
+        body[data-mode="household"] {
+            --accent-green:       #2A7A8C;
+            --accent-green-dark:  #1F6070;
+            --accent-green-light: #C2E6ED;
+            --bg-cream:           #EFF4F5;
+            --accent-glow-soft:   rgba(42, 122, 140, 0.15);
+            --accent-glow-mid:    rgba(42, 122, 140, 0.35);
+            --accent-glow-strong: rgba(42, 122, 140, 0.50);
         }
 
         /* ── Context Switcher (Personal / Household toggle in header) ── */
@@ -3205,6 +3793,7 @@
             color: white;
         }
 
+
         /* ── Household Settings UI ── */
         .household-member-list {
             display: flex;
@@ -3216,11 +3805,13 @@
         .household-member-item {
             display: flex;
             align-items: center;
-            gap: 0.75rem;
+            gap: 0.5rem;
             padding: 0.6rem 0.75rem;
             background: var(--bg-cream);
             border: 1px solid var(--border-light);
             border-radius: var(--radius-sm);
+            min-width: 0;
+            flex-wrap: wrap;
         }
 
         .member-avatar {
@@ -3239,8 +3830,12 @@
 
         .member-email {
             flex: 1;
+            min-width: 0;
             font-size: 0.9rem;
             color: var(--text-primary);
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
         }
 
         .member-role-badge {
@@ -3250,6 +3845,7 @@
             border-radius: 999px;
             text-transform: uppercase;
             letter-spacing: 0.03em;
+            flex-shrink: 0;
         }
 
         .member-role-badge.owner {
@@ -3276,6 +3872,7 @@
             background: transparent;
             color: var(--text-secondary);
             cursor: pointer;
+            flex-shrink: 0;
         }
 
         .member-remove-btn:hover {
@@ -3450,11 +4047,26 @@
                     <span class="logo-text">kitchen<span class="logo-highlight">listr</span></span>
                 </a>
                 <nav class="nav">
-                    <button class="nav-btn active" data-view="recipes">Recipes</button>
-                    <button class="nav-btn" data-view="planner">Meal Plan</button>
-                    <button class="nav-btn" data-view="shopping">Shopping List</button>
-                    <button class="nav-btn" data-view="settings">Settings</button>
-                    <button class="nav-btn" data-view="account">Account</button>
+                    <button class="nav-btn active" data-view="recipes">
+                        <svg class="nav-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+                        <span>Recipes</span>
+                    </button>
+                    <button class="nav-btn" data-view="planner">
+                        <svg class="nav-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                        <span>Meal Plan</span>
+                    </button>
+                    <button class="nav-btn" data-view="shopping">
+                        <svg class="nav-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+                        <span>Shopping</span>
+                    </button>
+                    <button class="nav-btn" data-view="settings">
+                        <svg class="nav-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="4" y1="21" x2="4" y2="14"/><line x1="4" y1="10" x2="4" y2="3"/><line x1="12" y1="21" x2="12" y2="12"/><line x1="12" y1="8" x2="12" y2="3"/><line x1="20" y1="21" x2="20" y2="16"/><line x1="20" y1="12" x2="20" y2="3"/><line x1="1" y1="14" x2="7" y2="14"/><line x1="9" y1="8" x2="15" y2="8"/><line x1="17" y1="16" x2="23" y2="16"/></svg>
+                        <span>Settings</span>
+                    </button>
+                    <button class="nav-btn" data-view="account">
+                        <svg class="nav-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                        <span>Account</span>
+                    </button>
                 </nav>
 
                 <!-- Context switcher: only visible when user belongs to a household -->
@@ -3493,7 +4105,9 @@
                 <div class="search-box">
                     <input type="text" class="search-input" id="recipe-search" placeholder="Search recipes..." oninput="filterRecipes()">
                 </div>
-                
+
+                <div id="recipe-category-filter" style="display:none;"></div>
+
                 <div id="recipes-grid" class="recipe-grid">
                     <!-- Recipes will be rendered here -->
                 </div>
@@ -3522,11 +4136,16 @@
                 <!-- Week View -->
                 <div id="week-view-container">
                     <div class="week-nav">
-                        <button class="week-nav-btn" onclick="changeWeek(-1)">← Previous</button>
+                        <button class="week-nav-btn" onclick="changeWeek(-1)">← Prev</button>
                         <span class="week-display" id="week-display"></span>
                         <button class="week-nav-btn" onclick="changeWeek(1)">Next →</button>
                     </div>
-                    
+
+                    <!-- Day strip: pill selector for each day of the week -->
+                    <div class="week-strip" id="week-strip">
+                        <!-- Rendered by JS -->
+                    </div>
+
                     <div id="planner-week" class="planner-week">
                         <!-- Days will be rendered here -->
                     </div>
@@ -3565,7 +4184,6 @@
                 <div class="page-header">
                     <h1 class="page-title">Shopping List</h1>
                     <div>
-                        <button class="btn btn-secondary" onclick="clearHaveItems()">Clear Checked</button>
                         <div class="export-dropdown">
                             <button class="btn btn-secondary" onclick="toggleExportMenu()">Export ▾</button>
                             <div class="export-menu" id="export-menu">
@@ -3573,28 +4191,14 @@
                                 <button class="export-menu-item" onclick="exportAsCSV()">📊 Download CSV</button>
                             </div>
                         </div>
-                        <button class="btn btn-primary" onclick="openPrintModal()">Print List</button>
+                        <button class="btn btn-secondary" onclick="openPrintModal()">Print</button>
                     </div>
                 </div>
-                
-                <div class="shopping-summary" id="shopping-summary">
+
+                <div class="shopping-summary" id="shopping-summary" style="display:none;">
                     <!-- Summary will be rendered here -->
                 </div>
-                
-                <!-- Add Item Section -->
-                <div class="add-item-section">
-                    <div class="add-item-header">
-                        <h4>➕ Add extra item</h4>
-                        <button class="btn btn-secondary btn-small" onclick="clearCheckedAdhocItems()">Remove checked extras</button>
-                    </div>
-                    <div class="add-item-row">
-                        <div class="add-item-input-wrapper">
-                            <input type="text" class="add-item-input" id="add-item-input" placeholder="e.g., Kitchen roll, Bin bags..." onkeypress="handleAddItemKeypress(event)" oninput="showAdHocAutocomplete(this)" onblur="hideAdHocAutocomplete(this)" autocomplete="off">
-                        </div>
-                        <button class="btn btn-primary btn-small" onclick="addAdHocItem()">Add</button>
-                    </div>
-                </div>
-                
+
                 <!-- Shop Selector -->
                 <div class="shop-selector" id="shop-selector-container" style="display: none;">
                     <span class="shop-selector-label">🏪 Shopping at:</span>
@@ -3603,39 +4207,58 @@
                     </select>
                     <a href="#" onclick="event.preventDefault(); showView('settings');" style="font-size: 0.85rem; color: var(--accent-green);">Manage shops</a>
                 </div>
-                
-                <!-- Controls Row -->
+
+                <!-- Controls: sort chips + date range nav -->
                 <div class="shopping-controls">
                     <div class="shopping-controls-group">
-                        <span class="sort-label">Sort by:</span>
-                        <select class="sort-select" id="sort-select" onchange="renderShoppingList()">
-                            <option value="alpha">A-Z (Alphabetical)</option>
-                            <option value="aisle">Aisle order</option>
-                            <option value="day">Date order</option>
-                            <option value="recipe">Recipe</option>
-                        </select>
-                    </div>
-                    <div class="shopping-controls-group">
-                        <span class="sort-label">Date range:</span>
-                        <div class="date-range-picker">
-                            <input type="date" class="date-input" id="date-from" onchange="onDateRangeChange()">
-                            <span class="date-range-separator">to</span>
-                            <input type="date" class="date-input" id="date-to" onchange="onDateRangeChange()">
+                        <div class="sort-chips" id="sort-chips">
+                            <button class="sort-chip active" data-sort="alpha" onclick="setSortMethod('alpha')">A–Z</button>
+                            <button class="sort-chip" data-sort="aisle" onclick="setSortMethod('aisle')">Aisle</button>
+                            <button class="sort-chip" data-sort="day" onclick="setSortMethod('day')">Date</button>
+                            <button class="sort-chip" data-sort="recipe" onclick="setSortMethod('recipe')">Recipe</button>
                         </div>
                     </div>
                     <div class="shopping-controls-group">
-                        <button class="date-preset-btn" data-preset="today" onclick="setDatePreset('today')">Today</button>
-                        <button class="date-preset-btn" data-preset="3days" onclick="setDatePreset('3days')">3 days</button>
-                        <button class="date-preset-btn active" data-preset="7days" onclick="setDatePreset('7days')">7 days</button>
-                        <button class="date-preset-btn" data-preset="week" onclick="setDatePreset('week')">This week</button>
-                        <button class="date-preset-btn" data-preset="all" onclick="setDatePreset('all')">All</button>
+                        <div class="date-range-nav">
+                            <button class="date-nav-btn" onclick="shiftDateRange(-1)" title="Previous period">‹</button>
+                            <span class="date-range-label" id="date-range-label">7 days</span>
+                            <button class="date-nav-btn" onclick="shiftDateRange(1)" title="Next period">›</button>
+                        </div>
+                    </div>
+                    <div class="shopping-controls-group">
+                        <button class="sort-chip date-preset-btn" data-preset="today" onclick="setDatePreset('today')">Today</button>
+                        <button class="sort-chip date-preset-btn" data-preset="3days" onclick="setDatePreset('3days')">3 days</button>
+                        <button class="sort-chip date-preset-btn active" data-preset="7days" onclick="setDatePreset('7days')">7 days</button>
+                        <button class="sort-chip date-preset-btn" data-preset="week" onclick="setDatePreset('week')">This week</button>
+                        <button class="sort-chip date-preset-btn" data-preset="all" onclick="setDatePreset('all')">All</button>
                     </div>
                 </div>
-                
+
+                <!-- Hidden date inputs (used by existing JS logic) -->
+                <div style="display:none;">
+                    <input type="date" id="date-from" onchange="onDateRangeChange()">
+                    <input type="date" id="date-to" onchange="onDateRangeChange()">
+                    <select id="sort-select"><option value="alpha">alpha</option><option value="aisle">aisle</option><option value="day">day</option><option value="recipe">recipe</option></select>
+                </div>
+
+                <!-- Add Item Section -->
+                <div class="add-item-section" id="add-item-section">
+                    <div class="add-item-header">
+                        <h4>Add extra item</h4>
+                        <button class="btn btn-secondary btn-small" onclick="clearCheckedAdhocItems()">Remove checked extras</button>
+                    </div>
+                    <div class="add-item-row">
+                        <div class="add-item-input-wrapper">
+                            <input type="text" class="add-item-input" id="add-item-input" placeholder="e.g., Kitchen roll, Bin bags…" onkeypress="handleAddItemKeypress(event)" oninput="showAdHocAutocomplete(this)" onblur="hideAdHocAutocomplete(this)" autocomplete="off">
+                        </div>
+                        <button class="btn btn-primary btn-small" onclick="addAdHocItem()">Add</button>
+                    </div>
+                </div>
+
                 <div id="shopping-list">
                     <!-- Shopping list will be rendered here -->
                 </div>
-                
+
                 <div id="shopping-empty" class="empty-state" style="display: none;">
                     <div class="empty-state-icon">🛒</div>
                     <h3 class="empty-state-title">No items to buy</h3>
@@ -3643,6 +4266,29 @@
                     <button class="btn btn-secondary" style="margin-top: 1rem;" onclick="showView('planner')">Go to Meal Plan</button>
                 </div>
             </section>
+
+            <!-- Floating clear-checked pill (shopping view only) -->
+            <div class="clear-checked-pill" id="clear-checked-pill">
+                <button onclick="clearHaveItems()" id="clear-checked-text">Clear checked</button>
+            </div>
+
+            <!-- FAB: add extra shopping item -->
+            <button class="fab" id="shopping-fab" onclick="focusShoppingAdd()" title="Add extra item" style="display:none;">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            </button>
+
+            <!-- FAB: add meal to planner -->
+            <button class="fab" id="planner-fab" onclick="openAddMealFab()" title="Add meal" style="display:none;">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            </button>
+
+            <!-- Emoji picker popover (shared, positioned by JS) -->
+            <div id="emoji-picker" class="emoji-picker-popover" style="display:none;" role="dialog" aria-label="Pick an emoji">
+                <input id="emoji-search" class="emoji-search" type="search" placeholder="Search emoji…" oninput="filterEmojiPicker(this.value)" autocomplete="off" aria-label="Search emoji">
+                <div class="emoji-picker-grid" id="emoji-picker-grid">
+                    <!-- Populated by JS -->
+                </div>
+            </div>
 
             <!-- Settings View -->
             <section id="settings-view" class="view">
@@ -3803,18 +4449,6 @@
                     <button class="btn btn-secondary" onclick="handleSignOut()">Sign Out</button>
                 </div>
 
-                <!-- Theme & Appearance Section (moved from Settings) -->
-                <div class="settings-section" id="settings-section-appearance">
-                    <div class="settings-section-header">
-                        <h2 class="settings-section-title">&#127912; Appearance</h2>
-                        <button class="section-toggle-btn" id="toggle-btn-appearance" onclick="toggleSettingsSection('appearance')" title="Collapse" aria-expanded="true" aria-controls="account-appearance-body">▼</button>
-                    </div>
-                    <div class="settings-section-body" id="account-appearance-body">
-                        <p class="text-muted mb-2">Choose a colour theme for KitchenListr.</p>
-                        <div class="theme-grid" id="theme-grid"></div>
-                    </div>
-                </div>
-
                 <!-- Household Section (moved from Settings) -->
                 <div class="settings-section" id="settings-section-household">
                     <div class="settings-section-header">
@@ -3844,7 +4478,30 @@
                         <label class="form-label" for="recipe-name">Recipe Name *</label>
                         <input type="text" class="form-input" id="recipe-name" required placeholder="e.g., Spaghetti Bolognese">
                     </div>
-                    
+
+                    <div class="form-group" id="recipe-category-group" style="display:none;">
+                        <label class="form-label">Categories (optional)</label>
+                        <div class="recipe-categories-chips" id="recipe-categories-chips">
+                            <!-- Populated by JS from mealCategories -->
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Recipe Icon (optional)</label>
+                        <div style="display:flex;align-items:center;gap:0.75rem;flex-wrap:wrap;">
+                            <button type="button" id="recipe-emoji-btn" class="aisle-emoji-btn"
+                                style="font-size:1.5rem;width:2.5rem;height:2.5rem;"
+                                onclick="openEmojiPicker(this, function(e){ document.getElementById('recipe-emoji-btn').textContent=e; document.getElementById('recipe-emoji').value=e; })">🍽️</button>
+                            <input type="hidden" id="recipe-emoji" value="">
+                            <button type="button" class="btn btn-secondary btn-small" onclick="clearRecipeEmoji()">Auto (from name)</button>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="recipe-image-url">Image URL (optional)</label>
+                        <input type="url" class="form-input" id="recipe-image-url" placeholder="https://example.com/image.jpg">
+                    </div>
+
                     <div class="form-group">
                         <label class="form-checkbox">
                             <input type="checkbox" id="recipe-title-only" onchange="toggleIngredientsSection()">
@@ -4508,13 +5165,6 @@ oregano"></textarea>
     </div>
 
 
-    <script>
-        (function() {
-            var t = localStorage.getItem('kitchenlistr-theme');
-            if (t && t !== 'garden') document.documentElement.setAttribute('data-theme', t);
-        })();
-    </script>
-
     <!-- Firebase SDK -->
     <script type="module">
         // =====================
@@ -4547,6 +5197,8 @@ oregano"></textarea>
         let recipes = [];
         let mealPlan = {};
         let shoppingHave = {};
+        let recentlyCheckedKey = null;
+        let _shopAnimOrder = 0;
         let adhocItems = [];
         let currentUser = null;
 
@@ -4604,107 +5256,6 @@ oregano"></textarea>
         // UI State
         let collapsedShops = {}; // { shopId: true } for collapsed aisle lists
         let collapsedSections = JSON.parse(localStorage.getItem('kl_collapsedSections') || '{}');
-        let currentTheme = 'garden';
-
-
-        // =====================
-        // Theme Management
-        // =====================
-
-        const themes = {
-            garden: {
-                name: 'Garden',
-                accent: '#4FB286',
-                bg: '#F4F9F7',
-                text: '#2A3B35',
-                headingFont: 'Fraunces',
-                bodyFont: 'Source Sans 3',
-                shadowRgb: '60, 137, 109'
-            },
-            terracotta: {
-                name: 'Terracotta',
-                accent: '#C1693A',
-                bg: '#FDF5F0',
-                text: '#3A2217',
-                headingFont: 'Playfair Display',
-                bodyFont: 'Lato',
-                shadowRgb: '193, 105, 58'
-            },
-            nordic: {
-                name: 'Nordic',
-                accent: '#4A80A5',
-                bg: '#F0F4F8',
-                text: '#1A2B3A',
-                headingFont: 'DM Serif Display',
-                bodyFont: 'DM Sans',
-                shadowRgb: '74, 128, 165'
-            },
-            berry: {
-                name: 'Berry',
-                accent: '#8B4FC8',
-                bg: '#F7F0FC',
-                text: '#2A1040',
-                headingFont: 'Cormorant Garamond',
-                bodyFont: 'Nunito',
-                shadowRgb: '139, 79, 200'
-            },
-            amber: {
-                name: 'Amber',
-                accent: '#D4972A',
-                bg: '#FDF8EE',
-                text: '#3A2800',
-                headingFont: 'Sora',
-                bodyFont: 'Sora',
-                shadowRgb: '212, 151, 42'
-            },
-            ink: {
-                name: 'Ink',
-                accent: '#8B1A2B',
-                bg: '#F8F3F4',
-                text: '#2A0A10',
-                headingFont: 'Libre Baskerville',
-                bodyFont: 'Source Serif 4',
-                shadowRgb: '139, 26, 43'
-            }
-        };
-
-        function applyTheme(themeId) {
-            if (!themes[themeId]) themeId = 'garden';
-            currentTheme = themeId;
-            if (themeId === 'garden') {
-                document.documentElement.removeAttribute('data-theme');
-            } else {
-                document.documentElement.setAttribute('data-theme', themeId);
-            }
-            const themeColorMeta = document.querySelector('meta[name="theme-color"]');
-            if (themeColorMeta) themeColorMeta.setAttribute('content', themes[themeId].accent);
-            localStorage.setItem('kitchenlistr-theme', themeId);
-            renderThemeSelector();
-        }
-
-        function renderThemeSelector() {
-            const grid = document.getElementById('theme-grid');
-            if (!grid) return;
-            grid.innerHTML = Object.entries(themes).map(([id, t]) => {
-                const isActive = id === currentTheme;
-                const swatch = `linear-gradient(135deg, ${t.bg} 50%, ${t.accent} 50%)`;
-                return `<div class="theme-card${isActive ? ' active' : ''}" onclick="selectTheme('${id}')">
-                    <div class="theme-swatch" style="background: ${swatch};">
-                        ${isActive ? '<span class=”theme-check”>&#10003;</span>' : ''}
-                    </div>
-                    <div class="theme-info">
-                        <div class="theme-name">${t.name}</div>
-                        <div class="theme-fonts">${t.headingFont}</div>
-                    </div>
-                </div>`;
-            }).join('');
-        }
-
-        async function selectTheme(themeId) {
-            applyTheme(themeId);
-            await saveUserPrefs();
-        }
-        window.selectTheme = selectTheme;
 
         // =====================
         // Auth UI Functions
@@ -4945,8 +5496,13 @@ oregano"></textarea>
 
             if (!currentHouseholdId) {
                 switcher.style.display = 'none';
+                document.body.removeAttribute('data-mode');
                 return;
             }
+
+            // Drive accent colour via body attribute
+            document.body.dataset.mode = currentDataMode;
+
             switcher.style.display = 'flex';
             personalBtn.classList.toggle('active', currentDataMode === 'personal');
             householdBtn.classList.toggle('active', currentDataMode === 'household');
@@ -5086,13 +5642,13 @@ oregano"></textarea>
                         const data = snapshot.data();
                         mealCategories = data.mealCategories || ['Breakfast', 'Lunch', 'Dinner'];
                         dayNotes = data.dayNotes || {};
-                        if (data.theme) applyTheme(data.theme);
                     } else {
                         mealCategories = ['Breakfast', 'Lunch', 'Dinner'];
                         dayNotes = {};
                     }
                     renderPlanner();
                     renderMealCategories();
+                    renderRecipeCategoryChips();
                 },
                 (error) => {
                     console.error("Error listening to user settings:", error);
@@ -5178,11 +5734,16 @@ oregano"></textarea>
             if (!currentUser) return;
             showSyncStatus('syncing', 'Saving...');
             try {
+                const cats = recipe.categories || (recipe.category ? [recipe.category] : []);
                 await setDoc(doc(db, ...getDataPath(), "recipes", recipe.id), {
                     name: recipe.name,
                     titleOnly: recipe.titleOnly,
                     ingredients: recipe.ingredients,
-                    notes: recipe.notes
+                    notes: recipe.notes,
+                    imageUrl: recipe.imageUrl || '',
+                    emoji: recipe.emoji || '',
+                    categories: cats,
+                    category: cats[0] || ''  // keep for backward compat
                 });
                 showSyncStatus('success', 'Saved');
             } catch (error) {
@@ -5296,70 +5857,142 @@ oregano"></textarea>
         // =====================
 
         document.querySelectorAll('.nav-btn').forEach(btn => {
-            btn.addEventListener('click', () => {
-                const view = btn.dataset.view;
-
-                // Update nav buttons
-                document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-                btn.classList.add('active');
-
-                // Update views
-                document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
-                document.getElementById(`${view}-view`).classList.add('active');
-
-                // Refresh view data
-                if (view === 'recipes') renderRecipes();
-                if (view === 'planner') renderPlanner();
-                if (view === 'shopping') renderShoppingList();
-                if (view === 'settings') {
-                    renderIngredientDictionary();
-                    renderIngredientManager();
-                    renderMealCategories();
-                    applyCollapsedSections();
-                }
-                if (view === 'account') {
-                    renderThemeSelector();
-                    renderHouseholdSettings();
-                    applyCollapsedSections();
-                    if (currentUser) {
-                        const avatarEl = document.getElementById('account-user-avatar');
-                        const emailEl = document.getElementById('account-user-email');
-                        if (avatarEl) avatarEl.textContent = (currentUser.email || '?')[0].toUpperCase();
-                        if (emailEl) emailEl.textContent = currentUser.email || '';
-                    }
-                }
-            });
+            btn.addEventListener('click', () => showView(btn.dataset.view));
         });
 
         // =====================
         // Recipe Management
         // =====================
 
+        let currentRecipeCategory = '';
+
+        function recipeAvatarColor(name) {
+            const colors = [
+                '#FAD4C0', // blush
+                '#FDE68A', // buttercup
+                '#D1FAE5', // sage pale
+                '#BFDBFE', // sky
+                '#E9D5FF', // lavender
+                '#FECACA', // light red
+                '#FED7AA', // peach
+                '#A7F3D0', // mint light
+                '#FBCFE8', // pink
+                '#C7D2FE', // indigo light
+            ];
+            let hash = 0;
+            for (let i = 0; i < name.length; i++) {
+                hash = (hash * 31 + name.charCodeAt(i)) & 0xffff;
+            }
+            return colors[hash % colors.length];
+        }
+
+        function recipeAvatarEmoji(name) {
+            const emojis = ['🍝','🍜','🍛','🍲','🥘','🫕','🍱','🥗','🍔','🌮','🌯','🥙','🥪','🍕','🫔','🥞','🧇','🍳','🍖','🍗','🥩','🥓','🦐','🐟','🍣','🍤','🥟','🥫','🧆','🫓','🥯','🥐','🍞','🧁','🎂','🍰','🥧','🫙','🫑','🥦','🧀','🥚'];
+            let hash = 0;
+            for (let i = 0; i < name.length; i++) {
+                hash = (hash * 17 + name.charCodeAt(i)) & 0xffff;
+            }
+            return emojis[hash % emojis.length];
+        }
+
+        function renderRecipeCategoryChips() {
+            const container = document.getElementById('recipe-category-filter');
+            if (!container) return;
+            if (!mealCategories || mealCategories.length === 0) {
+                container.style.display = 'none';
+                return;
+            }
+            container.style.display = 'flex';
+            container.innerHTML = [
+                `<button class="sort-chip${currentRecipeCategory === '' ? ' active' : ''}" onclick="filterRecipeByCategory('')">All</button>`,
+                ...mealCategories.map(cat =>
+                    `<button class="sort-chip${currentRecipeCategory === cat ? ' active' : ''}" onclick="filterRecipeByCategory(${JSON.stringify(cat)})">${escapeHtml(cat)}</button>`
+                )
+            ].join('');
+
+            // Show/hide category group in form (chip selector populated separately)
+            const catGroup = document.getElementById('recipe-category-group');
+            if (catGroup) catGroup.style.display = mealCategories.length > 0 ? '' : 'none';
+        }
+        window.renderRecipeCategoryChips = renderRecipeCategoryChips;
+
+        // Render the togglable category chips inside the recipe edit form
+        function renderRecipeCategorySelector(selectedCats) {
+            const container = document.getElementById('recipe-categories-chips');
+            if (!container) return;
+            if (!mealCategories || mealCategories.length === 0) {
+                container.innerHTML = '<span style="font-size:0.85rem;color:var(--text-secondary);">Add meal categories in Settings first.</span>';
+                return;
+            }
+            container.innerHTML = mealCategories.map(cat =>
+                `<button type="button" class="recipe-cat-chip${selectedCats.includes(cat) ? ' selected' : ''}" data-cat="${escapeHtml(cat)}" onclick="toggleRecipeCatChip(this)">${escapeHtml(cat)}<\/button>`
+            ).join('');
+        }
+        window.renderRecipeCategorySelector = renderRecipeCategorySelector;
+
+        function toggleRecipeCatChip(el) {
+            el.classList.toggle('selected');
+        }
+        window.toggleRecipeCatChip = toggleRecipeCatChip;
+
+        function clearRecipeEmoji() {
+            const btn = document.getElementById('recipe-emoji-btn');
+            const inp = document.getElementById('recipe-emoji');
+            if (btn) btn.textContent = '🍽️';
+            if (inp) inp.value = '';
+        }
+        window.clearRecipeEmoji = clearRecipeEmoji;
+
+        function filterRecipeByCategory(category) {
+            currentRecipeCategory = category;
+            renderRecipeCategoryChips();
+            renderRecipes();
+        }
+        window.filterRecipeByCategory = filterRecipeByCategory;
+
         function renderRecipes() {
             const grid = document.getElementById('recipes-grid');
             const empty = document.getElementById('recipes-empty');
             const searchTerm = document.getElementById('recipe-search').value.toLowerCase();
-            
-            const filtered = recipes.filter(r => 
+
+            let filtered = recipes.filter(r =>
                 r.name.toLowerCase().includes(searchTerm)
             );
-            
+            if (currentRecipeCategory) {
+                filtered = filtered.filter(r => {
+                    const cats = r.categories || (r.category ? [r.category] : []);
+                    return cats.includes(currentRecipeCategory);
+                });
+            }
+
             if (filtered.length === 0) {
                 grid.innerHTML = '';
                 empty.style.display = 'block';
                 return;
             }
-            
+
             empty.style.display = 'none';
-            grid.innerHTML = filtered.map(recipe => `
-                <div class="recipe-card" onclick="viewRecipe('${recipe.id}')">
-                    ${recipe.titleOnly ? '<span class="recipe-card-badge">Title Only</span>' : ''}
-                    <h3 class="recipe-card-title">${escapeHtml(recipe.name)}</h3>
-                    <p class="recipe-card-meta">
-                        ${recipe.titleOnly ? 'No ingredients' : `${recipe.ingredients.length} ingredient${recipe.ingredients.length !== 1 ? 's' : ''}`}
-                    </p>
-                </div>
-            `).join('');
+            grid.innerHTML = filtered.map((recipe, i) => {
+                const color = recipeAvatarColor(recipe.name);
+                const emoji = recipe.emoji || recipeAvatarEmoji(recipe.name);
+                const avatarContent = recipe.imageUrl
+                    ? `<img src="${escapeHtml(recipe.imageUrl)}" alt="" loading="lazy">`
+                    : emoji;
+                const recipeCats = recipe.categories || (recipe.category ? [recipe.category] : []);
+                const ingCount = recipe.titleOnly ? 'No ingredients' : `${recipe.ingredients.length} ingredient${recipe.ingredients.length !== 1 ? 's' : ''}`;
+                const metaLine = recipeCats.length > 0
+                    ? `<span>${recipeCats.map(escapeHtml).join(' · ')}<\/span> · <span>${ingCount}<\/span>`
+                    : ingCount;
+                return `
+                <div class="recipe-card" style="--anim-order:${i}" onclick="viewRecipe('${recipe.id}')">
+                    <div class="recipe-card-avatar" style="background:${recipe.imageUrl ? '#f0f0f0' : color}">${avatarContent}</div>
+                    <div class="recipe-card-body">
+                        ${recipe.titleOnly ? '<span class="recipe-card-badge">Title Only</span>' : ''}
+                        <h3 class="recipe-card-title">${escapeHtml(recipe.name)}</h3>
+                        <p class="recipe-card-meta">${metaLine}</p>
+                    </div>
+                </div>`;
+            }).join('');
         }
         window.renderRecipes = renderRecipes;
 
@@ -5374,6 +6007,12 @@ oregano"></textarea>
             document.getElementById('recipe-id').value = '';
             document.getElementById('recipe-title-only').checked = false;
             document.getElementById('bulk-ingredients').value = '';
+            document.getElementById('recipe-image-url').value = '';
+            const emojiBtn2 = document.getElementById('recipe-emoji-btn');
+            const emojiInput2 = document.getElementById('recipe-emoji');
+            if (emojiBtn2) emojiBtn2.textContent = '🍽️';
+            if (emojiInput2) emojiInput2.value = '';
+            renderRecipeCategorySelector([]);
             toggleIngredientsSection();
             showIngredientMode('single');
             
@@ -5610,7 +6249,12 @@ oregano"></textarea>
             const name = document.getElementById('recipe-name').value.trim();
             const titleOnly = document.getElementById('recipe-title-only').checked;
             const notes = document.getElementById('recipe-notes').value.trim();
-            
+            const imageUrl = document.getElementById('recipe-image-url').value.trim();
+            const emoji = document.getElementById('recipe-emoji')?.value || '';
+            const categories = Array.from(
+                document.querySelectorAll('#recipe-categories-chips .recipe-cat-chip.selected')
+            ).map(el => el.dataset.cat);
+
             let ingredients = [];
             if (!titleOnly) {
                 const items = document.querySelectorAll('#ingredients-list .ingredient-item');
@@ -5619,14 +6263,14 @@ oregano"></textarea>
                     const nameInput = item.querySelector('.ingredient-name-input');
                     const ingredientName = nameInput?.value.trim() || '';
                     const quantity = qtyInput?.value.trim() || '';
-                    
+
                     if (ingredientName) {
                         ingredients.push({ name: ingredientName, quantity: quantity });
                     }
                 });
             }
-            
-            const recipe = { id, name, titleOnly, ingredients, notes };
+
+            const recipe = { id, name, titleOnly, ingredients, notes, imageUrl, emoji, categories };
             
             await saveRecipeToFirebase(recipe);
             closeRecipeModal();
@@ -5640,9 +6284,20 @@ oregano"></textarea>
             currentViewingRecipeId = id;
             
             document.getElementById('view-recipe-title').textContent = recipe.name;
-            
-            let html = '';
-            
+
+            const avatarColor = recipeAvatarColor(recipe.name);
+            const avatarEmoji = recipe.emoji || recipeAvatarEmoji(recipe.name);
+            const avatarContent = recipe.imageUrl
+                ? `<img src="${escapeHtml(recipe.imageUrl)}" alt="">`
+                : avatarEmoji;
+            const avatarBg = recipe.imageUrl ? '#f0f0f0' : avatarColor;
+            let html = `<div class="recipe-view-avatar" style="background:${avatarBg}">${avatarContent}</div>`;
+
+            const recipeCats = recipe.categories || (recipe.category ? [recipe.category] : []);
+            if (recipeCats.length > 0) {
+                html += `<p style="font-size:0.85rem;color:var(--text-secondary);margin-bottom:1rem;">${recipeCats.map(escapeHtml).join(' · ')}</p>`;
+            }
+
             if (recipe.titleOnly) {
                 html += '<p class="text-muted"><em>This is a title-only recipe (no ingredients tracked)</em></p>';
             } else if (recipe.ingredients && recipe.ingredients.length > 0) {
@@ -5687,6 +6342,18 @@ oregano"></textarea>
             document.getElementById('recipe-name').value = recipe.name;
             document.getElementById('recipe-title-only').checked = recipe.titleOnly;
             document.getElementById('recipe-notes').value = recipe.notes || '';
+            document.getElementById('recipe-image-url').value = recipe.imageUrl || '';
+            // Populate emoji
+            const emojiBtn = document.getElementById('recipe-emoji-btn');
+            const emojiInput = document.getElementById('recipe-emoji');
+            if (emojiBtn && emojiInput) {
+                const custom = recipe.emoji || '';
+                emojiInput.value = custom;
+                emojiBtn.textContent = custom || '🍽️';
+            }
+            // Populate categories chips
+            const recipeCatsToLoad = recipe.categories || (recipe.category ? [recipe.category] : []);
+            renderRecipeCategorySelector(recipeCatsToLoad);
             document.getElementById('bulk-ingredients').value = '';
             
             toggleIngredientsSection();
@@ -5761,9 +6428,9 @@ oregano"></textarea>
                 const dayClass = isPast ? 'past' : (isToday ? 'today' : '');
                 
                 html += `
-                    <div class="day-card ${dayClass}">
+                    <div class="day-card ${dayClass}" data-date="${dateStr}">
                         <div class="day-header">
-                            ${getDayName(date)}${isToday ? ' (Today)' : ''}
+                            ${getDayName(date)}${isToday ? ' · Today' : ''}
                             <div class="date">${formatDisplayDate(date)}</div>
                         </div>
                         <div class="day-meals">
@@ -5772,12 +6439,12 @@ oregano"></textarea>
                                 // Check multiple possible key formats for backwards compatibility
                                 const recipeId = dayMeals[mealKey] || dayMeals[meal] || dayMeals[meal.toLowerCase()];
                                 const recipe = recipeId ? recipes.find(r => r.id === recipeId) : null;
-                                
+
                                 return `
-                                    <div class="meal-slot">
+                                    <div class="meal-slot${recipe ? '' : ' meal-empty'}">
                                         <div>
                                             <div class="meal-slot-label">${escapeHtml(meal)}</div>
-                                            ${recipe 
+                                            ${recipe
                                                 ? `<div class="meal-slot-name">${escapeHtml(recipe.name)}</div>`
                                                 : `<div class="meal-slot-empty">Not planned</div>`
                                             }
@@ -5797,7 +6464,7 @@ oregano"></textarea>
                             }).join('')}
                         </div>
                         <div class="day-notes">
-                            ${note 
+                            ${note
                                 ? `<div class="day-notes-preview" onclick="toggleDayNotes('${dateStr}')">${escapeHtml(note.substring(0, 50))}${note.length > 50 ? '...' : ''} <span style="color: var(--accent-green);">✏️</span></div>`
                                 : `<div class="day-notes-toggle" onclick="toggleDayNotes('${dateStr}')">📝 Add note</div>`
                             }
@@ -5808,8 +6475,9 @@ oregano"></textarea>
                     </div>
                 `;
             }
-            
+
             container.innerHTML = html;
+            renderWeekStrip();
         }
         window.renderPlanner = renderPlanner;
 
@@ -6053,6 +6721,7 @@ oregano"></textarea>
         function changeWeek(direction) {
             currentWeekStart.setDate(currentWeekStart.getDate() + (direction * 7));
             renderPlanner();
+            renderWeekStrip();
             renderShoppingList();
         }
         window.changeWeek = changeWeek;
@@ -6142,7 +6811,7 @@ oregano"></textarea>
                         <div class="month-day-number">${currentDate.getDate()}</div>
                         <div class="month-day-meals">
                             ${meals.slice(0, 3).map(m => `
-                                <div class="month-meal-pill ${m.type}"><span class="pill-initial">${escapeHtml(m.label[0])}</span> ${escapeHtml(m.name)}</div>
+                                <div class="month-meal-pill ${m.type}"><span class="month-meal-dot"></span>${escapeHtml(m.name)}</div>
                             `).join('')}
                             ${meals.length > 3 ? `<div class="month-day-more">+${meals.length - 3} more</div>` : ''}
                         </div>
@@ -6164,6 +6833,64 @@ oregano"></textarea>
             renderPlanner();
         }
         window.jumpToDate = jumpToDate;
+
+        // Render the horizontal week strip of day pills
+        function renderWeekStrip() {
+            const strip = document.getElementById('week-strip');
+            if (!strip) return;
+            const today = getToday();
+            let html = '';
+            for (let i = 0; i < 7; i++) {
+                const date = new Date(currentWeekStart);
+                date.setDate(date.getDate() + i);
+                const dateStr = formatDate(date);
+                const dayMeals = mealPlan[dateStr] || {};
+                const isToday = date.getTime() === today.getTime();
+                const hasMeals = Object.values(dayMeals).some(v => v);
+                const dayName = getDayName(date).substring(0, 3);
+                const dayNum = date.getDate();
+                html += `
+                    <button class="day-pill${isToday ? ' active' : ''}"
+                            id="day-pill-${dateStr}"
+                            onclick="scrollToDayCard('${dateStr}')">
+                        <span class="day-pill-name">${dayName}</span>
+                        <span class="day-pill-date">${dayNum}</span>
+                        ${hasMeals ? '<span class="day-pill-dot"></span>' : ''}
+                    </button>
+                `;
+            }
+            strip.innerHTML = html;
+        }
+        window.renderWeekStrip = renderWeekStrip;
+
+        // Scroll to a day card and highlight its pill
+        function scrollToDayCard(dateStr) {
+            const card = document.querySelector(`.day-card[data-date="${dateStr}"]`);
+            if (card) card.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            document.querySelectorAll('.day-pill').forEach(p => p.classList.remove('active'));
+            const pill = document.getElementById(`day-pill-${dateStr}`);
+            if (pill) pill.classList.add('active');
+        }
+        window.scrollToDayCard = scrollToDayCard;
+
+        // FAB: open recipe selector for today's first empty meal slot
+        function openAddMealFab() {
+            const today = getToday();
+            const todayStr = formatDate(today);
+            const mealTypes = getMealTypes();
+            const todayMeals = mealPlan[todayStr] || {};
+            let targetMeal = mealTypes[0];
+            for (const mt of mealTypes) {
+                const mk = mt.toLowerCase().replace(/[^a-z0-9]/g, '_');
+                if (!todayMeals[mk] && !todayMeals[mt] && !todayMeals[mt.toLowerCase()]) {
+                    targetMeal = mt;
+                    break;
+                }
+            }
+            const mealKey = targetMeal.toLowerCase().replace(/[^a-z0-9]/g, '_');
+            openSelectRecipeModal(todayStr, mealKey);
+        }
+        window.openAddMealFab = openAddMealFab;
 
         function openSelectRecipeModal(date, meal) {
             document.getElementById('select-recipe-date').value = date;
@@ -6267,6 +6994,7 @@ oregano"></textarea>
         // =====================
 
         function renderShoppingList() {
+            _shopAnimOrder = 0;
             const container = document.getElementById('shopping-list');
             const empty = document.getElementById('shopping-empty');
             const summary = document.getElementById('shopping-summary');
@@ -6405,20 +7133,36 @@ oregano"></textarea>
                 printDateEl.textContent = `${formatDisplayDate(shoppingDateFrom)} - ${formatDisplayDate(shoppingDateTo)} • Printed ${new Date().toLocaleDateString('en-GB')}`;
             }
             
+            const progressPct = total > 0 ? Math.round((haveCount / total) * 100) : 0;
             summary.innerHTML = `
                 <div class="shopping-summary-stat">
                     <div class="shopping-summary-number">${total}</div>
-                    <div class="shopping-summary-label">Total Items</div>
+                    <div class="shopping-summary-label">Total</div>
                 </div>
                 <div class="shopping-summary-stat">
                     <div class="shopping-summary-number">${haveCount}</div>
-                    <div class="shopping-summary-label">Already Have</div>
+                    <div class="shopping-summary-label">Have</div>
                 </div>
                 <div class="shopping-summary-stat">
                     <div class="shopping-summary-number">${needCount}</div>
-                    <div class="shopping-summary-label">Need to Buy</div>
+                    <div class="shopping-summary-label">Need</div>
+                </div>
+                <div class="shopping-progress-wrap">
+                    <div class="shopping-progress-bar-track">
+                        <div class="shopping-progress-bar-fill" style="width:${progressPct}%"></div>
+                    </div>
+                    <div class="shopping-progress-text">${haveCount} of ${total} checked</div>
                 </div>
             `;
+
+            // Show / hide floating clear-checked pill — only on shopping view
+            const clearPill = document.getElementById('clear-checked-pill');
+            if (clearPill) {
+                const shoppingActive = document.getElementById('shopping-view')?.classList.contains('active');
+                clearPill.style.display = (haveCount > 0 && shoppingActive) ? 'block' : 'none';
+                const clearBtn = document.getElementById('clear-checked-text');
+                if (clearBtn) clearBtn.textContent = `Clear ${haveCount} checked`;
+            }
             
             // Render list
             const needItems = sortedIngredients.filter(ing => !shoppingHave[ing.key]);
@@ -6447,19 +7191,22 @@ oregano"></textarea>
                         const items = aisleGroups[aisle.name];
                         if (items && items.length > 0) {
                             html += `<div class="aisle-section">`;
-                            html += `<div class="aisle-section-title"><span class="aisle-section-order">${index + 1}</span> ${escapeHtml(aisle.name)}</div>`;
+                            const icon = aisle.emoji
+                                ? `<span class="aisle-section-icon">${aisle.emoji}</span>`
+                                : `<span class="aisle-initial" style="background:${aisleInitialColor(aisle.name)}">${escapeHtml((aisle.name || '?')[0].toUpperCase())}</span>`;
+                            html += `<div class="aisle-section-title">${icon} ${escapeHtml(aisle.name)}</div>`;
                             items.forEach(ing => {
                                 html += renderShoppingItem(ing, false, sortMethod);
                             });
                             html += '</div>';
                         }
                     });
-                    
+
                     // Uncategorised at the end
                     const uncategorised = aisleGroups['__uncategorised__'];
                     if (uncategorised && uncategorised.length > 0) {
                         html += `<div class="aisle-section">`;
-                        html += `<div class="aisle-section-title" style="background: var(--bg-cream); color: var(--text-secondary);">📦 Uncategorised</div>`;
+                        html += `<div class="aisle-section-title" style="background: var(--bg-cream); color: var(--text-secondary);"><span class="aisle-section-icon">📦</span> Uncategorised</div>`;
                         uncategorised.forEach(ing => {
                             html += renderShoppingItem(ing, false, sortMethod);
                         });
@@ -6494,20 +7241,28 @@ oregano"></textarea>
             const escapedKey = ing.key.replace(/'/g, "\\'").replace(/"/g, '&quot;');
             const isAdhoc = ing.isAdhoc;
             const adhocClass = isAdhoc ? 'adhoc' : '';
-            const contextText = isAdhoc ? 'Extra item' : `${escapeHtml(ing.dateDisplay || ing.dayName)} · ${escapeHtml(ing.recipeName)}`;
-            
+            const springClass = (have && ing.key === recentlyCheckedKey) ? 'spring-check' : '';
+            const animOrder = _shopAnimOrder++;
+
+            let contextHtml;
+            if (isAdhoc) {
+                contextHtml = '<span class="shopping-item-meal">Extra item</span>';
+            } else {
+                contextHtml = `<span class="shopping-item-meal">${escapeHtml(ing.recipeName)}</span><span class="shopping-item-date"> · ${escapeHtml(ing.dateDisplay || ing.dayName)}</span>`;
+            }
+
             // Show set aisle button if sorting by aisle and item has no aisle
             const showSetAisle = sortMethod === 'aisle' && !ing.aisle && currentShopId && shops.find(s => s.id === currentShopId)?.aisles?.length > 0;
             const escapedText = escapeHtml(ing.text).replace(/'/g, "\\'");
-            
+
             return `
-                <div class="shopping-item ${have ? 'have' : ''} ${adhocClass}">
-                    <input type="checkbox" 
-                           ${have ? 'checked' : ''} 
+                <div class="shopping-item ${have ? 'have' : ''} ${adhocClass} ${springClass}" style="--anim-order:${animOrder}">
+                    <input type="checkbox"
+                           ${have ? 'checked' : ''}
                            onchange="toggleShoppingItem('${escapedKey}', this.checked)">
                     <div class="shopping-item-text">
                         ${escapeHtml(ing.text)}
-                        <div class="shopping-item-recipe">${contextText}</div>
+                        <div class="shopping-item-recipe">${contextHtml}</div>
                     </div>
                     ${showSetAisle ? `<button class="set-aisle-btn" onclick="showAisleSelector('${escapedText}', this)">Set aisle</button>` : ''}
                     ${isAdhoc ? `<button class="shopping-item-remove" onclick="removeAdhocItem('${ing.adhocId}')" title="Remove item">✕</button>` : ''}
@@ -6518,11 +7273,14 @@ oregano"></textarea>
         async function toggleShoppingItem(key, have) {
             if (have) {
                 shoppingHave[key] = true;
+                recentlyCheckedKey = key;
             } else {
                 delete shoppingHave[key];
+                recentlyCheckedKey = null;
             }
             await saveShoppingHaveToFirebase();
             renderShoppingList();
+            recentlyCheckedKey = null;
         }
         window.toggleShoppingItem = toggleShoppingItem;
 
@@ -7154,6 +7912,8 @@ oregano"></textarea>
             document.querySelectorAll('.date-preset-btn').forEach(btn => {
                 btn.classList.toggle('active', btn.dataset.preset === '7days');
             });
+
+            updateDateRangeLabel();
         }
 
         function onDateRangeChange() {
@@ -7217,10 +7977,70 @@ oregano"></textarea>
             document.querySelectorAll('.date-preset-btn').forEach(btn => {
                 btn.classList.toggle('active', btn.dataset.preset === preset);
             });
-            
+
+            updateDateRangeLabel();
             renderShoppingList();
         }
         window.setDatePreset = setDatePreset;
+
+        // Update the date range label shown in the nav
+        function updateDateRangeLabel() {
+            const label = document.getElementById('date-range-label');
+            if (!label) return;
+            if (!shoppingDateFrom || !shoppingDateTo) {
+                label.textContent = 'All dates';
+                return;
+            }
+            const opts = { day: 'numeric', month: 'short' };
+            const fromStr = shoppingDateFrom.toLocaleDateString('en-GB', opts);
+            const toStr = shoppingDateTo.toLocaleDateString('en-GB', opts);
+            label.textContent = `${fromStr} – ${toStr}`;
+        }
+        window.updateDateRangeLabel = updateDateRangeLabel;
+
+        // Shift the date range forward/backward by its current span
+        function shiftDateRange(direction) {
+            if (!shoppingDateFrom || !shoppingDateTo) {
+                initDateRangePicker();
+            }
+            const spanMs = shoppingDateTo.getTime() - shoppingDateFrom.getTime() + 24 * 60 * 60 * 1000;
+            shoppingDateFrom = new Date(shoppingDateFrom.getTime() + direction * spanMs);
+            shoppingDateTo = new Date(shoppingDateTo.getTime() + direction * spanMs);
+
+            const fromInput = document.getElementById('date-from');
+            const toInput = document.getElementById('date-to');
+            if (fromInput) fromInput.value = formatDate(shoppingDateFrom);
+            if (toInput) toInput.value = formatDate(shoppingDateTo);
+
+            // Clear preset active state
+            document.querySelectorAll('.date-preset-btn').forEach(btn => btn.classList.remove('active'));
+
+            updateDateRangeLabel();
+            renderShoppingList();
+        }
+        window.shiftDateRange = shiftDateRange;
+
+        // Set sort method via chip buttons
+        function setSortMethod(method) {
+            const select = document.getElementById('sort-select');
+            if (select) select.value = method;
+
+            document.querySelectorAll('#sort-chips .sort-chip').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.sort === method);
+            });
+
+            renderShoppingList();
+        }
+        window.setSortMethod = setSortMethod;
+
+        // FAB: scroll to and focus the add-item input
+        function focusShoppingAdd() {
+            const section = document.getElementById('add-item-section');
+            const input = document.getElementById('add-item-input');
+            if (section) section.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            if (input) setTimeout(() => input.focus(), 250);
+        }
+        window.focusShoppingAdd = focusShoppingAdd;
 
         // =====================
         // Shops & Aisles Management
@@ -7258,9 +8078,15 @@ oregano"></textarea>
                         </div>
                     </div>
                     <div class="aisle-list" ${isCollapsed ? 'style="display: none;"' : ''}>
-                        ${(shop.aisles || []).map((aisle, index) => `
+                        ${(shop.aisles || []).map((aisle, index) => {
+                            const color = aisleInitialColor(aisle.name);
+                            const icon = aisle.emoji
+                                ? `<button class="aisle-emoji-btn" onclick="openEmojiPicker(this, (e) => setAisleEmoji('${shop.id}', ${index}, e))" title="Change emoji" type="button">${aisle.emoji}</button>`
+                                : `<button class="aisle-emoji-btn" onclick="openEmojiPicker(this, (e) => setAisleEmoji('${shop.id}', ${index}, e))" title="Add emoji" type="button" style="color:var(--text-secondary);font-size:0.85rem;">+🍽️</button>`;
+                            return `
                             <div class="aisle-item">
                                 <span class="aisle-order">${index + 1}</span>
+                                ${icon}
                                 <span class="aisle-name">${escapeHtml(aisle.name)}</span>
                                 <div class="aisle-move-btns">
                                     <button class="aisle-move-btn" onclick="moveAisle('${shop.id}', ${index}, -1)" ${index === 0 ? 'disabled' : ''}>▲</button>
@@ -7268,9 +8094,12 @@ oregano"></textarea>
                                 </div>
                                 <button class="aisle-delete-btn" onclick="deleteAisle('${shop.id}', ${index})" title="Delete aisle">✕</button>
                             </div>
-                        `).join('') || '<p class="text-muted" style="padding: 0.5rem;">No aisles yet. Add your first aisle below.</p>'}
+                        `}).join('') || '<p class="text-muted" style="padding: 0.5rem;">No aisles yet. Add your first aisle below.</p>'}
                         <div class="add-aisle-row">
-                            <input type="text" class="add-aisle-input" id="add-aisle-${shop.id}" placeholder="New aisle name..." onkeypress="handleAddAisleKeypress(event, '${shop.id}')">
+                            <button class="aisle-emoji-btn" id="add-aisle-emoji-${shop.id}" type="button"
+                                onclick="openEmojiPicker(this, (e) => { this.textContent = e; this.dataset.emoji = e; })"
+                                title="Pick emoji" data-emoji="">🍽️</button>
+                            <input type="text" class="add-aisle-input" id="add-aisle-${shop.id}" placeholder="New aisle name…" onkeypress="handleAddAisleKeypress(event, '${shop.id}')">
                             <button class="btn btn-primary btn-small" onclick="addAisle('${shop.id}')">Add</button>
                         </div>
                     </div>
@@ -7443,20 +8272,310 @@ oregano"></textarea>
         }
         window.handleAddAisleKeypress = handleAddAisleKeypress;
 
+        // =====================
+        // Emoji Picker
+        // =====================
+
+        const ALL_EMOJI = [
+          { cat: 'Smileys', items: [
+            {e:'😀',k:'grin smile happy face'},{e:'😁',k:'grin beam smile'},{e:'😂',k:'laugh cry tears joy'},{e:'🤣',k:'laugh rolling floor'},
+            {e:'😃',k:'smile open happy'},{e:'😄',k:'smile eyes happy'},{e:'😅',k:'sweat smile relief'},{e:'😆',k:'laugh squint happy'},
+            {e:'😊',k:'blush smile happy'},{e:'😍',k:'heart eyes love'},{e:'🥰',k:'hearts love smiling'},{e:'😘',k:'kiss blow face'},
+            {e:'😎',k:'cool sunglasses'},{e:'🤩',k:'star eyes excited wow'},{e:'🥳',k:'party celebrate birthday'},{e:'😏',k:'smirk'},
+            {e:'😒',k:'unamused unimpressed'},{e:'😔',k:'pensive sad'},{e:'😟',k:'worried concerned'},{e:'😕',k:'confused unsure'},
+            {e:'🥺',k:'pleading puppy eyes sad'},{e:'😢',k:'cry tears sad'},{e:'😭',k:'sob cry loud sad'},{e:'😤',k:'huff triumph'},
+            {e:'😠',k:'angry mad'},{e:'😡',k:'rage angry mad furious'},{e:'🤬',k:'swearing angry symbols'},{e:'🤯',k:'exploding head mind blown'},
+            {e:'😱',k:'scream fear shock'},{e:'😨',k:'fearful scared'},{e:'😰',k:'anxious sweat cold'},{e:'😳',k:'flushed embarrassed'},
+            {e:'🤪',k:'zany wacky crazy'},{e:'🤔',k:'thinking hmm'},{e:'🤭',k:'giggle oops secret'},{e:'🤫',k:'shush quiet silent'},
+            {e:'😶',k:'no mouth silent'},{e:'😐',k:'neutral blank'},{e:'🙄',k:'eye roll'},{e:'😬',k:'grimace awkward'},
+            {e:'🤤',k:'drool hungry'},{e:'😴',k:'sleep zzz tired'},{e:'🤒',k:'sick ill thermometer'},{e:'🤕',k:'hurt bandage injured'},
+            {e:'🤢',k:'nauseated sick green'},{e:'🤮',k:'vomit sick'},{e:'🤧',k:'sneeze cold sniffle'},{e:'🥵',k:'hot overheated sweating'},
+            {e:'🥶',k:'cold frozen freezing'},{e:'😈',k:'devil horns mischief'},{e:'👿',k:'devil angry imp'},{e:'💀',k:'skull death bones'},
+            {e:'👻',k:'ghost boo halloween'},{e:'💩',k:'poop brown'},{e:'🤡',k:'clown joker'},{e:'👽',k:'alien extraterrestrial'},
+          ]},
+          { cat: 'People', items: [
+            {e:'👋',k:'wave hello goodbye hand'},{e:'🤚',k:'raised back hand stop'},{e:'✋',k:'raised hand stop high five'},
+            {e:'🤙',k:'call shaka hang loose'},{e:'👌',k:'ok perfect'},{e:'🤌',k:'pinch chef kiss italy'},
+            {e:'✌️',k:'peace victory two fingers'},{e:'🤞',k:'fingers crossed luck'},{e:'🤟',k:'love you sign'},
+            {e:'👍',k:'thumbs up good like'},{e:'👎',k:'thumbs down dislike bad'},{e:'👏',k:'clap applause'},
+            {e:'🙌',k:'raise hands celebrate high five'},{e:'🤝',k:'handshake deal agreement'},{e:'🙏',k:'pray thanks please namaste'},
+            {e:'💪',k:'muscle strong flex bicep'},{e:'🫶',k:'heart hands love care'},{e:'🤷',k:'shrug whatever dunno'},
+            {e:'🤦',k:'facepalm'},{e:'👶',k:'baby infant'},{e:'🧒',k:'child kid'},{e:'👦',k:'boy'},
+            {e:'👧',k:'girl'},{e:'🧑',k:'person adult'},{e:'👨',k:'man'},{e:'👩',k:'woman'},
+            {e:'🧓',k:'older adult'},{e:'👴',k:'old man grandpa'},{e:'👵',k:'old woman grandma'},
+            {e:'🧑‍🍳',k:'cook chef cooking'},{e:'🧑‍🌾',k:'farmer gardener'},{e:'🧑‍🏫',k:'teacher professor'},
+            {e:'🧑‍⚕️',k:'doctor nurse health medical'},{e:'🧑‍💻',k:'technologist coder developer'},
+            {e:'🧑‍🎨',k:'artist painter'},{e:'🧑‍🔧',k:'mechanic handyperson'},
+          ]},
+          { cat: 'Animals', items: [
+            {e:'🐶',k:'dog puppy pet'},{e:'🐱',k:'cat kitten pet'},{e:'🐭',k:'mouse rat'},{e:'🐹',k:'hamster'},
+            {e:'🐰',k:'rabbit bunny'},{e:'🦊',k:'fox'},{e:'🐻',k:'bear'},{e:'🐼',k:'panda'},
+            {e:'🐨',k:'koala'},{e:'🐯',k:'tiger'},{e:'🦁',k:'lion'},{e:'🐮',k:'cow'},
+            {e:'🐷',k:'pig'},{e:'🐸',k:'frog'},{e:'🐵',k:'monkey'},{e:'🐔',k:'chicken hen'},
+            {e:'🐧',k:'penguin'},{e:'🐦',k:'bird'},{e:'🐤',k:'chick baby bird'},{e:'🦆',k:'duck'},
+            {e:'🦅',k:'eagle'},{e:'🦉',k:'owl'},{e:'🦇',k:'bat'},{e:'🐺',k:'wolf'},
+            {e:'🐗',k:'boar pig wild'},{e:'🐴',k:'horse'},{e:'🦄',k:'unicorn'},{e:'🐝',k:'bee honey'},
+            {e:'🦋',k:'butterfly'},{e:'🐌',k:'snail'},{e:'🐞',k:'ladybug ladybird'},{e:'🐜',k:'ant'},
+            {e:'🐢',k:'turtle tortoise'},{e:'🐍',k:'snake'},{e:'🦎',k:'lizard'},{e:'🐊',k:'crocodile alligator'},
+            {e:'🐳',k:'whale'},{e:'🐬',k:'dolphin'},{e:'🦭',k:'seal'},{e:'🐟',k:'fish'},
+            {e:'🐠',k:'tropical fish'},{e:'🦈',k:'shark'},{e:'🐙',k:'octopus'},{e:'🦑',k:'squid'},
+            {e:'🦐',k:'shrimp prawn'},{e:'🦀',k:'crab'},{e:'🦞',k:'lobster'},{e:'🦪',k:'oyster'},
+            {e:'🌸',k:'cherry blossom flower pink'},{e:'🌺',k:'hibiscus flower'},{e:'🌻',k:'sunflower'},
+            {e:'🌹',k:'rose'},{e:'🌷',k:'tulip'},{e:'🌿',k:'herb leaf green plant'},
+            {e:'🍀',k:'clover luck four leaf'},{e:'🌱',k:'sprout seedling grow'},{e:'🌾',k:'wheat grain sheaf'},
+            {e:'🍄',k:'mushroom fungi'},{e:'🌵',k:'cactus'},{e:'🌴',k:'palm tree tropical'},
+            {e:'🌊',k:'wave ocean water sea'},{e:'⭐',k:'star yellow'},{e:'🌙',k:'moon crescent night'},
+            {e:'☀️',k:'sun sunny bright'},{e:'🌈',k:'rainbow'},{e:'⛅',k:'cloud sun partly cloudy'},
+            {e:'🌧️',k:'rain cloud rainy'},{e:'❄️',k:'snow snowflake cold'},{e:'🔥',k:'fire flame hot'},
+            {e:'💧',k:'water drop'},{e:'🌍',k:'earth globe world'},
+          ]},
+          { cat: 'Food & Drink', items: [
+            {e:'🍎',k:'apple red fruit'},{e:'🍏',k:'apple green fruit'},{e:'🍐',k:'pear fruit'},{e:'🍊',k:'orange tangerine fruit'},
+            {e:'🍋',k:'lemon citrus fruit'},{e:'🍌',k:'banana fruit'},{e:'🍉',k:'watermelon fruit'},{e:'🍇',k:'grapes fruit'},
+            {e:'🍓',k:'strawberry fruit'},{e:'🫐',k:'blueberries fruit'},{e:'🍈',k:'melon fruit'},{e:'🍒',k:'cherries fruit'},
+            {e:'🍑',k:'peach fruit'},{e:'🥭',k:'mango fruit'},{e:'🍍',k:'pineapple fruit'},{e:'🥥',k:'coconut'},
+            {e:'🥝',k:'kiwi fruit'},{e:'🍅',k:'tomato'},{e:'🫒',k:'olive'},{e:'🥑',k:'avocado'},
+            {e:'🍆',k:'eggplant aubergine vegetable'},{e:'🥔',k:'potato vegetable'},{e:'🥕',k:'carrot vegetable'},
+            {e:'🌽',k:'corn maize vegetable'},{e:'🌶️',k:'chilli pepper hot spicy'},{e:'🫑',k:'bell pepper vegetable'},
+            {e:'🥒',k:'cucumber vegetable'},{e:'🥬',k:'leafy green lettuce vegetable'},{e:'🥦',k:'broccoli vegetable'},
+            {e:'🧄',k:'garlic vegetable'},{e:'🧅',k:'onion vegetable'},{e:'🥜',k:'peanut nut'},
+            {e:'🫘',k:'beans legumes'},{e:'🌰',k:'chestnut nut'},{e:'🍞',k:'bread loaf'},
+            {e:'🥐',k:'croissant pastry'},{e:'🥖',k:'baguette bread french'},{e:'🫓',k:'flatbread'},
+            {e:'🥨',k:'pretzel'},{e:'🥯',k:'bagel'},{e:'🧇',k:'waffle'},
+            {e:'🥞',k:'pancake flapjack'},{e:'🧈',k:'butter'},{e:'🍳',k:'egg fry pan cooking'},
+            {e:'🥚',k:'egg'},{e:'🧀',k:'cheese'},{e:'🥩',k:'meat steak beef'},
+            {e:'🥓',k:'bacon'},{e:'🍗',k:'chicken drumstick poultry'},{e:'🍖',k:'bone meat'},
+            {e:'🌭',k:'hotdog sausage'},{e:'🍔',k:'burger hamburger'},{e:'🍟',k:'fries chips'},
+            {e:'🍕',k:'pizza'},{e:'🌮',k:'taco mexican'},{e:'🌯',k:'burrito wrap'},
+            {e:'🥙',k:'pita wrap falafel kebab'},{e:'🧆',k:'falafel'},{e:'🍿',k:'popcorn cinema'},
+            {e:'🧂',k:'salt seasoning'},{e:'🥫',k:'tin can canned food'},{e:'🍱',k:'bento box lunch'},
+            {e:'🍚',k:'rice bowl'},{e:'🍛',k:'curry rice'},{e:'🍜',k:'noodles ramen soup'},
+            {e:'🍝',k:'pasta spaghetti'},{e:'🍣',k:'sushi fish'},{e:'🍤',k:'fried shrimp prawn'},
+            {e:'🫙',k:'jar preserve'},{e:'🫚',k:'olive oil bottle'},{e:'🥛',k:'milk glass'},
+            {e:'🍦',k:'ice cream soft serve'},{e:'🍧',k:'shaved ice'},{e:'🍨',k:'ice cream scoop'},
+            {e:'🍩',k:'doughnut donut'},{e:'🍪',k:'cookie biscuit'},{e:'🎂',k:'birthday cake celebration'},
+            {e:'🍰',k:'cake slice'},{e:'🧁',k:'cupcake'},{e:'🥧',k:'pie tart'},
+            {e:'🍫',k:'chocolate bar'},{e:'🍬',k:'candy sweet'},{e:'🍭',k:'lollipop sweet'},
+            {e:'🍮',k:'custard pudding'},{e:'🍯',k:'honey pot'},
+            {e:'☕',k:'coffee hot espresso'},{e:'🫖',k:'teapot kettle tea'},{e:'🍵',k:'tea cup green matcha'},
+            {e:'🧃',k:'juice box drink'},{e:'🥤',k:'cup straw soda'},{e:'🧋',k:'bubble tea boba'},
+            {e:'🍺',k:'beer pint ale'},{e:'🍻',k:'cheers beers toast'},{e:'🥂',k:'champagne toast prosecco'},
+            {e:'🍷',k:'wine red glass'},{e:'🍸',k:'cocktail martini'},{e:'🍹',k:'tropical drink cocktail'},
+            {e:'🍾',k:'champagne bottle celebration'},{e:'💧',k:'water drop drink'},
+          ]},
+          { cat: 'Travel & Places', items: [
+            {e:'🏠',k:'house home'},{e:'🏡',k:'house garden home'},{e:'🏢',k:'office building'},
+            {e:'🏥',k:'hospital health'},{e:'🏦',k:'bank money'},{e:'🏪',k:'shop store convenience'},
+            {e:'🏫',k:'school education'},{e:'🏨',k:'hotel stay'},{e:'🏰',k:'castle'},
+            {e:'⛪',k:'church'},{e:'🕌',k:'mosque'},{e:'🕍',k:'synagogue'},
+            {e:'🏗️',k:'construction building crane'},{e:'🌁',k:'foggy bridge city'},
+            {e:'🌃',k:'night city stars'},{e:'🏙️',k:'cityscape city skyline'},
+            {e:'🌄',k:'sunrise mountain dawn'},{e:'🏕️',k:'camping tent outdoors'},
+            {e:'⛺',k:'tent camping'},{e:'🏔️',k:'mountain snow snowy'},
+            {e:'⛰️',k:'mountain peak'},{e:'🌋',k:'volcano'},
+            {e:'🏖️',k:'beach sand sea'},{e:'🏝️',k:'island tropical desert'},
+            {e:'🚗',k:'car auto drive'},{e:'🚕',k:'taxi cab'},{e:'🚙',k:'suv car'},
+            {e:'🚌',k:'bus public transport'},{e:'🚂',k:'train steam locomotive'},
+            {e:'🚀',k:'rocket space launch'},{e:'✈️',k:'plane airplane fly travel'},
+            {e:'⛵',k:'sailboat sea'},{e:'🚲',k:'bicycle bike cycle'},
+            {e:'🛵',k:'scooter moped'},{e:'🛒',k:'shopping trolley cart'},
+            {e:'🗺️',k:'map world travel'},{e:'🧭',k:'compass navigate'},
+            {e:'⚓',k:'anchor ship sea'},{e:'🚩',k:'flag red triangular'},
+          ]},
+          { cat: 'Activities', items: [
+            {e:'⚽',k:'football soccer ball'},{e:'🏀',k:'basketball'},{e:'🏈',k:'american football'},
+            {e:'⚾',k:'baseball'},{e:'🎾',k:'tennis'},{e:'🏐',k:'volleyball'},
+            {e:'🏉',k:'rugby'},{e:'🥊',k:'boxing glove fight'},{e:'🎯',k:'bullseye target dart'},
+            {e:'⛳',k:'golf hole green'},{e:'🎣',k:'fishing rod angling'},{e:'🏊',k:'swim swimming pool'},
+            {e:'🚴',k:'cycling bike'},{e:'🏋️',k:'weightlifting gym fitness'},{e:'🤸',k:'gymnastics cartwheel'},
+            {e:'🧘',k:'yoga meditation calm'},{e:'🎮',k:'video game controller gaming'},
+            {e:'🎲',k:'dice board game'},{e:'♟️',k:'chess'},{e:'🎭',k:'theatre masks performance'},
+            {e:'🎨',k:'art palette paint creative'},{e:'🎬',k:'movie film clapper cinema'},
+            {e:'🎤',k:'microphone sing karaoke'},{e:'🎵',k:'music note song'},{e:'🎶',k:'music notes melody'},
+            {e:'🎸',k:'guitar electric acoustic'},{e:'🎹',k:'piano keyboard'},
+            {e:'🥁',k:'drums percussion'},{e:'🎷',k:'saxophone jazz'},{e:'🎺',k:'trumpet'},
+            {e:'📚',k:'books reading study learning'},{e:'🎓',k:'graduation cap university degree'},
+            {e:'🏆',k:'trophy winner prize'},{e:'🥇',k:'gold medal first place'},{e:'🎪',k:'circus tent fair'},
+          ]},
+          { cat: 'Objects', items: [
+            {e:'💡',k:'lightbulb idea bright'},{e:'🔦',k:'torch flashlight'},{e:'🕯️',k:'candle light'},
+            {e:'🔋',k:'battery power charge'},{e:'🔌',k:'plug socket power'},
+            {e:'💻',k:'laptop computer work'},{e:'🖥️',k:'monitor desktop screen'},
+            {e:'📱',k:'phone mobile smartphone'},{e:'📷',k:'camera photo picture'},
+            {e:'📺',k:'television tv screen'},{e:'📻',k:'radio music'},
+            {e:'⏰',k:'alarm clock time wake'},{e:'⌚',k:'watch wristwatch time'},
+            {e:'📅',k:'calendar date schedule'},{e:'📋',k:'clipboard list'},
+            {e:'📝',k:'memo note write'},{e:'✏️',k:'pencil write draw'},{e:'🖊️',k:'pen write'},
+            {e:'📌',k:'pin pushpin location'},{e:'📎',k:'paperclip attach'},{e:'✂️',k:'scissors cut'},
+            {e:'🔑',k:'key lock access'},{e:'🗝️',k:'old key vintage'},{e:'🔒',k:'lock locked secure'},
+            {e:'🔓',k:'unlock open access'},{e:'🛠️',k:'tools repair fix'},{e:'🔧',k:'wrench spanner tool'},
+            {e:'🔨',k:'hammer build'},{e:'⚙️',k:'gear settings cog'},{e:'🧰',k:'toolbox kit'},
+            {e:'🧲',k:'magnet attract'},{e:'💊',k:'pill medicine tablet'},{e:'🩺',k:'stethoscope doctor'},
+            {e:'🌡️',k:'thermometer temperature fever'},{e:'🧪',k:'test tube science lab'},
+            {e:'🔬',k:'microscope science research'},{e:'🧴',k:'lotion bottle cream'},
+            {e:'🧹',k:'broom sweep clean'},{e:'🧺',k:'basket laundry'},{e:'🧻',k:'toilet roll paper tissue'},
+            {e:'🪣',k:'bucket pail'},{e:'🧼',k:'soap wash clean'},{e:'🪥',k:'toothbrush teeth'},
+            {e:'🛁',k:'bathtub bath'},{e:'🚿',k:'shower wash'},{e:'🪑',k:'chair seat'},
+            {e:'🛋️',k:'sofa couch sit'},{e:'🛏️',k:'bed sleep'},{e:'🚪',k:'door entrance'},
+            {e:'🪟',k:'window view'},{e:'🧸',k:'teddy bear toy stuffed'},
+            {e:'🎁',k:'gift present wrapped birthday'},{e:'🎉',k:'party popper celebrate confetti'},
+            {e:'🎊',k:'confetti ball celebrate'},{e:'💰',k:'money bag rich wealth'},
+            {e:'💳',k:'credit card payment'},{e:'📦',k:'box package delivery'},
+            {e:'🛍️',k:'shopping bags retail'},{e:'📫',k:'mailbox letter post'},
+            {e:'📧',k:'email message'},{e:'📞',k:'telephone phone call'},
+          ]},
+          { cat: 'Symbols', items: [
+            {e:'❤️',k:'heart red love'},{e:'🧡',k:'heart orange love'},{e:'💛',k:'heart yellow love'},
+            {e:'💚',k:'heart green love'},{e:'💙',k:'heart blue love'},{e:'💜',k:'heart purple love'},
+            {e:'🖤',k:'heart black'},{e:'🤍',k:'heart white'},{e:'💔',k:'broken heart sad'},
+            {e:'💕',k:'two hearts love'},{e:'💖',k:'sparkling heart love'},{e:'✅',k:'check tick done yes'},
+            {e:'❌',k:'cross x wrong no'},{e:'❓',k:'question mark'},{e:'❗',k:'exclamation alert important'},
+            {e:'⭐',k:'star yellow favourite'},{e:'🌟',k:'glowing star shine'},{e:'✨',k:'sparkles magic shine'},
+            {e:'💫',k:'dizzy star spin'},{e:'💯',k:'100 percent perfect'},
+            {e:'🔔',k:'bell notification alert'},{e:'🔕',k:'bell off silent mute'},
+            {e:'📢',k:'loudspeaker announce'},{e:'🚫',k:'no entry prohibited ban'},
+            {e:'⛔',k:'no entry stop red'},{e:'♻️',k:'recycle green environment'},
+            {e:'🔴',k:'red circle dot'},{e:'🟠',k:'orange circle dot'},{e:'🟡',k:'yellow circle dot'},
+            {e:'🟢',k:'green circle dot'},{e:'🔵',k:'blue circle dot'},{e:'🟣',k:'purple circle dot'},
+            {e:'⚫',k:'black circle dot'},{e:'⚪',k:'white circle dot'},
+            {e:'💬',k:'speech bubble talk comment'},{e:'💭',k:'thought bubble think'},
+            {e:'💤',k:'zzz sleep tired'},{e:'💢',k:'anger symbol furious'},
+            {e:'🏁',k:'chequered flag finish race'},{e:'🚩',k:'flag red warning'},
+            {e:'🏴',k:'black flag'},{e:'🏳️',k:'white flag surrender peace'},
+          ]},
+        ];
+
+        let _emojiCallback = null;
+
+        // Palette for initial-letter fallback (index cycles with char code)
+        const AISLE_COLORS = [
+            '#F2654A','#F0A500','#5BBF7A','#C4B5F4','#3B82F6',
+            '#EC4899','#F59E0B','#10B981','#6366F1','#EF4444',
+        ];
+
+        function aisleInitialColor(name) {
+            const code = (name || ' ').charCodeAt(0);
+            return AISLE_COLORS[code % AISLE_COLORS.length];
+        }
+        window.aisleInitialColor = aisleInitialColor;
+
+        function renderEmojiPicker() {
+            const grid = document.getElementById('emoji-picker-grid');
+            if (!grid || grid.dataset.built === '1') return;
+            let html = '';
+            for (const { cat, items } of ALL_EMOJI) {
+                html += `<div class="emoji-category-header">${cat}</div>`;
+                for (const { e, k } of items) {
+                    html += `<button class="emoji-option" data-e="${e}" data-k="${k}" type="button">${e}</button>`;
+                }
+            }
+            grid.innerHTML = html;
+            // Event delegation — avoids inline onclick issues with compound emoji
+            grid.addEventListener('click', ev => {
+                const btn = ev.target.closest('.emoji-option');
+                if (btn) selectEmoji(btn.dataset.e);
+            });
+            grid.dataset.built = '1';
+        }
+
+        function filterEmojiPicker(query) {
+            const grid = document.getElementById('emoji-picker-grid');
+            if (!grid) return;
+            const q = query.trim().toLowerCase();
+            if (!q) {
+                grid.querySelectorAll('.emoji-option, .emoji-category-header').forEach(el => el.style.display = '');
+                return;
+            }
+            // Hide headers while searching; show/hide buttons by keyword match
+            grid.querySelectorAll('.emoji-category-header').forEach(el => el.style.display = 'none');
+            grid.querySelectorAll('.emoji-option').forEach(btn => {
+                btn.style.display = (btn.dataset.k.includes(q) || btn.dataset.e === q) ? '' : 'none';
+            });
+        }
+        window.filterEmojiPicker = filterEmojiPicker;
+
+        let _emojiTrigger = null;
+
+        function openEmojiPicker(triggerEl, callback) {
+            renderEmojiPicker();
+            _emojiCallback = callback;
+            _emojiTrigger = triggerEl;
+
+            // Reset search on each open
+            const searchInput = document.getElementById('emoji-search');
+            if (searchInput) { searchInput.value = ''; filterEmojiPicker(''); }
+
+            const picker = document.getElementById('emoji-picker');
+            picker.style.display = 'flex';
+
+            const rect = triggerEl.getBoundingClientRect();
+            const pickerW = 340;
+            const pickerH = 380;
+            let left = rect.left + window.scrollX;
+            let top = rect.bottom + window.scrollY + 6;
+
+            // Stay inside viewport horizontally
+            if (left + pickerW > window.innerWidth - 8) {
+                left = window.innerWidth - pickerW - 8;
+            }
+            if (left < 8) left = 8;
+
+            // Flip above trigger if too close to bottom of viewport
+            if (rect.bottom + pickerH + 6 > window.innerHeight) {
+                top = rect.top + window.scrollY - pickerH - 6;
+                if (top < window.scrollY + 8) top = window.scrollY + 8;
+            }
+
+            picker.style.left = `${left}px`;
+            picker.style.top = `${top}px`;
+
+            // Focus search for immediate typing
+            setTimeout(() => { if (searchInput) searchInput.focus(); }, 50);
+        }
+        window.openEmojiPicker = openEmojiPicker;
+
+        function closeEmojiPicker() {
+            const picker = document.getElementById('emoji-picker');
+            if (picker) picker.style.display = 'none';
+            _emojiCallback = null;
+            _emojiTrigger = null;
+        }
+        window.closeEmojiPicker = closeEmojiPicker;
+
+        function selectEmoji(emoji) {
+            if (_emojiCallback) _emojiCallback(emoji);
+            closeEmojiPicker();
+        }
+        window.selectEmoji = selectEmoji;
+
+        // Close picker when tapping/clicking outside (works on mobile too)
+        document.addEventListener('pointerdown', function(e) {
+            const picker = document.getElementById('emoji-picker');
+            if (picker && picker.style.display !== 'none') {
+                if (!picker.contains(e.target) && e.target !== _emojiTrigger && !e.target.closest('.aisle-emoji-btn') && e.target.id !== 'recipe-emoji-btn') {
+                    closeEmojiPicker();
+                }
+            }
+        }, { capture: true });
+
         async function addAisle(shopId) {
             const input = document.getElementById(`add-aisle-${shopId}`);
             const name = input.value.trim();
-            
+
             if (!name || !currentUser) return;
-            
+
             const shop = shops.find(s => s.id === shopId);
             if (!shop) return;
-            
-            const aisles = shop.aisles || [];
-            aisles.push({ name, order: aisles.length + 1 });
-            
+
+            // Pick up emoji selected for this add row (if any)
+            const emojiBtn = document.getElementById(`add-aisle-emoji-${shopId}`);
+            const emoji = emojiBtn?.dataset.emoji || '';
+
+            const aisles = [...(shop.aisles || [])];
+            aisles.push({ name, emoji, order: aisles.length + 1 });
+
             showSyncStatus('syncing', 'Adding...');
-            
+
             try {
                 await setDoc(doc(db, ...getDataPath(), "shops", shopId), {
                     ...shop,
@@ -7464,6 +8583,7 @@ oregano"></textarea>
                 });
 
                 input.value = '';
+                if (emojiBtn) { emojiBtn.textContent = '🍽️'; emojiBtn.dataset.emoji = ''; }
                 showSyncStatus('success', 'Added!');
             } catch (error) {
                 console.error("Error adding aisle:", error);
@@ -7471,6 +8591,23 @@ oregano"></textarea>
             }
         }
         window.addAisle = addAisle;
+
+        async function setAisleEmoji(shopId, aisleIndex, emoji) {
+            const shop = shops.find(s => s.id === shopId);
+            if (!shop || !currentUser) return;
+
+            const aisles = [...(shop.aisles || [])];
+            if (!aisles[aisleIndex]) return;
+            aisles[aisleIndex] = { ...aisles[aisleIndex], emoji };
+
+            try {
+                await setDoc(doc(db, ...getDataPath(), "shops", shopId), { ...shop, aisles });
+            } catch (error) {
+                console.error("Error setting aisle emoji:", error);
+                showSyncStatus('error', 'Failed to save emoji');
+            }
+        }
+        window.setAisleEmoji = setAisleEmoji;
 
         async function moveAisle(shopId, index, direction) {
             const shop = shops.find(s => s.id === shopId);
@@ -7982,6 +9119,21 @@ oregano"></textarea>
             document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
             document.getElementById(`${viewName}-view`).classList.add('active');
 
+            // Render view-specific content
+            if (viewName === 'recipes') {
+                renderRecipes();
+                renderRecipeCategoryChips();
+            }
+
+            if (viewName === 'planner') {
+                renderPlanner();
+            }
+
+            if (viewName === 'shopping') {
+                renderShoppingList();
+                setTimeout(setupAdhocAutocomplete, 100);
+            }
+
             // Render settings components when switching to settings
             if (viewName === 'settings') {
                 renderIngredientDictionary();
@@ -7992,7 +9144,6 @@ oregano"></textarea>
 
             // Render account components when switching to account
             if (viewName === 'account') {
-                renderThemeSelector();
                 renderHouseholdSettings();
                 applyCollapsedSections();
                 if (currentUser) {
@@ -8003,10 +9154,13 @@ oregano"></textarea>
                 }
             }
 
-            // Setup adhoc autocomplete when switching to shopping
-            if (viewName === 'shopping') {
-                setTimeout(setupAdhocAutocomplete, 100);
-            }
+            // Show FAB and clear pill only on their respective views
+            const shoppingFab = document.getElementById('shopping-fab');
+            if (shoppingFab) shoppingFab.style.display = viewName === 'shopping' ? 'flex' : 'none';
+            const plannerFab = document.getElementById('planner-fab');
+            if (plannerFab) plannerFab.style.display = viewName === 'planner' ? 'flex' : 'none';
+            const clearPill = document.getElementById('clear-checked-pill');
+            if (clearPill && viewName !== 'shopping') clearPill.style.display = 'none';
 
             // Render suggestions panel when switching to planner
             if (viewName === 'planner') {
@@ -8572,8 +9726,7 @@ oregano"></textarea>
             try {
                 await setDoc(doc(db, ...getDataPath(), "settings", "userPrefs"), {
                     mealCategories: mealCategories,
-                    dayNotes: dayNotes,
-                    theme: currentTheme
+                    dayNotes: dayNotes
                 });
             } catch (error) {
                 console.error("Error saving user prefs:", error);
