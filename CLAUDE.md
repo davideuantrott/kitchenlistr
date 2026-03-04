@@ -121,7 +121,10 @@ New brand colour variables also added (not yet widely used): `--color-tomato`, `
 - **Icons:** Inline SVG (Lucide-style, stroke 1.75) on all 5 buttons — hidden on desktop, visible on mobile
 - **Header:** Frosted glass (`backdrop-filter: blur(12px)`, 92% opacity white)
 - **Sign-out button:** Pill shape, ghost style
-- Main content gets `padding-bottom: calc(72px + 1rem)` on mobile to clear the fixed nav
+- Main content gets `padding-bottom: calc(72px + 1rem + env(safe-area-inset-bottom, 0px))` on mobile to clear the fixed nav and iPhone home indicator
+- Nav height includes `env(safe-area-inset-bottom)` for iPhones with Dynamic Island / home bar
+- Viewport meta has `viewport-fit=cover` (required for safe-area insets to work)
+- `@media (max-height: 500px) and (orientation: landscape)` compacts header/nav in landscape on phones
 
 ---
 
@@ -154,10 +157,11 @@ New brand colour variables also added (not yet widely used): `--color-tomato`, `
 - **Avatar system:** `recipeAvatarColor(name)` (10-colour brand palette, hash) + `recipeAvatarEmoji(name)` (food emoji set, second hash); deterministic per recipe name
 - **Recipe cards restructured:** `padding: 0`, `overflow: hidden`; top 100px avatar strip (`.recipe-card-avatar`) + `.recipe-card-body` with padding; image shown instead of emoji when `imageUrl` set
 - **Optional image URL field:** added to recipe form; saved to Firestore as `imageUrl`; backward-compatible (empty string = use avatar)
-- **Category field:** added to recipe form as `<select>` populated from `mealCategories`; saved to Firestore as `category`; shown as subtitle on card meta line
-- **Category filter chips:** pill chip row (`#recipe-category-filter`) above the grid; "All" + one chip per mealCategory; `currentRecipeCategory` state; chips re-render on `showView('recipes')` and when `mealCategories` updates in settings listener
+- **Category field:** originally a single `<select>`; now replaced with multi-select togglable chips (`.recipe-cat-chip`); recipes support multiple categories saved as `categories: string[]` in Firestore; `category: string` retained as first element for backward compat
+- **Category filter chips:** pill chip row (`#recipe-category-filter`) above the grid; "All" + one chip per mealCategory; `currentRecipeCategory` state; filtering checks `recipe.categories` array (falls back to legacy `recipe.category` string); chips re-render on `showView('recipes')` and when `mealCategories` updates in settings listener
+- **Custom recipe emoji:** emoji picker button (🍽️) in edit form; stored as `recipe.emoji`; overrides deterministic `recipeAvatarEmoji(name)`; "Auto (from name)" button clears it; `renderRecipeCategorySelector(selectedCats)` / `toggleRecipeCatChip()` / `clearRecipeEmoji()` are the new form helpers
 - **Two-column grid:** `minmax` changed 280px → 200px (two columns from ~420px viewport)
-- **View modal:** shows large 140px avatar at top; category shown as subtitle below title
+- **View modal:** shows large 140px avatar at top; all categories shown as subtitle below title
 
 #### ✅ Phase 8 — Blob decorations & animations
 - **Blob decorations:** `.page-header::before` / `::after` pseudo-elements; organic blob shapes via `border-radius: 60% 40% 30% 70% / ...`; opacity 0.38; per-view pastel colours (blush/buttercup on recipes, sage-pale/lavender on planner, blush/peach on shopping, sage-pale/sky on settings, lavender/buttercup on account)
@@ -165,6 +169,38 @@ New brand colour variables also added (not yet widely used): `--color-tomato`, `
 - **Card pop-in:** `popIn` keyframe (scale 0.92 + fade → scale 1); applied to `.recipe-card` (0.28s, 50ms stagger) and `.shopping-item` (0.22s, 35ms stagger); stagger driven by `--anim-order` CSS custom property set inline during render; `_shopAnimOrder` counter reset at start of each `renderShoppingList()` call
 - **Spring check:** `springCheck` keyframe applied as `.spring-check` class on the newly checked shopping item; `recentlyCheckedKey` module variable set in `toggleShoppingItem()` before re-render, cleared after; class applied in `renderShoppingItem()` when `ing.key === recentlyCheckedKey`
 - **Reduced motion:** all new animations inside `@media (prefers-reduced-motion: no-preference)`; existing `reduce` block kills them as second safety net
+
+#### ✅ Phase 9 — Bug fixes & mobile polish
+
+**Mobile nav & layout**
+- `viewport-fit=cover` + `env(safe-area-inset-bottom)` ensures nav clears iPhone home indicator
+- `-webkit-text-size-adjust: 100%` prevents iOS from zooming text on orientation change
+- Landscape compact mode: `@media (max-height: 500px) and (orientation: landscape)` shrinks header/nav
+
+**Shopping list**
+- "Clear checked" pill no longer appears on non-shopping views; `renderShoppingList()` now checks `shopping-view` is `.active` before showing it
+
+**Emoji picker (shared, used by aisles + recipe form)**
+- Positioned to flip above trigger if near viewport bottom (`rect.bottom + pickerH > window.innerHeight`)
+- `max-height: 260px; overflow-y: auto` prevents picker overflowing off-screen
+- Outside-close uses `pointerdown` + `{ capture: true }` instead of `click`; stores `_emojiTrigger` reference to correctly exclude the trigger element on mobile
+
+**Planner**
+- `::before` blob on planner page-header resized (110→90px) and pushed right (`-15px → -45px`) to avoid clashing with Print Plan button
+- Future (non-today) day cards get a slightly stronger border `#C8C2B8`
+- Day notes section has horizontal padding so 📝 Add note text doesn't clip the card corner
+- Month view more compact on mobile; dots-only mode on ≤400px screens
+
+**Shopping summary**
+- Replaced orange-to-green gradient with solid `var(--bg-white)`
+
+**Settings / Dictionary**
+- `.dictionary-stats` uses `flex-wrap: wrap` to prevent text overflowing narrow screens
+- Aisle `<select>` in dictionary table has `max-width: 140px`
+
+**Account page**
+- Profile card: email truncates with ellipsis; Sign Out button has `flex-shrink: 0`
+- Household member rows: `flex-wrap: wrap`; email truncates; role badge and remove button don't shrink
 
 ### Theme picker
 The legacy theme picker (Garden / Terracotta / Nordic / Berry / Amber / Ink) has been **removed** from the redesign branch. The app ships with Warm Pantry only. Themes will be reintroduced in a future iteration designed specifically for the Warm Pantry token system.
