@@ -3706,6 +3706,13 @@
            Theme Overrides
            ===================== */
 
+        /* ── Household mode: amber accent override ── */
+        body[data-mode="household"] {
+            --accent-green:       #C47C15;
+            --accent-green-dark:  #A36510;
+            --accent-green-light: #FEF0C8;
+        }
+
         /* ── Context Switcher (Personal / Household toggle in header) ── */
         .context-switcher {
             display: none; /* shown by JS when user is in a household */
@@ -3737,6 +3744,35 @@
         .ctx-btn.active {
             background: var(--accent-green);
             color: white;
+        }
+
+        /* ── Context mode label (persistent status badge in header) ── */
+        .context-mode-label {
+            display: none; /* shown by JS when user is in a household */
+            align-items: center;
+            gap: 0.3rem;
+            padding: 0.25rem 0.65rem;
+            border-radius: 999px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            white-space: nowrap;
+            letter-spacing: 0.01em;
+            transition: background 0.2s, color 0.2s;
+            order: -1; /* sits before nav on desktop */
+        }
+        .context-mode-label.mode-personal {
+            background: var(--accent-green-light);
+            color: var(--accent-green-dark);
+        }
+        .context-mode-label.mode-household {
+            background: var(--accent-green-light);
+            color: var(--accent-green-dark);
+        }
+        @media (max-width: 768px) {
+            .context-mode-label {
+                font-size: 0.7rem;
+                padding: 0.2rem 0.5rem;
+            }
         }
 
         /* ── Household Settings UI ── */
@@ -4013,6 +4049,9 @@
                         <span>Account</span>
                     </button>
                 </nav>
+
+                <!-- Persistent context label: only visible when user belongs to a household -->
+                <div id="context-mode-label" class="context-mode-label"></div>
 
                 <!-- Context switcher: only visible when user belongs to a household -->
                 <div id="context-switcher" class="context-switcher">
@@ -5436,12 +5475,31 @@ oregano"></textarea>
             const switcher = document.getElementById('context-switcher');
             const personalBtn = document.getElementById('ctx-personal-btn');
             const householdBtn = document.getElementById('ctx-household-btn');
+            const modeLabel = document.getElementById('context-mode-label');
             if (!switcher) return;
 
             if (!currentHouseholdId) {
                 switcher.style.display = 'none';
+                if (modeLabel) modeLabel.style.display = 'none';
+                document.body.removeAttribute('data-mode');
                 return;
             }
+
+            // Toggle: accent colour via body attribute
+            document.body.dataset.mode = currentDataMode;
+
+            // Persistent mode label
+            if (modeLabel) {
+                modeLabel.style.display = 'flex';
+                if (currentDataMode === 'household') {
+                    modeLabel.className = 'context-mode-label mode-household';
+                    modeLabel.textContent = '🏠 ' + (currentHouseholdName || 'Household');
+                } else {
+                    modeLabel.className = 'context-mode-label mode-personal';
+                    modeLabel.textContent = '👤 Personal';
+                }
+            }
+
             switcher.style.display = 'flex';
             personalBtn.classList.toggle('active', currentDataMode === 'personal');
             householdBtn.classList.toggle('active', currentDataMode === 'household');
