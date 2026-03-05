@@ -4058,7 +4058,7 @@
     </div>
 
     <!-- Sync Status -->
-    <div class="sync-status hidden" id="sync-status">
+    <div class="sync-status hidden" id="sync-status" role="status" aria-live="polite">
         <span class="sync-dot" id="sync-dot"></span>
         <span id="sync-text">Synced</span>
     </div>
@@ -5314,7 +5314,7 @@ oregano"></textarea>
         // Firebase Setup
         // =====================
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getFirestore, collection, doc, setDoc, getDoc, getDocs, deleteDoc, onSnapshot, query, updateDoc, deleteField } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getFirestore, collection, doc, setDoc, getDoc, getDocs, deleteDoc, onSnapshot, query, updateDoc, deleteField, writeBatch } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
         import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signInWithPopup, signInWithRedirect, getRedirectResult, GoogleAuthProvider, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
 		// Your Firebase configuration
@@ -5557,6 +5557,9 @@ oregano"></textarea>
                 // Start real-time listeners for the active data context
                 setupDataListeners(getDataPath());
 
+                // Handle PWA shortcuts (?action=add-recipe, ?view=shopping)
+                checkForShortcuts();
+
                 // Check for a household join link or a recipe/shop import link
                 setTimeout(() => checkForJoin(), 300);
                 setTimeout(() => checkForImport(), 500);
@@ -5678,6 +5681,7 @@ oregano"></textarea>
                 collection(db, ...dataPath, "recipes"),
                 (snapshot) => {
                     recipes = [];
+                    _ingredientNamesCache = null;
                     snapshot.forEach((doc) => {
                         recipes.push({ id: doc.id, ...doc.data() });
                     });
@@ -6215,7 +6219,10 @@ oregano"></textarea>
         window.addIngredientInput = addIngredientInput;
 
         // Get all unique ingredient names across all recipes
+        let _ingredientNamesCache = null;
+
         function getAllIngredientNames() {
+            if (_ingredientNamesCache) return _ingredientNamesCache;
             const names = new Set();
             recipes.forEach(recipe => {
                 if (recipe.ingredients) {
@@ -6229,7 +6236,8 @@ oregano"></textarea>
                     });
                 }
             });
-            return Array.from(names).sort();
+            _ingredientNamesCache = Array.from(names).sort();
+            return _ingredientNamesCache;
         }
 
         let autocompleteHighlightIndex = -1;
@@ -6253,11 +6261,15 @@ oregano"></textarea>
             
             const dropdown = document.createElement('div');
             dropdown.className = 'autocomplete-dropdown';
-            
+            dropdown.setAttribute('role', 'listbox');
+
             matches.forEach((name, index) => {
                 const aisle = getIngredientAisle(name, currentShopId);
                 const item = document.createElement('div');
                 item.className = 'autocomplete-item';
+                item.setAttribute('role', 'option');
+                item.setAttribute('aria-selected', 'false');
+                item.dataset.name = name;
                 item.innerHTML = `${escapeHtml(name)}${aisle ? `<span class="autocomplete-aisle">(${escapeHtml(aisle)})</span>` : ''}`;
                 item.onmousedown = (e) => {
                     e.preventDefault();
@@ -6265,7 +6277,7 @@ oregano"></textarea>
                 };
                 dropdown.appendChild(item);
             });
-            
+
             wrapper.appendChild(dropdown);
             autocompleteHighlightIndex = -1;
         }
@@ -6300,7 +6312,7 @@ oregano"></textarea>
                 event.preventDefault();
                 const selectedItem = items[autocompleteHighlightIndex];
                 if (selectedItem) {
-                    const name = selectedItem.textContent.split('(')[0].trim();
+                    const name = selectedItem.dataset.name;
                     selectAutocompleteItem(input, name);
                 }
             } else if (event.key === 'Escape') {
@@ -7587,11 +7599,11 @@ oregano"></textarea>
                     const aisleItems = aisleGroups[aisle.name];
                     if (aisleItems && aisleItems.length > 0) {
                         html += `<div class="print-aisle-section">`;
-                        html += `<div class="print-aisle-title">${index + 1}. ${aisle.name}</div>`;
+                        html += `<div class="print-aisle-title">${index + 1}. ${escapeHtml(aisle.name)}</div>`;
                         aisleItems.forEach(item => {
                             html += `<div class="print-item">
                                 <div class="print-checkbox"></div>
-                                <div class="print-item-text">${item.text}<div class="print-item-context">${item.context}</div></div>
+                                <div class="print-item-text">${escapeHtml(item.text)}<div class="print-item-context">${escapeHtml(item.context)}</div></div>
                             </div>`;
                         });
                         html += `</div>`;
@@ -7606,7 +7618,7 @@ oregano"></textarea>
                     uncategorised.forEach(item => {
                         html += `<div class="print-item">
                             <div class="print-checkbox"></div>
-                            <div class="print-item-text">${item.text}<div class="print-item-context">${item.context}</div></div>
+                            <div class="print-item-text">${escapeHtml(item.text)}<div class="print-item-context">${escapeHtml(item.context)}</div></div>
                         </div>`;
                     });
                     html += `</div>`;
@@ -7616,7 +7628,7 @@ oregano"></textarea>
                 items.forEach(item => {
                     html += `<div class="print-item">
                         <div class="print-checkbox"></div>
-                        <div class="print-item-text">${item.text}<div class="print-item-context">${item.context}</div></div>
+                        <div class="print-item-text">${escapeHtml(item.text)}<div class="print-item-context">${escapeHtml(item.context)}</div></div>
                     </div>`;
                 });
             }
@@ -9375,8 +9387,14 @@ oregano"></textarea>
 
         let pendingImportData = null;
 
+        function generateSecureToken(bytes = 16) {
+            const arr = new Uint8Array(bytes);
+            crypto.getRandomValues(arr);
+            return Array.from(arr, b => b.toString(16).padStart(2, '0')).join('');
+        }
+
         function generateShareId() {
-            return Date.now().toString(36) + Math.random().toString(36).substr(2, 8);
+            return generateSecureToken(16);
         }
 
         // Share a recipe
@@ -9470,21 +9488,44 @@ oregano"></textarea>
         }
         window.closeShareModal = closeShareModal;
 
-        function copyShareLink() {
+        async function copyShareLink() {
             const input = document.getElementById('share-link-input');
-            input.select();
-            document.execCommand('copy');
-            
+            const shareUrl = input.value;
             const btn = document.getElementById('copy-share-btn');
+
+            try {
+                await navigator.clipboard.writeText(shareUrl);
+            } catch {
+                // Fallback for browsers without clipboard API permission
+                input.select();
+                document.execCommand('copy');
+            }
+
             btn.textContent = 'Copied!';
             btn.classList.add('copied');
-            
+
             setTimeout(() => {
                 btn.textContent = 'Copy';
                 btn.classList.remove('copied');
             }, 2000);
         }
         window.copyShareLink = copyShareLink;
+
+        // PWA shortcut handling
+        function checkForShortcuts() {
+            if (!currentUser) return;
+            const params = new URLSearchParams(window.location.search);
+            const action = params.get('action');
+            const view = params.get('view');
+            if (action || view) {
+                window.history.replaceState({}, document.title, window.location.pathname);
+            }
+            if (action === 'add-recipe') {
+                openRecipeModal();
+            } else if (view === 'shopping') {
+                showView('shopping');
+            }
+        }
 
         // Import functions
         async function checkForImport() {
@@ -9576,8 +9617,40 @@ oregano"></textarea>
         }
         window.closeImportModal = closeImportModal;
 
+        function isValidSharePayload(data) {
+            if (!data || typeof data !== 'object') return false;
+            if (typeof data.type !== 'string') return false;
+            if (data.type === 'recipe') {
+                if (!data.data || typeof data.data !== 'object') return false;
+                if (typeof data.data.name !== 'string' || !data.data.name.trim()) return false;
+                if (data.data.ingredients !== undefined && !Array.isArray(data.data.ingredients)) return false;
+                if (Array.isArray(data.data.ingredients) && data.data.ingredients.length > 200) return false;
+            } else if (data.type === 'recipes_bulk') {
+                if (!data.data || typeof data.data !== 'object') return false;
+                if (!Array.isArray(data.data.recipes)) return false;
+                if (data.data.recipes.length > 500) return false;
+                for (const r of data.data.recipes) {
+                    if (typeof r.name !== 'string' || !r.name.trim()) return false;
+                    if (r.ingredients !== undefined && !Array.isArray(r.ingredients)) return false;
+                }
+            } else if (data.type === 'shop') {
+                if (!data.data || typeof data.data !== 'object') return false;
+                if (typeof data.data.name !== 'string' || !data.data.name.trim()) return false;
+                if (!Array.isArray(data.data.aisles)) return false;
+                if (data.data.aisles.length > 200) return false;
+            } else {
+                return false;
+            }
+            return true;
+        }
+
         async function confirmImport() {
             if (!pendingImportData || !currentUser) return;
+            if (!isValidSharePayload(pendingImportData)) {
+                showSyncStatus('error', 'Invalid import data');
+                closeImportModal();
+                return;
+            }
             
             showSyncStatus('syncing', 'Importing...');
             
@@ -9776,12 +9849,14 @@ oregano"></textarea>
             }
             
             showSyncStatus('syncing', 'Updating recipes...');
-            
+
             try {
+                const batch = writeBatch(db);
+
                 // Update all recipes that use this ingredient
                 for (const recipe of recipes) {
                     if (!recipe.ingredients) continue;
-                    
+
                     let changed = false;
                     const updatedIngredients = recipe.ingredients.map(ing => {
                         let name;
@@ -9802,9 +9877,9 @@ oregano"></textarea>
                         }
                         return ing;
                     });
-                    
+
                     if (changed) {
-                        await setDoc(doc(db, ...getDataPath(), "recipes", recipe.id), {
+                        batch.set(doc(db, ...getDataPath(), "recipes", recipe.id), {
                             ...recipe,
                             ingredients: updatedIngredients
                         });
@@ -9815,20 +9890,22 @@ oregano"></textarea>
                 if (!mergeWith && newName !== originalName && ingredientAisles[originalName]) {
                     ingredientAisles[newName] = ingredientAisles[originalName];
                     delete ingredientAisles[originalName];
-                    await setDoc(doc(db, ...getDataPath(), "settings", "ingredientAisles"), ingredientAisles);
+                    batch.set(doc(db, ...getDataPath(), "settings", "ingredientAisles"), ingredientAisles);
                 }
 
                 // If merging, remove the old ingredient's aisle data
                 if (mergeWith && ingredientAisles[originalName]) {
                     delete ingredientAisles[originalName];
-                    await setDoc(doc(db, ...getDataPath(), "settings", "ingredientAisles"), ingredientAisles);
+                    batch.set(doc(db, ...getDataPath(), "settings", "ingredientAisles"), ingredientAisles);
                 }
-                
+
+                await batch.commit();
+
                 showSyncStatus('success', 'Updated!');
                 closeEditIngredientModal();
                 renderIngredientManager();
                 renderIngredientDictionary();
-                
+
             } catch (error) {
                 console.error("Error updating ingredient:", error);
                 showSyncStatus('error', 'Update failed');
@@ -9844,12 +9921,14 @@ oregano"></textarea>
             }
             
             showSyncStatus('syncing', 'Deleting...');
-            
+
             try {
+                const batch = writeBatch(db);
+
                 // Remove from all recipes
                 for (const recipe of recipes) {
                     if (!recipe.ingredients) continue;
-                    
+
                     const originalLength = recipe.ingredients.length;
                     const updatedIngredients = recipe.ingredients.filter(ing => {
                         let name;
@@ -9862,9 +9941,9 @@ oregano"></textarea>
                         }
                         return name !== originalName;
                     });
-                    
+
                     if (updatedIngredients.length !== originalLength) {
-                        await setDoc(doc(db, ...getDataPath(), "recipes", recipe.id), {
+                        batch.set(doc(db, ...getDataPath(), "recipes", recipe.id), {
                             ...recipe,
                             ingredients: updatedIngredients
                         });
@@ -9874,14 +9953,16 @@ oregano"></textarea>
                 // Remove from ingredient aisles
                 if (ingredientAisles[originalName]) {
                     delete ingredientAisles[originalName];
-                    await setDoc(doc(db, ...getDataPath(), "settings", "ingredientAisles"), ingredientAisles);
+                    batch.set(doc(db, ...getDataPath(), "settings", "ingredientAisles"), ingredientAisles);
                 }
-                
+
+                await batch.commit();
+
                 showSyncStatus('success', 'Deleted!');
                 closeEditIngredientModal();
                 renderIngredientManager();
                 renderIngredientDictionary();
-                
+
             } catch (error) {
                 console.error("Error deleting ingredient:", error);
                 showSyncStatus('error', 'Delete failed');
@@ -10114,7 +10195,7 @@ oregano"></textarea>
         async function generateInviteLink() {
             if (!currentHouseholdId || !currentUser) return;
             try {
-                const token = generateId();
+                const token = generateSecureToken(16);
                 const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString();
                 await setDoc(doc(db, "households", currentHouseholdId, "invites", token), {
                     createdBy: currentUser.uid,
@@ -10602,6 +10683,7 @@ oregano"></textarea>
             const dropdown = document.createElement('div');
             dropdown.id = 'adhoc-autocomplete';
             dropdown.className = 'autocomplete-dropdown';
+            dropdown.setAttribute('role', 'listbox');
             dropdown.style.position = 'absolute';
             dropdown.style.width = '100%';
             dropdown.style.top = '100%';
@@ -10611,6 +10693,9 @@ oregano"></textarea>
                 const aisle = getIngredientAisle(name, currentShopId);
                 const item = document.createElement('div');
                 item.className = 'autocomplete-item';
+                item.setAttribute('role', 'option');
+                item.setAttribute('aria-selected', 'false');
+                item.dataset.name = name;
                 item.innerHTML = `${escapeHtml(name)}${aisle ? `<span class="autocomplete-aisle">(${escapeHtml(aisle)})</span>` : ''}`;
                 item.onmousedown = (ev) => {
                     ev.preventDefault();
@@ -10643,7 +10728,7 @@ oregano"></textarea>
                 e.preventDefault();
                 const selectedItem = items[adhocAutocompleteIndex];
                 if (selectedItem) {
-                    const name = selectedItem.textContent.split('(')[0].trim();
+                    const name = selectedItem.dataset.name;
                     selectAdhocAutocomplete(name);
                 }
             } else if (e.key === 'Escape') {
@@ -10771,7 +10856,12 @@ oregano"></textarea>
 
         function checkShowWelcome() {
             if (!currentUser) return;
-            
+
+            // Remove stale welcomeShown keys from other accounts on this device
+            Object.keys(localStorage)
+                .filter(k => k.startsWith('welcomeShown_') && k !== `welcomeShown_${currentUser.uid}`)
+                .forEach(k => localStorage.removeItem(k));
+
             const welcomeShown = localStorage.getItem(`welcomeShown_${currentUser.uid}`);
             if (!welcomeShown) {
                 // Small delay to let the app load first
@@ -10815,8 +10905,9 @@ oregano"></textarea>
         });
 
         function showInstallPrompt() {
-            // Don't show if already dismissed
-            if (localStorage.getItem('installPromptDismissed')) return;
+            // Don't show if dismissed within the last 30 days
+            const dismissed = localStorage.getItem('installPromptDismissed');
+            if (dismissed && Date.now() - Number(dismissed) < 30 * 24 * 60 * 60 * 1000) return;
             
             // Create and show the install prompt
             const existingPrompt = document.getElementById('install-prompt');
@@ -10854,7 +10945,7 @@ oregano"></textarea>
         window.installApp = installApp;
 
         function dismissInstallPrompt() {
-            localStorage.setItem('installPromptDismissed', 'true');
+            localStorage.setItem('installPromptDismissed', Date.now().toString());
             hideInstallPrompt();
         }
         window.dismissInstallPrompt = dismissInstallPrompt;

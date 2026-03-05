@@ -245,5 +245,50 @@ What was removed: `[data-theme]` CSS blocks, Theme Selector UI CSS, Appearance s
 When reintroducing themes, each theme block should override: `--bg-cream`, `--bg-white`, `--text-primary`, `--text-secondary`, `--accent-green`, `--accent-green-light`, `--accent-green-dark`, `--accent-mint`, `--border-light`, `--border-medium`, `--shadow-*`, `--accent-glow-soft`, `--accent-glow-mid`, `--accent-glow-strong`, `--font-heading`, `--font-body`. The `--color-*` pastel variables and `--radius-*` values should remain fixed.
 
 ### Deploy checklist
-1. Increment `CACHE_NAME` in `sw.js` when deploying significant changes (currently `kitchenlistr-v2`)
+1. Increment `CACHE_NAME` in `sw.js` when deploying significant changes (currently `kitchenlistr-v3`)
 2. Commit and push to `main` — GitHub Pages deploys automatically
+
+---
+
+## Code Quality & Security Notes
+
+A formal code review was conducted (see `CODE-REVIEW.md`). The following changes were applied during that review and are now baseline behaviour.
+
+### Security / Correctness (applied)
+- **XSS in print output:** `escapeHtml()` now applied to `item.text`, `item.context`, and `aisle.name` in all three render branches of `printShoppingList()`. The planner print functions (`generateWeekPrintHtml`, `generateMonthPrintHtml`) were already correct.
+- **Import validation:** `isValidSharePayload()` validator added; `confirmImport()` now rejects malformed shared documents before writing to Firestore.
+- **Autocomplete data corruption:** Autocomplete items now carry a `data-name` attribute. Both keydown handlers (`handleAdhocKeydown`, `handleAutocompleteKeydown`) read from `dataset.name` instead of parsing `textContent.split('(')`, which silently truncated names containing parentheses.
+- **Cryptographic tokens:** `generateSecureToken()` uses `crypto.getRandomValues()`; used by `generateShareId()` and `generateInviteLink()`. General-purpose `generateId()` (recipe/shop IDs) retains `Math.random()` — acceptable for non-access-control IDs.
+
+### Performance (applied)
+- **`getAllIngredientNames()` memoised:** `_ingredientNamesCache` module variable; invalidated in the recipes `onSnapshot` callback. Eliminates per-keypress full recipe traversal.
+- **Firestore `writeBatch`:** `saveIngredientEdit()` and `deleteIngredient()` now use `writeBatch` — atomic writes, single network round-trip. `writeBatch` added to Firestore imports.
+
+### Compatibility / UX (applied)
+- **`copyShareLink()`:** Uses `navigator.clipboard.writeText()` with `execCommand` fallback.
+- **PWA shortcuts:** `checkForShortcuts()` handles `?action=add-recipe` → `openRecipeModal()` and `?view=shopping` → `showView('shopping')` on auth.
+- **`installPromptDismissed`:** Now stores a timestamp (ms); prompt re-offers after 30 days.
+- **`welcomeShown_*` keys:** `checkShowWelcome()` removes stale keys from other UIDs on the same device.
+
+### Accessibility (applied)
+- **Sync status:** `role="status" aria-live="polite"` on `#sync-status`.
+- **Autocomplete ARIA:** `role="listbox"` on both autocomplete dropdowns; `role="option" aria-selected="false"` on each item.
+
+### PWA / Offline (applied)
+- **`sw.js`:** Incorrect `Source+Sans+3` precache entry replaced with the actual 4-font combined Google Fonts URL. `CACHE_NAME` bumped to `kitchenlistr-v3`. `cache.put()` now has a `.catch()` handler.
+- **`manifest.json`:** `theme_color` and `background_color` updated to Warm Pantry tokens (`#F2654A` / `#F5F5F0`).
+- **`offline.html`:** All colours updated to Warm Pantry tokens.
+
+### Known deferred issues (do not attempt without careful planning)
+See `CODE-REVIEW.md` for full rationale on each. Summary:
+- **Debounce re-renders (#5):** Changes render timing across 6+ snapshot listeners; risk of masking fast-path UI bugs.
+- **`shoppingHave`/`dayNotes` cleanup (#8):** Silently deletes user data; threshold is a product decision.
+- **DOM patch on checkbox toggle (#9):** Would conflict with `recentlyCheckedKey` spring animation and hide-checked logic.
+- **`window.*` / event handler refactor (#11/12):** ~50 functions; touches every interactive element.
+- **Auth `setTimeout` → data-ready (#13):** Architectural change; existing approach is reliable.
+- **`confirm()`/`alert()` → custom modals (#14):** Needs new modal HTML/CSS per destructive action.
+- **Stale `shoppingHave` after rename (#15):** Needs full key-schema analysis before migration.
+- **`deleteCurrentRecipe()` atomic (#16):** Tiny race window; transaction adds new failure mode.
+- **`try/catch` everywhere (#18/30):** Systematic work; best done with a shared wrapper pattern.
+- **`data:` URI icons → real PNGs (#23):** Requires generating image assets.
+- **Modal focus trap (#29):** Complex; needs per-modal testing across all 14 modals.

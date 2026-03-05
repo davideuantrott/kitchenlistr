@@ -1,5 +1,5 @@
 // KitchenListr Service Worker
-const CACHE_NAME = 'kitchenlistr-v2';
+const CACHE_NAME = 'kitchenlistr-v3';
 const OFFLINE_URL = '/kitchenlistr/offline.html';
 
 // Assets to cache immediately on install
@@ -7,7 +7,7 @@ const PRECACHE_ASSETS = [
   '/kitchenlistr/',
   '/kitchenlistr/index.html',
   '/kitchenlistr/manifest.json',
-  'https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Source+Sans+3:wght@400;500;600&display=swap'
+  'https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,700;0,9..144,900;1,9..144,300&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&family=Caveat:wght@400;600&display=swap'
 ];
 
 // Install event - cache core assets
@@ -55,7 +55,7 @@ self.addEventListener('fetch', (event) => {
         const responseClone = response.clone();
         caches.open(CACHE_NAME).then((cache) => {
           cache.put(event.request, responseClone);
-        });
+        }).catch(err => console.warn('Cache write failed:', err));
         return response;
       })
       .catch(() => {

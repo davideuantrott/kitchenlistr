@@ -5,8 +5,8 @@
   "start_url": "/kitchenlistr/",
   "scope": "/kitchenlistr/",
   "display": "standalone",
-  "background_color": "#F4F9F7",
-  "theme_color": "#4FB286",
+  "background_color": "#F5F5F0",
+  "theme_color": "#F2654A",
   "orientation": "portrait-primary",
   "icons": [
     {
