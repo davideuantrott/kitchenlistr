@@ -58,11 +58,11 @@ KitchenListr is a meal planning and shopping list PWA built with vanilla HTML, C
 
 ---
 
-## Redesign: "Warm Pantry" Design System
+## "Warm Pantry" Design System
 
-> **Branch:** `redesign` — do not merge to `main` until all phases are reviewed and approved.
-> **Design spec:** `kitchenlistr-design-spec.jsonc` in the repo root.
-> **Mockup reference:** `kitchenlistr-mockup.html` in the repo root (open in browser).
+> The redesign is complete and merged into `main`. All future work should be done directly on `main`.
+> **Design spec:** `kitchenlistr-design-spec.jsonc` in the repo root (reference only).
+> **Mockup reference:** `kitchenlistr-mockup.html` in the repo root (reference only).
 
 ### Design Decisions Agreed
 
@@ -217,6 +217,18 @@ New brand colour variables also added (not yet widely used): `--color-tomato`, `
 - Two parallel navigation systems existed: nav button click handlers managed view-switching independently (no pill logic), while `showView()` had the pill-hiding code but was only called from the logo and a few in-app links
 - Fix: nav buttons now call `showView(btn.dataset.view)` directly; `showView()` extended with `renderRecipes()`, `renderPlanner()`, `renderShoppingList()` calls previously only in the old handler — all navigation now flows through one function
 
+#### ✅ Phase 12 — Bug fixes, shopping UX & recipe improvements
+
+- **Export button fix:** Removed `overflow: hidden` from `.page-header` blob CSS block (was clipping the absolute-positioned export dropdown)
+- **Recipe category filter fix:** `renderRecipeCategoryChips()` was generating `onclick="filterRecipeByCategory("Category")"` with conflicting double-quotes; switched to `data-cat` attribute + delegated event listener
+- **Hide checked items:** "Hide checked" toggle pill added to shopping list sort chips row; `hideChecked` module var + `toggleHideChecked()` function; active class toggled on pill; `renderShoppingItem()` respects flag via inline `display:none`
+- **Add Recipe FAB (mobile):** `#recipe-fab` added (same `.fab` pattern as shopping/planner FABs); shown only on recipes view via `showView()`; hidden on desktop via `@media (min-width: 768px) .fab--recipe { display: none !important }`
+- **Add to Plan from recipes:** `#add-to-plan-modal` added (date input + meal type select); `addRecipeToPlan(recipeId)`, `addCurrentRecipeToPlan()`, `confirmAddToPlan()`, `closeAddToPlanModal()` functions; "Add to Plan" button on recipe cards (with `stopPropagation`) and in recipe view modal footer
+
+#### 🔜 Future Phase — Meal plan recipe selector redesign
+
+Replace the plain text list in `#select-recipe-modal` with a 2-column card grid using recipe avatars (colour + emoji via `recipeAvatarColor()` / `recipeAvatarEmoji()`), category badge, and search — consistent with the Recipes page. Function to modify: `renderRecipeSelectList()`. Three options: (A) card grid with avatars (**recommended**), (B) category-grouped list, (C) filter chips + grid.
+
 #### ✅ Phase 11 — Emoji picker overhaul
 
 - **Full emoji set:** `FOOD_EMOJI` (~80 food-only) replaced with `ALL_EMOJI` — ~400 emoji across 8 categories: Smileys, People, Animals, Food & Drink, Travel & Places, Activities, Objects, Symbols; each entry has a keyword string for search
@@ -226,13 +238,12 @@ New brand colour variables also added (not yet widely used): `--color-tomato`, `
 - **Event delegation:** switched from inline `onclick` to grid-level `click` listener using `data-e` / `data-k` attributes, safely handling compound/ZWJ emoji that can cause HTML attribute parsing issues
 
 ### Theme picker
-The legacy theme picker (Garden / Terracotta / Nordic / Berry / Amber / Ink) has been **removed** from the redesign branch. The app ships with Warm Pantry only. Themes will be reintroduced in a future iteration designed specifically for the Warm Pantry token system.
+The legacy theme picker (Garden / Terracotta / Nordic / Berry / Amber / Ink) has been **removed**. The app ships with Warm Pantry only. Themes will be reintroduced in a future iteration designed specifically for the Warm Pantry token system.
 
 What was removed: `[data-theme]` CSS blocks, Theme Selector UI CSS, Appearance section in account view, localStorage theme loader, `themes` object, `applyTheme` / `renderThemeSelector` / `selectTheme` functions, `theme` field from `saveUserPrefs`. Any `theme` value previously stored in Firestore `settings/userPrefs` is harmlessly ignored.
 
 When reintroducing themes, each theme block should override: `--bg-cream`, `--bg-white`, `--text-primary`, `--text-secondary`, `--accent-green`, `--accent-green-light`, `--accent-green-dark`, `--accent-mint`, `--border-light`, `--border-medium`, `--shadow-*`, `--accent-glow-soft`, `--accent-glow-mid`, `--accent-glow-strong`, `--font-heading`, `--font-body`. The `--color-*` pastel variables and `--radius-*` values should remain fixed.
 
-### Deploy checklist (before merging redesign → main)
-1. Increment `CACHE_NAME` in `sw.js` (currently `kitchenlistr-v1` → `kitchenlistr-v2`) to force cache refresh for all users
-2. Merge `redesign` branch into `main` via PR
-3. GitHub Pages deploys automatically on push to `main`
+### Deploy checklist
+1. Increment `CACHE_NAME` in `sw.js` when deploying significant changes (currently `kitchenlistr-v2`)
+2. Commit and push to `main` — GitHub Pages deploys automatically

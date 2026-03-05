@@ -596,7 +596,6 @@
         /* Blob shapes on page headers */
         .page-header {
             position: relative;
-            overflow: hidden;
         }
 
         .page-header::before,
@@ -828,6 +827,29 @@
         .recipe-card-meta {
             font-size: 0.8rem;
             color: var(--text-secondary);
+            margin-bottom: 0.5rem;
+        }
+
+        .recipe-card-add-plan-btn {
+            display: inline-block;
+            margin-top: 0.25rem;
+            padding: 0.25rem 0.75rem;
+            background: var(--accent-green-light);
+            color: var(--accent-green-dark);
+            border: none;
+            border-radius: var(--radius-pill);
+            font-size: 0.75rem;
+            font-weight: 600;
+            font-family: var(--font-body);
+            cursor: pointer;
+            transition: background 0.15s ease, transform 0.1s ease;
+        }
+        .recipe-card-add-plan-btn:hover {
+            background: var(--accent-green);
+            color: #fff;
+        }
+        .recipe-card-add-plan-btn:active {
+            transform: scale(0.96);
         }
 
         .recipe-card-badge {
@@ -2430,6 +2452,9 @@
         @media (min-width: 768px) {
             .fab {
                 bottom: 1.5rem;
+            }
+            .fab--recipe {
+                display: none !important;
             }
             .clear-checked-pill {
                 bottom: 1.75rem;
@@ -4216,6 +4241,7 @@
                             <button class="sort-chip" data-sort="aisle" onclick="setSortMethod('aisle')">Aisle</button>
                             <button class="sort-chip" data-sort="day" onclick="setSortMethod('day')">Date</button>
                             <button class="sort-chip" data-sort="recipe" onclick="setSortMethod('recipe')">Recipe</button>
+                            <button class="sort-chip" id="hide-checked-chip" onclick="toggleHideChecked()">Hide checked</button>
                         </div>
                     </div>
                     <div class="shopping-controls-group">
@@ -4279,6 +4305,11 @@
 
             <!-- FAB: add meal to planner -->
             <button class="fab" id="planner-fab" onclick="openAddMealFab()" title="Add meal" style="display:none;">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            </button>
+
+            <!-- FAB: add recipe (mobile only) -->
+            <button class="fab fab--recipe" id="recipe-fab" onclick="openAddRecipeModal()" title="Add recipe" style="display:none;">
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
             </button>
 
@@ -4570,7 +4601,35 @@ oregano"></textarea>
                 <button type="button" class="btn btn-danger" onclick="deleteCurrentRecipe()">Delete</button>
                 <button type="button" class="btn btn-secondary" onclick="shareRecipe()">Share</button>
                 <button type="button" class="btn btn-secondary" onclick="editCurrentRecipe()">Edit</button>
+                <button type="button" class="btn btn-secondary" onclick="addCurrentRecipeToPlan()">Add to Plan</button>
                 <button type="button" class="btn btn-primary" onclick="closeViewRecipeModal()">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Recipe to Plan Modal -->
+    <div class="modal-overlay" id="add-to-plan-modal" role="dialog" aria-modal="true" aria-labelledby="add-to-plan-modal-title">
+        <div class="modal" style="max-width: 400px;">
+            <div class="modal-header">
+                <h2 class="modal-title" id="add-to-plan-modal-title">Add to Meal Plan</h2>
+                <button class="modal-close" onclick="closeAddToPlanModal()" aria-label="Close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p style="margin-bottom: 1rem; font-weight: 600; font-family: var(--font-heading);" id="add-to-plan-recipe-name"></p>
+                <div class="form-group">
+                    <label class="form-label">Date</label>
+                    <input type="date" class="form-input" id="add-to-plan-date">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Meal</label>
+                    <select class="form-select" id="add-to-plan-meal">
+                        <!-- Populated by JS -->
+                    </select>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="closeAddToPlanModal()">Cancel</button>
+                <button type="button" class="btn btn-primary" onclick="confirmAddToPlan()">Add to Plan</button>
             </div>
         </div>
     </div>
@@ -4771,73 +4830,102 @@ oregano"></textarea>
                 <button class="modal-close" onclick="closeHelpModal()" aria-label="Close">&times;</button>
             </div>
             <div class="modal-body">
-                
+
                 <div class="help-section">
                     <h3 class="help-section-title">📖 Recipes</h3>
-                    
+
                     <div class="help-item">
                         <div class="help-question" onclick="toggleHelpItem(this)">
                             How do I add a recipe?
                             <span class="help-question-icon">▼</span>
                         </div>
                         <div class="help-answer">
-                            Click the <strong>"+ Add Recipe"</strong> button on the Recipes page. Enter the recipe name and add ingredients one by one, or paste multiple ingredients at once using bulk mode.
-                            <div class="help-tip"><strong>Tip:</strong> Use "Title only" for takeaways or meals you don't need to shop for.</div>
+                            Click <strong>"+ Add Recipe"</strong> on the Recipes page (or tap the <strong>tomato ➕ button</strong> at the bottom-right on mobile). Enter a name, add ingredients one by one or use bulk-paste mode, and save. Each recipe gets a colourful avatar automatically — or you can pick a custom emoji.
+                            <div class="help-tip"><strong>Tip:</strong> Tick "Title only" for takeaways or restaurant meals so they appear in the meal plan without generating a shopping list.</div>
                         </div>
                     </div>
-                    
+
+                    <div class="help-item">
+                        <div class="help-question" onclick="toggleHelpItem(this)">
+                            How do I filter recipes by category?
+                            <span class="help-question-icon">▼</span>
+                        </div>
+                        <div class="help-answer">
+                            If you've set up <strong>Meal Categories</strong> in Settings, a row of filter chips appears at the top of the Recipes page. Tap <strong>All</strong> to show everything, or tap a category name (e.g. "Dinner") to show only recipes tagged with that category. Recipes can belong to multiple categories.
+                        </div>
+                    </div>
+
+                    <div class="help-item">
+                        <div class="help-question" onclick="toggleHelpItem(this)">
+                            How do I add a recipe straight to the meal plan?
+                            <span class="help-question-icon">▼</span>
+                        </div>
+                        <div class="help-answer">
+                            Tap <strong>"+ Add to Plan"</strong> on any recipe card, or open a recipe and tap <strong>"Add to Plan"</strong> in the footer. Choose a date and meal type, then confirm — the recipe is immediately added to your meal plan.
+                        </div>
+                    </div>
+
                     <div class="help-item">
                         <div class="help-question" onclick="toggleHelpItem(this)">
                             Can I share recipes with others?
                             <span class="help-question-icon">▼</span>
                         </div>
                         <div class="help-answer">
-                            Yes! Open a recipe and click <strong>"Share"</strong> to get a link. Anyone with the link can import the recipe to their own account. You can also share multiple recipes at once using the "Share Recipes" button.
+                            Yes! Open a recipe and tap <strong>"Share"</strong> to generate a link. Anyone with the link can import the recipe into their own account. Use <strong>"Share Recipes"</strong> on the main Recipes page to share multiple recipes at once.
+                        </div>
+                    </div>
+
+                    <div class="help-item">
+                        <div class="help-question" onclick="toggleHelpItem(this)">
+                            Can I add an image to a recipe?
+                            <span class="help-question-icon">▼</span>
+                        </div>
+                        <div class="help-answer">
+                            Yes! When adding or editing a recipe, paste a public image URL into the <strong>Image URL</strong> field. The image replaces the automatic colour-and-emoji avatar on the recipe card and in the detail view.
                         </div>
                     </div>
                 </div>
-                
+
                 <div class="help-section">
                     <h3 class="help-section-title">📅 Meal Planning</h3>
 
                     <div class="help-item">
                         <div class="help-question" onclick="toggleHelpItem(this)">
-                            How do I plan a meal?
+                            How do I add a recipe to the meal plan?
                             <span class="help-question-icon">▼</span>
                         </div>
                         <div class="help-answer">
-                            Go to the <strong>Meal Plan</strong> page and click the <strong>➕</strong> button on any meal slot. Select a recipe from your list and it will be added to that day.
+                            Go to the <strong>Meal Plan</strong> page and tap the <strong>➕</strong> button on any meal slot. Search your recipes, select one, and it's added instantly. Alternatively, use the <strong>tomato ➕ FAB button</strong> at the bottom-right — it opens the recipe picker for today's next empty meal slot. You can also add recipes directly from the Recipes page using <strong>"+ Add to Plan"</strong>.
                         </div>
                     </div>
 
                     <div class="help-item">
                         <div class="help-question" onclick="toggleHelpItem(this)">
-                            Can I print or save the meal plan as a PDF?
+                            How do I navigate between weeks and days?
                             <span class="help-question-icon">▼</span>
                         </div>
                         <div class="help-answer">
-                            Yes! Click <strong>"Print Plan"</strong> at the top of the Meal Plan page. Choose <strong>Week view</strong> (current week) or <strong>Month view</strong> (current month), then click Print. In your browser's print dialog, select <strong>"Save as PDF"</strong> to save a file you can email or share, or choose a printer to print a physical copy.
-                            <div class="help-tip"><strong>Tip:</strong> Landscape orientation usually works best for the week view — you can change this in the print dialog.</div>
+                            Use the <strong>‹ ›</strong> arrows to move back and forward by one week. The <strong>day strip</strong> (scrollable row of day pills below the navigation) shows all 7 days — tap a day to jump straight to it. The current day is highlighted in tomato.
                         </div>
                     </div>
 
                     <div class="help-item">
                         <div class="help-question" onclick="toggleHelpItem(this)">
-                            What does the month view show?
+                            What's the difference between Week and Month view?
                             <span class="help-question-icon">▼</span>
                         </div>
                         <div class="help-answer">
-                            The month view shows a full calendar with each meal displayed inside its day cell. Each pill shows the meal category initial (e.g. <strong>B</strong> for Breakfast, <strong>L</strong> for Lunch, <strong>D</strong> for Dinner) followed by the recipe name. Click any day to jump to that week in the week view.
+                            <strong>Week view</strong> shows each day as a card with all meal slots visible — great for day-to-day planning. <strong>Month view</strong> shows a full calendar grid where each day cell contains compact colour-coded meal pills (one per meal category). Tap any day in month view to jump to that week.
                         </div>
                     </div>
 
                     <div class="help-item">
                         <div class="help-question" onclick="toggleHelpItem(this)">
-                            Can I add a new recipe while planning a meal?
+                            Can I add a new recipe while planning?
                             <span class="help-question-icon">▼</span>
                         </div>
                         <div class="help-answer">
-                            Yes! When the recipe selection dialog opens, click <strong>"+ New Recipe"</strong> to quickly add a recipe on the fly. Just enter the name (and optionally tick "Title only") and click <strong>"Save &amp; Select"</strong> — it will be saved and immediately assigned to that meal slot. You can go back and add ingredients later on the Recipes page.
+                            Yes! In the recipe picker, tap <strong>"+ New Recipe"</strong> to create one on the fly. Enter a name, optionally tick "Title only", and tap <strong>"Save &amp; Select"</strong> — the recipe is saved and immediately added to the meal slot. Add full ingredients later on the Recipes page.
                         </div>
                     </div>
 
@@ -4847,7 +4935,7 @@ oregano"></textarea>
                             <span class="help-question-icon">▼</span>
                         </div>
                         <div class="help-answer">
-                            Yes! Go to <strong>Settings → Meal Categories</strong> to add new categories like "Kids' Dinner" or "Snack". You can also rename, reorder, or delete existing categories.
+                            Yes! Go to <strong>Settings → Meal Categories</strong> to add, rename, reorder, or remove categories. Categories are shared between Recipes and Meal Planner — the same list is used to tag recipes and to define meal slots on the planner.
                         </div>
                     </div>
 
@@ -4857,7 +4945,18 @@ oregano"></textarea>
                             <span class="help-question-icon">▼</span>
                         </div>
                         <div class="help-answer">
-                            Each day has a <strong>"📝 Add note"</strong> option where you can add reminders like "Guests coming" or "Defrost chicken". Notes appear on your meal plan.
+                            Each day card has a <strong>"📝 Add note"</strong> link at the bottom. Use it to add reminders like "Guests coming" or "Defrost chicken overnight". Notes appear on the day card in the planner.
+                        </div>
+                    </div>
+
+                    <div class="help-item">
+                        <div class="help-question" onclick="toggleHelpItem(this)">
+                            Can I print or save the meal plan?
+                            <span class="help-question-icon">▼</span>
+                        </div>
+                        <div class="help-answer">
+                            Yes! Click <strong>"Print Plan"</strong> at the top of the Meal Plan page. Choose <strong>Week</strong> or <strong>Month</strong> view, then click Print. In your browser's print dialog, select <strong>"Save as PDF"</strong> to save a shareable file.
+                            <div class="help-tip"><strong>Tip:</strong> Landscape orientation usually works best for the week view.</div>
                         </div>
                     </div>
                 </div>
@@ -4871,31 +4970,27 @@ oregano"></textarea>
                             <span class="help-question-icon">▼</span>
                         </div>
                         <div class="help-answer">
-                            Your shopping list is built automatically from all recipes in your meal plan for the selected date range. Tick items off as you shop. Use the date range filter or quick presets (Today, 3 days, 7 days, This week, All) to adjust which dates are included.
+                            Your shopping list is built automatically from the recipes in your meal plan for the selected date range. Tick items off as you shop — ticked items show with a strikethrough. Use the date range navigator or quick presets (Today / 3d / 7d / This week / All) to control which dates are included. A <strong>progress bar</strong> at the top shows how many items you've checked off.
                         </div>
                     </div>
 
                     <div class="help-item">
                         <div class="help-question" onclick="toggleHelpItem(this)">
-                            What do the date range presets mean?
+                            How do I sort the shopping list?
                             <span class="help-question-icon">▼</span>
                         </div>
                         <div class="help-answer">
-                            <strong>Today</strong> — only today's meals.<br>
-                            <strong>3 days</strong> — today plus the next 2 days.<br>
-                            <strong>7 days</strong> — today plus the next 6 days (rolling week). This is the default.<br>
-                            <strong>This week</strong> — the current calendar week (Monday to Sunday).<br>
-                            <strong>All</strong> — everything from this week up to 30 days ahead.
+                            Use the sort chips at the top of the list: <strong>A–Z</strong> (alphabetical), <strong>Aisle</strong> (by your shop layout), <strong>Date</strong> (by meal date), or <strong>Recipe</strong> (grouped by recipe). Sorting by Aisle is the most useful when you're actually in the shop — it puts items in the order you walk through the aisles.
                         </div>
                     </div>
 
                     <div class="help-item">
                         <div class="help-question" onclick="toggleHelpItem(this)">
-                            Why does the shopping list show a date instead of a day name?
+                            Can I hide items I've already ticked?
                             <span class="help-question-icon">▼</span>
                         </div>
                         <div class="help-answer">
-                            Each item shows the full calendar date (e.g. "12 April 2026") rather than just the day name. This helps you know the target best-before date you need when shopping for perishable items.
+                            Yes! Tap the <strong>"Hide checked"</strong> chip in the sort chips row to collapse all ticked items out of view. Tap it again to show them. This is useful when your list is long and you want to focus on what's left to find.
                         </div>
                     </div>
 
@@ -4905,27 +5000,30 @@ oregano"></textarea>
                             <span class="help-question-icon">▼</span>
                         </div>
                         <div class="help-answer">
-                            Yes! Use <strong>"Add extra item"</strong> at the top of the shopping list to add things like toilet roll or cleaning supplies. As you type, suggestions appear from your recipe ingredients and items you've added before — making it easy to re-add frequent items with their aisle already set. Extra items stay until you delete them with the <strong>✕</strong> button.
+                            Yes! Use the <strong>"Add extra item"</strong> input at the top of the shopping list (or tap the <strong>tomato ➕ FAB</strong> at the bottom-right to jump to it). As you type, suggestions appear from your ingredients and previous extras. Extra items stay until you remove them with the <strong>✕</strong> button.
                         </div>
                     </div>
 
                     <div class="help-item">
                         <div class="help-question" onclick="toggleHelpItem(this)">
-                            How do I remove extra items I no longer need?
+                            How do I clear items I've ticked off?
                             <span class="help-question-icon">▼</span>
                         </div>
                         <div class="help-answer">
-                            Tick the extra items as <strong>"Already Have"</strong>, then click <strong>"Remove checked extras"</strong> in the extra items section. This permanently deletes all checked extra items in one go. You can also delete individual items using the <strong>✕</strong> button next to each one.
+                            A <strong>"Clear checked (N)"</strong> floating pill appears at the bottom of the screen whenever you have ticked items. Tap it to mark all ticked items as "not bought" in one go — useful when you're starting a new shop.
                         </div>
                     </div>
 
                     <div class="help-item">
                         <div class="help-question" onclick="toggleHelpItem(this)">
-                            What does the Export option include?
+                            What does the Export option do?
                             <span class="help-question-icon">▼</span>
                         </div>
                         <div class="help-answer">
-                            The <strong>Copy as Text</strong> and <strong>Download CSV</strong> exports only include items you still need to buy — items marked as "Already Have" and meals from past dates are excluded. Each item shows the full calendar date so you know what best-before date to look for.
+                            Tap <strong>"Export ▾"</strong> at the top of the Shopping List page to reveal two options:<br>
+                            <strong>Copy as Text</strong> — copies a formatted list to your clipboard for pasting into a message or note.<br>
+                            <strong>Download CSV</strong> — downloads a spreadsheet file.<br>
+                            Both exports only include items you still need to buy — ticked items and past-date meals are excluded.
                         </div>
                     </div>
 
@@ -4935,14 +5033,13 @@ oregano"></textarea>
                             <span class="help-question-icon">▼</span>
                         </div>
                         <div class="help-answer">
-                            Go to <strong>Settings → Shops &amp; Aisles</strong> to create your shop layout. Then in <strong>Ingredient Dictionary</strong>, assign each ingredient to an aisle. Your shopping list will then sort items by aisle order.
-                            <div class="help-tip"><strong>Tip:</strong> Share your shop layout with family members so everyone has the same aisle order!</div>
+                            Go to <strong>Settings → Shops &amp; Aisles</strong> to set up your shop's aisle layout. You can add an <strong>emoji</strong> to each aisle for quick visual recognition. Then use the <strong>Ingredient Dictionary</strong> to assign each ingredient to an aisle. Once set up, the <strong>Aisle</strong> sort option groups your shopping list in the order you walk through the store.
                         </div>
                     </div>
                 </div>
 
                 <div class="help-section">
-                    <h3 class="help-section-title">⚙️ Settings &amp; Data</h3>
+                    <h3 class="help-section-title">⚙️ Settings</h3>
 
                     <div class="help-item">
                         <div class="help-question" onclick="toggleHelpItem(this)">
@@ -4950,7 +5047,53 @@ oregano"></textarea>
                             <span class="help-question-icon">▼</span>
                         </div>
                         <div class="help-answer">
-                            Go to <strong>Settings → Shops &amp; Aisles</strong>. Click <strong>"▼ Aisles"</strong> next to any shop to expand or collapse its aisle list — useful when you have multiple shops. Use the <strong>▲ ▼</strong> buttons to reorder aisles to match the order you walk through the store.
+                            Go to <strong>Settings → Shops &amp; Aisles</strong>. Tap <strong>"▼ Aisles"</strong> next to a shop to expand or collapse it. Use <strong>▲ ▼</strong> to reorder aisles. Tap the emoji area next to an aisle to assign an emoji — it will appear as a header on your shopping list. You can add multiple shops and switch between them when generating the shopping list.
+                        </div>
+                    </div>
+
+                    <div class="help-item">
+                        <div class="help-question" onclick="toggleHelpItem(this)">
+                            What is the Ingredient Dictionary?
+                            <span class="help-question-icon">▼</span>
+                        </div>
+                        <div class="help-answer">
+                            The <strong>Ingredient Dictionary</strong> (in Settings) maps each ingredient name to an aisle in your shop. Once assigned, every occurrence of that ingredient in your shopping list is sorted into the correct aisle automatically. Dictionaries are stored per-shop.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="help-section">
+                    <h3 class="help-section-title">👥 Account &amp; Household</h3>
+
+                    <div class="help-item">
+                        <div class="help-question" onclick="toggleHelpItem(this)">
+                            What is Household mode?
+                            <span class="help-question-icon">▼</span>
+                        </div>
+                        <div class="help-answer">
+                            Household mode lets multiple people share the same recipes, meal plan, and shopping list in real time. All changes sync instantly across everyone's devices. Switch between your personal data and household data using the toggle in the <strong>Account</strong> tab.
+                        </div>
+                    </div>
+
+                    <div class="help-item">
+                        <div class="help-question" onclick="toggleHelpItem(this)">
+                            How do I invite someone to my household?
+                            <span class="help-question-icon">▼</span>
+                        </div>
+                        <div class="help-answer">
+                            Go to <strong>Account → Household Settings</strong> and tap <strong>"Create Invite Link"</strong>. Share the link with the person you want to invite. The link expires after 7 days. Once they join, they'll appear in the Members list.
+                        </div>
+                    </div>
+
+                    <div class="help-item">
+                        <div class="help-question" onclick="toggleHelpItem(this)">
+                            What are the household member roles?
+                            <span class="help-question-icon">▼</span>
+                        </div>
+                        <div class="help-answer">
+                            <strong>Owner</strong> — full control; can delete the household, transfer ownership, and manage all members.<br>
+                            <strong>Admin</strong> — can invite new members, remove non-owner members, and rename the household.<br>
+                            <strong>Member</strong> — can view and edit all shared data (recipes, meal plan, shopping list) but cannot manage members.
                         </div>
                     </div>
 
@@ -4960,7 +5103,7 @@ oregano"></textarea>
                             <span class="help-question-icon">▼</span>
                         </div>
                         <div class="help-answer">
-                            Yes! Your data is stored securely in the cloud and syncs automatically across all your devices. Sign in with the same account to access your recipes and meal plans anywhere.
+                            Yes. All data is stored in Firebase (Google Cloud) and syncs automatically across your devices. Sign in with the same account to access your data from any browser or device.
                         </div>
                     </div>
 
@@ -4970,11 +5113,11 @@ oregano"></textarea>
                             <span class="help-question-icon">▼</span>
                         </div>
                         <div class="help-answer">
-                            Yes! On your phone or tablet, tap the share button and select <strong>"Add to Home Screen"</strong>. On desktop Chrome, look for the install icon in the address bar. The app works offline too!
+                            Yes! On iPhone or Android, open the site in your browser, tap the share icon, and select <strong>"Add to Home Screen"</strong>. On desktop Chrome or Edge, look for the install icon in the address bar. The app also works offline for basic browsing when there's no internet connection.
                         </div>
                     </div>
                 </div>
-                
+
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" onclick="openWelcomeModal()">Show Welcome Guide</button>
@@ -5199,6 +5342,7 @@ oregano"></textarea>
         let shoppingHave = {};
         let recentlyCheckedKey = null;
         let _shopAnimOrder = 0;
+        let hideChecked = false;
         let adhocItems = [];
         let currentUser = null;
 
@@ -5906,9 +6050,12 @@ oregano"></textarea>
             container.innerHTML = [
                 `<button class="sort-chip${currentRecipeCategory === '' ? ' active' : ''}" onclick="filterRecipeByCategory('')">All</button>`,
                 ...mealCategories.map(cat =>
-                    `<button class="sort-chip${currentRecipeCategory === cat ? ' active' : ''}" onclick="filterRecipeByCategory(${JSON.stringify(cat)})">${escapeHtml(cat)}</button>`
+                    `<button class="sort-chip${currentRecipeCategory === cat ? ' active' : ''}" data-cat="${escapeHtml(cat)}">${escapeHtml(cat)}</button>`
                 )
             ].join('');
+            container.querySelectorAll('[data-cat]').forEach(btn => {
+                btn.addEventListener('click', () => filterRecipeByCategory(btn.dataset.cat));
+            });
 
             // Show/hide category group in form (chip selector populated separately)
             const catGroup = document.getElementById('recipe-category-group');
@@ -5990,6 +6137,7 @@ oregano"></textarea>
                         ${recipe.titleOnly ? '<span class="recipe-card-badge">Title Only</span>' : ''}
                         <h3 class="recipe-card-title">${escapeHtml(recipe.name)}</h3>
                         <p class="recipe-card-meta">${metaLine}</p>
+                        <button class="recipe-card-add-plan-btn" onclick="event.stopPropagation(); addRecipeToPlan('${recipe.id}')" title="Add to meal plan">+ Add to Plan</button>
                     </div>
                 </div>`;
             }).join('');
@@ -6330,6 +6478,48 @@ oregano"></textarea>
             currentViewingRecipeId = null;
         }
         window.closeViewRecipeModal = closeViewRecipeModal;
+
+        // Add to Plan from recipe card or modal
+        let addToPlanRecipeId = null;
+
+        function addRecipeToPlan(recipeId) {
+            const recipe = recipes.find(r => r.id === recipeId);
+            if (!recipe) return;
+            addToPlanRecipeId = recipeId;
+            document.getElementById('add-to-plan-recipe-name').textContent = recipe.name;
+            document.getElementById('add-to-plan-date').value = getToday();
+            const mealSelect = document.getElementById('add-to-plan-meal');
+            mealSelect.innerHTML = getMealTypes().map(m => {
+                const key = m.toLowerCase().replace(/[^a-z0-9]/g, '_');
+                return `<option value="${escapeHtml(key)}">${escapeHtml(m)}</option>`;
+            }).join('');
+            document.getElementById('add-to-plan-modal').classList.add('active');
+        }
+        window.addRecipeToPlan = addRecipeToPlan;
+
+        function addCurrentRecipeToPlan() {
+            if (currentViewingRecipeId) addRecipeToPlan(currentViewingRecipeId);
+        }
+        window.addCurrentRecipeToPlan = addCurrentRecipeToPlan;
+
+        function closeAddToPlanModal() {
+            document.getElementById('add-to-plan-modal').classList.remove('active');
+            addToPlanRecipeId = null;
+        }
+        window.closeAddToPlanModal = closeAddToPlanModal;
+
+        async function confirmAddToPlan() {
+            if (!addToPlanRecipeId) return;
+            const date = document.getElementById('add-to-plan-date').value;
+            const meal = document.getElementById('add-to-plan-meal').value;
+            if (!date || !meal) return;
+            if (!mealPlan[date]) mealPlan[date] = {};
+            mealPlan[date][meal] = addToPlanRecipeId;
+            closeAddToPlanModal();
+            await saveMealPlanToFirebase(date, mealPlan[date]);
+            showSyncStatus('success', 'Added to meal plan!');
+        }
+        window.confirmAddToPlan = confirmAddToPlan;
 
         function editCurrentRecipe() {
             const recipe = recipes.find(r => r.id === currentViewingRecipeId);
@@ -7256,7 +7446,7 @@ oregano"></textarea>
             const escapedText = escapeHtml(ing.text).replace(/'/g, "\\'");
 
             return `
-                <div class="shopping-item ${have ? 'have' : ''} ${adhocClass} ${springClass}" style="--anim-order:${animOrder}">
+                <div class="shopping-item ${have ? 'have' : ''} ${adhocClass} ${springClass}" style="--anim-order:${animOrder}${hideChecked && have ? ';display:none' : ''}">
                     <input type="checkbox"
                            ${have ? 'checked' : ''}
                            onchange="toggleShoppingItem('${escapedKey}', this.checked)">
@@ -8032,6 +8222,14 @@ oregano"></textarea>
             renderShoppingList();
         }
         window.setSortMethod = setSortMethod;
+
+        function toggleHideChecked() {
+            hideChecked = !hideChecked;
+            const chip = document.getElementById('hide-checked-chip');
+            if (chip) chip.classList.toggle('active', hideChecked);
+            renderShoppingList();
+        }
+        window.toggleHideChecked = toggleHideChecked;
 
         // FAB: scroll to and focus the add-item input
         function focusShoppingAdd() {
@@ -9159,6 +9357,8 @@ oregano"></textarea>
             if (shoppingFab) shoppingFab.style.display = viewName === 'shopping' ? 'flex' : 'none';
             const plannerFab = document.getElementById('planner-fab');
             if (plannerFab) plannerFab.style.display = viewName === 'planner' ? 'flex' : 'none';
+            const recipeFab = document.getElementById('recipe-fab');
+            if (recipeFab) recipeFab.style.display = viewName === 'recipes' ? 'flex' : 'none';
             const clearPill = document.getElementById('clear-checked-pill');
             if (clearPill && viewName !== 'shopping') clearPill.style.display = 'none';
 
