@@ -5341,6 +5341,8 @@ oregano"></textarea>
         let mealPlan = {};
         let shoppingHave = {};
         let recentlyCheckedKey = null;
+        let _suppressNextShoppingRender = false;
+        let _lastSortedIngredients = [];
         let _shopAnimOrder = 0;
         let hideChecked = false;
         let adhocItems = [];
@@ -5720,6 +5722,10 @@ oregano"></textarea>
                         shoppingHave = snapshot.data();
                     } else {
                         shoppingHave = {};
+                    }
+                    if (_suppressNextShoppingRender) {
+                        _suppressNextShoppingRender = false;
+                        return;
                     }
                     renderShoppingList();
                 },
@@ -7324,47 +7330,9 @@ oregano"></textarea>
                         a.text.localeCompare(b.text)
                     );
             }
+            _lastSortedIngredients = sortedIngredients;
             
-            // Calculate summary
-            const total = sortedIngredients.length;
-            const haveCount = sortedIngredients.filter(ing => shoppingHave[ing.key]).length;
-            const needCount = total - haveCount;
-            
-            // Update print date
-            if (printDateEl) {
-                printDateEl.textContent = `${formatDisplayDate(shoppingDateFrom)} - ${formatDisplayDate(shoppingDateTo)} • Printed ${new Date().toLocaleDateString('en-GB')}`;
-            }
-            
-            const progressPct = total > 0 ? Math.round((haveCount / total) * 100) : 0;
-            summary.innerHTML = `
-                <div class="shopping-summary-stat">
-                    <div class="shopping-summary-number">${total}</div>
-                    <div class="shopping-summary-label">Total</div>
-                </div>
-                <div class="shopping-summary-stat">
-                    <div class="shopping-summary-number">${haveCount}</div>
-                    <div class="shopping-summary-label">Have</div>
-                </div>
-                <div class="shopping-summary-stat">
-                    <div class="shopping-summary-number">${needCount}</div>
-                    <div class="shopping-summary-label">Need</div>
-                </div>
-                <div class="shopping-progress-wrap">
-                    <div class="shopping-progress-bar-track">
-                        <div class="shopping-progress-bar-fill" style="width:${progressPct}%"></div>
-                    </div>
-                    <div class="shopping-progress-text">${haveCount} of ${total} checked</div>
-                </div>
-            `;
-
-            // Show / hide floating clear-checked pill — only on shopping view
-            const clearPill = document.getElementById('clear-checked-pill');
-            if (clearPill) {
-                const shoppingActive = document.getElementById('shopping-view')?.classList.contains('active');
-                clearPill.style.display = (haveCount > 0 && shoppingActive) ? 'block' : 'none';
-                const clearBtn = document.getElementById('clear-checked-text');
-                if (clearBtn) clearBtn.textContent = `Clear ${haveCount} checked`;
-            }
+            updateShoppingSummary();
             
             // Render list
             const needItems = sortedIngredients.filter(ing => !shoppingHave[ing.key]);
@@ -7458,7 +7426,7 @@ oregano"></textarea>
             const escapedText = escapeHtml(ing.text).replace(/'/g, "\\'");
 
             return `
-                <div class="shopping-item ${have ? 'have' : ''} ${adhocClass} ${springClass}" style="--anim-order:${animOrder}${hideChecked && have ? ';display:none' : ''}">
+                <div class="shopping-item ${have ? 'have' : ''} ${adhocClass} ${springClass}" data-key="${ing.key.replace(/"/g, '&quot;')}" style="--anim-order:${animOrder}${hideChecked && have ? ';display:none' : ''}">
                     <input type="checkbox"
                            ${have ? 'checked' : ''}
                            onchange="toggleShoppingItem('${escapedKey}', this.checked)">
@@ -7472,17 +7440,70 @@ oregano"></textarea>
             `;
         }
 
-        async function toggleShoppingItem(key, have) {
-            if (have) {
-                shoppingHave[key] = true;
-                recentlyCheckedKey = key;
-            } else {
-                delete shoppingHave[key];
-                recentlyCheckedKey = null;
+        function updateShoppingSummary() {
+            const summary = document.getElementById('shopping-summary');
+            const printDateEl = document.getElementById('print-date');
+            if (!summary) return;
+
+            const total = _lastSortedIngredients.length;
+            const haveCount = _lastSortedIngredients.filter(ing => shoppingHave[ing.key]).length;
+            const needCount = total - haveCount;
+
+            if (printDateEl) {
+                printDateEl.textContent = `${formatDisplayDate(shoppingDateFrom)} - ${formatDisplayDate(shoppingDateTo)} • Printed ${new Date().toLocaleDateString('en-GB')}`;
             }
+
+            const progressPct = total > 0 ? Math.round((haveCount / total) * 100) : 0;
+            summary.innerHTML = `
+                <div class="shopping-summary-stat">
+                    <div class="shopping-summary-number">${total}</div>
+                    <div class="shopping-summary-label">Total</div>
+                </div>
+                <div class="shopping-summary-stat">
+                    <div class="shopping-summary-number">${haveCount}</div>
+                    <div class="shopping-summary-label">Have</div>
+                </div>
+                <div class="shopping-summary-stat">
+                    <div class="shopping-summary-number">${needCount}</div>
+                    <div class="shopping-summary-label">Need</div>
+                </div>
+                <div class="shopping-progress-wrap">
+                    <div class="shopping-progress-bar-track">
+                        <div class="shopping-progress-bar-fill" style="width:${progressPct}%"></div>
+                    </div>
+                    <div class="shopping-progress-text">${haveCount} of ${total} checked</div>
+                </div>
+            `;
+
+            const clearPill = document.getElementById('clear-checked-pill');
+            if (clearPill) {
+                const shoppingActive = document.getElementById('shopping-view')?.classList.contains('active');
+                clearPill.style.display = (haveCount > 0 && shoppingActive) ? 'block' : 'none';
+                const clearBtn = document.getElementById('clear-checked-text');
+                if (clearBtn) clearBtn.textContent = `Clear ${haveCount} checked`;
+            }
+        }
+        async function toggleShoppingItem(key, have) {
+            if (have) shoppingHave[key] = true;
+            else delete shoppingHave[key];
+
+            // Patch the DOM directly — no full re-render needed
+            const el = document.querySelector(`.shopping-item[data-key="${CSS.escape(key)}"]`);
+            if (el) {
+                el.classList.toggle('have', have);
+                if (have) {
+                    el.classList.add('spring-check');
+                    el.addEventListener('animationend', () => el.classList.remove('spring-check'), { once: true });
+                    if (hideChecked) el.style.display = 'none';
+                } else {
+                    el.style.display = '';
+                }
+            }
+            updateShoppingSummary();
+
+            // Suppress the Firestore snapshot re-render triggered by this write
+            _suppressNextShoppingRender = true;
             await saveShoppingHaveToFirebase();
-            renderShoppingList();
-            recentlyCheckedKey = null;
         }
         window.toggleShoppingItem = toggleShoppingItem;
 
