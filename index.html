@@ -4233,7 +4233,7 @@
                     <a href="#" onclick="event.preventDefault(); showView('settings');" style="font-size: 0.85rem; color: var(--accent-green);">Manage shops</a>
                 </div>
 
-                <!-- Controls: sort chips + date range nav -->
+                <!-- Controls: sort chips + date range picker -->
                 <div class="shopping-controls">
                     <div class="shopping-controls-group">
                         <div class="sort-chips" id="sort-chips">
@@ -4245,9 +4245,11 @@
                         </div>
                     </div>
                     <div class="shopping-controls-group">
-                        <div class="date-range-nav">
+                        <div class="date-range-picker">
                             <button class="date-nav-btn" onclick="shiftDateRange(-1)" title="Previous period">‹</button>
-                            <span class="date-range-label" id="date-range-label">7 days</span>
+                            <input type="date" id="date-from" class="date-input" onchange="onDateRangeChange()" title="From date">
+                            <span class="date-range-separator">–</span>
+                            <input type="date" id="date-to" class="date-input" onchange="onDateRangeChange()" title="To date">
                             <button class="date-nav-btn" onclick="shiftDateRange(1)" title="Next period">›</button>
                         </div>
                     </div>
@@ -4260,10 +4262,8 @@
                     </div>
                 </div>
 
-                <!-- Hidden date inputs (used by existing JS logic) -->
+                <!-- Hidden sort select (used by print logic) -->
                 <div style="display:none;">
-                    <input type="date" id="date-from" onchange="onDateRangeChange()">
-                    <input type="date" id="date-to" onchange="onDateRangeChange()">
                     <select id="sort-select"><option value="alpha">alpha</option><option value="aisle">aisle</option><option value="day">day</option><option value="recipe">recipe</option></select>
                 </div>
 
@@ -4970,7 +4970,7 @@ oregano"></textarea>
                             <span class="help-question-icon">▼</span>
                         </div>
                         <div class="help-answer">
-                            Your shopping list is built automatically from the recipes in your meal plan for the selected date range. Tick items off as you shop — ticked items show with a strikethrough. Use the date range navigator or quick presets (Today / 3d / 7d / This week / All) to control which dates are included. A <strong>progress bar</strong> at the top shows how many items you've checked off.
+                            Your shopping list is built automatically from the recipes in your meal plan for the selected date range. Tick items off as you shop — ticked items show with a strikethrough. Use the date inputs or quick presets (Today / 3d / 7d / This week / All) to control which dates are included; the ‹ › arrows shift the selected span forward or backward. A <strong>progress bar</strong> at the top shows how many items you've checked off.
                         </div>
                     </div>
 

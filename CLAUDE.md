@@ -131,7 +131,7 @@ New brand colour variables also added (not yet widely used): `--color-tomato`, `
 #### ✅ Phase 4 — Shopping list upgrades
 - Item cards: meal name (DM Sans small) + date (DM Mono) as separate spans in second line
 - Sort chips: pill-shaped chip row replaces `<select>` (A–Z / Aisle / Date / Recipe); hidden `<select>` kept for print compat
-- Date range navigator: `‹ [7 Apr – 13 Apr] ›` replaces raw date inputs; arrows shift by current span; preset chips (Today / 3d / 7d / This week / All) update the label
+- Date range picker: visible `date-from` / `date-to` inputs flanked by `‹` / `›` arrow buttons that shift the span; preset chips (Today / 3d / 7d / This week / All) populate the inputs; inputs are directly editable for custom ranges
 - Progress bar: herb-green fill inside summary card, "X of Y checked" label, updates live
 - "Clear checked" floating pill: `position: fixed`, appears only when ≥1 item checked, shows count; hides on non-shopping views
 - Tomato FAB: fixed bottom-right (shopping view only), scrolls to and focuses the add-item input
