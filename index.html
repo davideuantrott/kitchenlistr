@@ -1431,6 +1431,23 @@
             color: #DC3545;
         }
 
+        /* Linked meal slot */
+        .meal-slot-linked {
+            background: var(--bg-cream);
+            border: 1.5px dashed var(--accent-green-light);
+            opacity: 0.85;
+        }
+        .meal-slot-linked-name {
+            font-weight: 400;
+            font-style: italic;
+            color: var(--text-secondary);
+            font-size: 0.82rem;
+        }
+        .month-meal-pill.linked {
+            opacity: 0.7;
+            font-style: italic;
+        }
+
         /* Day card states */
         /* Future days get a slightly stronger border than the default */
         .day-card:not(.past):not(.today) {
@@ -6637,6 +6654,34 @@ oregano"></textarea>
         // =====================
         // Meal Planner
         // =====================
+
+        // --- Linked meal helpers ---
+        // stored as linked:YYYY-MM-DD_mealKey; skipped by shopping list
+
+        function parseLinkedMeal(recipeId) {
+            if (recipeId === undefined || recipeId === null || recipeId.startsWith('linked:') === false) return null;
+            const target = recipeId.slice(7);
+            return { targetDateStr: target.slice(0, 10), targetMealKey: target.slice(11) };
+        }
+
+        function getLinkedRecipe(recipeId) {
+            const p = parseLinkedMeal(recipeId);
+            if (p === null) return null;
+            const targetRecipeId = mealPlan[p.targetDateStr] && mealPlan[p.targetDateStr][p.targetMealKey];
+            if (targetRecipeId === undefined || targetRecipeId === null || targetRecipeId.startsWith('linked:')) return null;
+            return recipes.find(function(r) { return r.id === targetRecipeId; }) || null;
+        }
+
+        function getLinkedDisplayText(recipeId) {
+            const p = parseLinkedMeal(recipeId);
+            if (p === null) return '↩ Linked meal';
+            const date = new Date(p.targetDateStr);
+            const dayAbbr = getDayName(date).substring(0, 3);
+            const recipe = getLinkedRecipe(recipeId);
+            const name = recipe ? recipe.name : 'removed meal';
+            return '↩ ' + name + ' · ' + dayAbbr;
+        }
+        window.getLinkedDisplayText = getLinkedDisplayText;
 
         function getMealTypes() {
             return mealCategories.length > 0 ? mealCategories : ['Breakfast', 'Lunch', 'Dinner'];
