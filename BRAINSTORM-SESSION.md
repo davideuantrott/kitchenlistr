@@ -137,6 +137,15 @@ For each idea generated, record it using this structure:
 
 ---
 
+
+### Shopping List Data Hygiene — "Bought" State
+**What it does:** Introduces a third shopping list state (beyond 'need' and 'have') called 'bought' or 'done'. The existing 'Clear checked' pill would move checked items into this dismissed state rather than unchecking them. Items in the 'done' state are permanently invisible in the list — they don't reappear in 'need to buy' when cleared. Users can undo individual dismissals if needed. A separate shoppingDone Firestore document (same structure as shoppingHave) holds these keys. A 7-day time-based auto-purge on app load safely removes old entries (keys embed the date: 2026-03-06_breakfast_recipeId_ingredient).
+**User value:** Solves two friction points: (a) shopping list filling back up with already-bought items when 'Clear checked' is pressed; (b) accumulated stale shoppingHave data from old shopping trips.
+**Effort estimate:** Medium
+**Dependencies:** No schema-breaking changes — shoppingDone is an additive Firestore document. Shopping list render needs a third filter pass. 'Clear checked' button UX needs updating. Undo affordance needs design.
+**Priority signal:** Nice-to-have
+**Notes:** Should 'done' items be visible anywhere (e.g. collapsed 'Done' section below 'Already Have')? Ad-hoc items (adhoc_{id} keys, no embedded date) need a separate cleanup strategy.
+
 ## 6. Ideas Already in the Backlog
 
 (Capture new ideas above these; don't duplicate)
