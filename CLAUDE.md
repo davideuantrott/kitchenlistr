@@ -225,6 +225,16 @@ New brand colour variables also added (not yet widely used): `--color-tomato`, `
 - **Add Recipe FAB (mobile):** `#recipe-fab` added (same `.fab` pattern as shopping/planner FABs); shown only on recipes view via `showView()`; hidden on desktop via `@media (min-width: 768px) .fab--recipe { display: none !important }`
 - **Add to Plan from recipes:** `#add-to-plan-modal` added (date input + meal type select); `addRecipeToPlan(recipeId)`, `addCurrentRecipeToPlan()`, `confirmAddToPlan()`, `closeAddToPlanModal()` functions; "Add to Plan" button on recipe cards (with `stopPropagation`) and in recipe view modal footer
 
+#### ✅ Phase 13 — Linked meals (leftovers / batch cooking)
+
+- **Data model:** linked entry stored as `linked:YYYY-MM-DD_mealKey` string in `mealPlan[dateStr][mealKey]`; fully backward-compatible (shopping list silently skips unresolved recipe IDs)
+- **Helper functions** (pre-existing): `parseLinkedMeal()`, `getLinkedRecipe()`, `getLinkedDisplayText()` — return parsed target, resolved recipe, and display text (e.g. "↩ Lasagne · Mon")
+- **CSS** (pre-existing): `.meal-slot-linked` (dashed border, cream bg), `.meal-slot-linked-name` (italic, secondary colour), `.month-meal-pill.linked` (italic, reduced opacity)
+- **Week view:** `renderPlanner()` detects `linked:` prefix; applies `meal-slot-linked` class and renders `meal-slot-linked-name` with display text; edit/remove buttons shown via `hasEntry` flag
+- **Month view:** `renderMonthView()` pushes linked entries with `isLinked: true`; pill gets `.linked` class
+- **Print:** `generateWeekPrintHtml()` and `generateMonthPrintHtml()` show linked display text instead of `—` / blank
+- **UI:** `#select-recipe-modal` has a collapsible "↩ Link to another day's meal instead" section with date + meal type pickers; `toggleLinkForm()` populates meal select from `getMealTypes()`; `confirmLinkMeal()` saves via existing `selectRecipeForMeal()`
+
 #### 🔜 Future Phase — Meal plan recipe selector redesign
 
 Replace the plain text list in `#select-recipe-modal` with a 2-column card grid using recipe avatars (colour + emoji via `recipeAvatarColor()` / `recipeAvatarEmoji()`), category badge, and search — consistent with the Recipes page. Function to modify: `renderRecipeSelectList()`. Three options: (A) card grid with avatars (**recommended**), (B) category-grouped list, (C) filter chips + grid.
