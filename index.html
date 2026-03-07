@@ -4713,6 +4713,24 @@ oregano"></textarea>
                 <div class="recipe-select-list" id="recipe-select-list">
                     <!-- Recipes will be listed here -->
                 </div>
+
+                <div class="link-meal-toggle" style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--border-light);">
+                    <button type="button" class="btn btn-secondary btn-small" onclick="toggleLinkForm()">↩ Link to another day's meal instead</button>
+                </div>
+                <div id="link-meal-form" style="display:none; margin-top: 0.75rem; padding: 1rem; border: 1px solid var(--border-light); border-radius: var(--radius-md); background: var(--bg-cream);">
+                    <div class="form-group" style="margin-bottom: 0.75rem;">
+                        <label class="form-label">Date</label>
+                        <input type="date" class="form-input" id="link-target-date">
+                    </div>
+                    <div class="form-group" style="margin-bottom: 0.75rem;">
+                        <label class="form-label">Meal</label>
+                        <select class="form-input" id="link-target-meal"></select>
+                    </div>
+                    <div style="display: flex; gap: 0.5rem; justify-content: flex-end;">
+                        <button type="button" class="btn btn-secondary btn-small" onclick="toggleLinkForm()">Cancel</button>
+                        <button type="button" class="btn btn-primary btn-small" onclick="confirmLinkMeal()">Link</button>
+                    </div>
+                </div>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" onclick="closeSelectRecipeModal()">Cancel</button>
@@ -6717,22 +6735,26 @@ oregano"></textarea>
                                 const mealKey = meal.toLowerCase().replace(/[^a-z0-9]/g, '_');
                                 // Check multiple possible key formats for backwards compatibility
                                 const recipeId = dayMeals[mealKey] || dayMeals[meal] || dayMeals[meal.toLowerCase()];
-                                const recipe = recipeId ? recipes.find(r => r.id === recipeId) : null;
+                                const isLinked = recipeId ? recipeId.startsWith('linked:') : false;
+                                const recipe = (!isLinked && recipeId) ? recipes.find(r => r.id === recipeId) : null;
+                                const hasEntry = isLinked || !!recipe;
 
                                 return `
-                                    <div class="meal-slot${recipe ? '' : ' meal-empty'}">
+                                    <div class="meal-slot${hasEntry ? (isLinked ? ' meal-slot-linked' : '') : ' meal-empty'}">
                                         <div>
                                             <div class="meal-slot-label">${escapeHtml(meal)}</div>
-                                            ${recipe
-                                                ? `<div class="meal-slot-name">${escapeHtml(recipe.name)}</div>`
-                                                : `<div class="meal-slot-empty">Not planned</div>`
+                                            ${isLinked
+                                                ? `<div class="meal-slot-linked-name">${escapeHtml(getLinkedDisplayText(recipeId))}</div>`
+                                                : recipe
+                                                    ? `<div class="meal-slot-name">${escapeHtml(recipe.name)}</div>`
+                                                    : `<div class="meal-slot-empty">Not planned</div>`
                                             }
                                         </div>
                                         <div class="meal-slot-actions">
                                             <button class="meal-slot-btn" onclick="openSelectRecipeModal('${dateStr}', '${escapeHtml(mealKey)}')" title="Add/Change">
-                                                ${recipe ? '✏️' : '➕'}
+                                                ${hasEntry ? '✏️' : '➕'}
                                             </button>
-                                            ${recipe ? `
+                                            ${hasEntry ? `
                                                 <button class="meal-slot-btn remove" onclick="removeMeal('${dateStr}', '${escapeHtml(mealKey)}')" title="Remove">
                                                     ✕
                                                 </button>
@@ -7078,9 +7100,13 @@ oregano"></textarea>
                     const mealKey = mealType.toLowerCase().replace(/[^a-z0-9]/g, '_');
                     const recipeId = dayMeals[mealKey] || dayMeals[mealType] || dayMeals[mealType.toLowerCase()];
                     if (recipeId) {
-                        const recipe = recipes.find(r => r.id === recipeId);
-                        if (recipe) {
-                            meals.push({ type: mealKey, label: mealType, name: recipe.name });
+                        if (recipeId.startsWith('linked:')) {
+                            meals.push({ type: mealKey, label: mealType, name: getLinkedDisplayText(recipeId), isLinked: true });
+                        } else {
+                            const recipe = recipes.find(r => r.id === recipeId);
+                            if (recipe) {
+                                meals.push({ type: mealKey, label: mealType, name: recipe.name });
+                            }
                         }
                     }
                 });
@@ -7090,7 +7116,7 @@ oregano"></textarea>
                         <div class="month-day-number">${currentDate.getDate()}</div>
                         <div class="month-day-meals">
                             ${meals.slice(0, 3).map(m => `
-                                <div class="month-meal-pill ${m.type}"><span class="month-meal-dot"></span>${escapeHtml(m.name)}</div>
+                                <div class="month-meal-pill ${m.type}${m.isLinked ? ' linked' : ''}"><span class="month-meal-dot"></span>${escapeHtml(m.name)}</div>
                             `).join('')}
                             ${meals.length > 3 ? `<div class="month-day-more">+${meals.length - 3} more</div>` : ''}
                         </div>
@@ -7229,6 +7255,28 @@ oregano"></textarea>
             closeSelectRecipeModal();
         }
         window.selectRecipeForMeal = selectRecipeForMeal;
+
+        function toggleLinkForm() {
+            const f = document.getElementById('link-meal-form');
+            const sel = document.getElementById('link-target-meal');
+            if (!sel.options.length) {
+                getMealTypes().forEach(m => {
+                    const key = m.toLowerCase().replace(/[^a-z0-9]/g, '_');
+                    sel.add(new Option(m, key));
+                });
+            }
+            f.style.display = f.style.display === 'none' ? 'block' : 'none';
+        }
+        window.toggleLinkForm = toggleLinkForm;
+
+        async function confirmLinkMeal() {
+            const date = document.getElementById('link-target-date').value;
+            const meal = document.getElementById('link-target-meal').value;
+            if (!date || !meal) return;
+            const linkedId = 'linked:' + date + '_' + meal;
+            await selectRecipeForMeal(linkedId);
+        }
+        window.confirmLinkMeal = confirmLinkMeal;
 
         function toggleQuickAddRecipeForm() {
             const form = document.getElementById('quick-add-recipe-form');
@@ -7813,11 +7861,12 @@ oregano"></textarea>
                 getMealTypes().forEach(meal => {
                     const mealKey = meal.toLowerCase().replace(/[^a-z0-9]/g, '_');
                     const recipeId = dayMeals[mealKey] || dayMeals[meal] || dayMeals[meal.toLowerCase()];
-                    const recipe = recipeId ? recipes.find(r => r.id === recipeId) : null;
+                    const isLinked = recipeId && recipeId.startsWith('linked:');
+                    const recipe = (!isLinked && recipeId) ? recipes.find(r => r.id === recipeId) : null;
 
                     html += `<div class="print-meal-slot">`;
                     html += `<div class="print-meal-label">${escapeHtml(meal)}</div>`;
-                    html += `<div class="print-meal-name">${recipe ? escapeHtml(recipe.name) : '—'}</div>`;
+                    html += `<div class="print-meal-name">${isLinked ? escapeHtml(getLinkedDisplayText(recipeId)) : recipe ? escapeHtml(recipe.name) : '—'}</div>`;
                     html += `</div>`;
                 });
 
@@ -7861,8 +7910,11 @@ oregano"></textarea>
                 getMealTypes().forEach(meal => {
                     const mealKey = meal.toLowerCase().replace(/[^a-z0-9]/g, '_');
                     const recipeId = dayMeals[mealKey] || dayMeals[meal] || dayMeals[meal.toLowerCase()];
-                    const recipe = recipeId ? recipes.find(r => r.id === recipeId) : null;
-                    if (recipe) {
+                    const isLinked = recipeId && recipeId.startsWith('linked:');
+                    const recipe = (!isLinked && recipeId) ? recipes.find(r => r.id === recipeId) : null;
+                    if (isLinked) {
+                        html += `<div class="print-month-meal"><span class="print-month-meal-label">${escapeHtml(meal[0])}</span> ${escapeHtml(getLinkedDisplayText(recipeId))}</div>`;
+                    } else if (recipe) {
                         html += `<div class="print-month-meal"><span class="print-month-meal-label">${escapeHtml(meal[0])}</span> ${escapeHtml(recipe.name)}</div>`;
                     }
                 });
