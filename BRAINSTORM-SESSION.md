@@ -146,6 +146,17 @@ For each idea generated, record it using this structure:
 **Priority signal:** Nice-to-have
 **Notes:** Should 'done' items be visible anywhere (e.g. collapsed 'Done' section below 'Already Have')? Ad-hoc items (adhoc_{id} keys, no embedded date) need a separate cleanup strategy.
 
+---
+
+
+### Linked Meals — UX / Flow / Usability Improvements
+**What it does:** The linked meals feature (Phase 13) is implemented and working, but the current UX is functional rather than polished. Areas to explore: (a) the "Link to another day's meal" form inside the recipe selector modal — is it discoverable enough, or should it be a separate flow? (b) When viewing a linked slot, should tapping it navigate to the source day rather than opening the recipe selector? (c) Should there be a warning if the user tries to link to a slot that is itself linked (chain-linking)? (d) Is the "↩ Meal · Day" label clear enough to non-technical users — could a tooltip or popover help? (e) On mobile, the date picker inside the modal may be awkward — consider a week-strip or calendar picker instead. (f) Should removing a source meal warn the user that linked slots will become orphaned?
+**User value:** Reduces friction for the core leftovers/batch-cooking workflow; makes the feature feel intentional rather than bolted on.
+**Effort estimate:** Medium
+**Dependencies:** Phase 13 linked meals (✅ done). Any navigation change would touch `openSelectRecipeModal` and the day-card click handlers.
+**Priority signal:** Nice-to-have
+**Notes:** Worth doing a quick usability test (even just self-testing the full flow) before designing solutions — the problems may be different in practice than on paper.
+
 ## 6. Ideas Already in the Backlog
 
 (Capture new ideas above these; don't duplicate)
