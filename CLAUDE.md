@@ -244,6 +244,13 @@ New brand colour variables also added (not yet widely used): `--color-tomato`, `
 - **Clearer labels:** each option shows a date range (e.g. "13 Jan – 19 Jan") rather than relative labels, so it's always unambiguous which week is being suggested for
 - **No data model changes:** `weekStart` field, filter tabs (This / Next / All), and Firestore writes are unchanged
 
+#### ✅ Phase 15 — Planner week view row alignment
+
+- **`equalizePlannerRows()`** added after `renderPlanner()`; called via `requestAnimationFrame` at end of each render, and debounced on window resize (150ms)
+- For each meal slot index (0 = first category, 1 = second, etc.), collects the same-position `.meal-slot` across all 7 day cards, resets `minHeight`, measures natural `offsetHeight`, then sets all slots to the tallest one
+- Skips on ≤500px viewports (single-column mobile layout where row alignment is irrelevant)
+- No HTML/CSS changes required; purely JS post-render measurement
+
 #### 🔜 Future Phase — Meal plan recipe selector redesign
 
 Replace the plain text list in `#select-recipe-modal` with a 2-column card grid using recipe avatars (colour + emoji via `recipeAvatarColor()` / `recipeAvatarEmoji()`), category badge, and search — consistent with the Recipes page. Function to modify: `renderRecipeSelectList()`. Three options: (A) card grid with avatars (**recommended**), (B) category-grouped list, (C) filter chips + grid.

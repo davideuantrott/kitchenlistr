@@ -6779,8 +6779,25 @@ oregano"></textarea>
 
             container.innerHTML = html;
             renderWeekStrip();
+            requestAnimationFrame(equalizePlannerRows);
         }
         window.renderPlanner = renderPlanner;
+
+        function equalizePlannerRows() {
+            if (window.innerWidth <= 500) return; // single-column layout – no row alignment needed
+            const grid = document.getElementById('planner-week');
+            if (!grid) return;
+            const cards = Array.from(grid.querySelectorAll('.day-card'));
+            if (cards.length === 0) return;
+            const mealCount = getMealTypes().length;
+            for (let i = 0; i < mealCount; i++) {
+                const slots = cards.map(card => card.querySelectorAll('.meal-slot')[i]).filter(Boolean);
+                if (slots.length === 0) continue;
+                slots.forEach(s => s.style.minHeight = '');
+                const maxH = Math.max(...slots.map(s => s.offsetHeight));
+                if (maxH > 0) slots.forEach(s => s.style.minHeight = maxH + 'px');
+            }
+        }
 
         // =====================
         // Suggestions Functions
@@ -11160,6 +11177,12 @@ oregano"></textarea>
         // =====================
         // Initialize
         // =====================
+
+        let _plannerEqualizeTimer = null;
+        window.addEventListener('resize', () => {
+            clearTimeout(_plannerEqualizeTimer);
+            _plannerEqualizeTimer = setTimeout(equalizePlannerRows, 150);
+        });
 
         initDateRangePicker();
         renderPlanner();
