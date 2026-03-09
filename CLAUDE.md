@@ -235,6 +235,15 @@ New brand colour variables also added (not yet widely used): `--color-tomato`, `
 - **Print:** `generateWeekPrintHtml()` and `generateMonthPrintHtml()` show linked display text instead of `—` / blank
 - **UI:** `#select-recipe-modal` has a collapsible "↩ Link to another day's meal instead" section with date + meal type pickers; `toggleLinkForm()` populates meal select from `getMealTypes()`; `confirmLinkMeal()` saves via existing `selectRecipeForMeal()`
 
+#### ✅ Phase 14 — Meal suggestion week-picker improvement
+
+- **Context-aware default week:** `openSuggestRecipeModal()` now reads `currentPlannerView` and sets a smart default:
+  - Week view → defaults to `currentWeekStart` (the week currently displayed), clamped to not be in the past
+  - Month view → defaults to the first Monday of `currentMonth`, clamped to current week if the month is past
+- **12-week dropdown:** replaced the hardcoded "This week / Next week" two-option select with a dynamically generated list of 12 weeks (~3 months); list auto-extends if the default week falls beyond the window
+- **Clearer labels:** each option shows a date range (e.g. "13 Jan – 19 Jan") rather than relative labels, so it's always unambiguous which week is being suggested for
+- **No data model changes:** `weekStart` field, filter tabs (This / Next / All), and Firestore writes are unchanged
+
 #### 🔜 Future Phase — Meal plan recipe selector redesign
 
 Replace the plain text list in `#select-recipe-modal` with a 2-column card grid using recipe avatars (colour + emoji via `recipeAvatarColor()` / `recipeAvatarEmoji()`), category badge, and search — consistent with the Recipes page. Function to modify: `renderRecipeSelectList()`. Three options: (A) card grid with avatars (**recommended**), (B) category-grouped list, (C) filter chips + grid.

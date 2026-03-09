@@ -5277,7 +5277,7 @@ oregano"></textarea>
                     </select>
                 </div>
                 <div class="form-group">
-                    <label class="form-label">Suggest for week starting</label>
+                    <label class="form-label">Week</label>
                     <select class="form-select" id="suggest-week-select">
                         <!-- Populated by JS -->
                     </select>
@@ -6883,15 +6883,45 @@ oregano"></textarea>
                 ).join('');
             }
 
-            // Populate week select
-            const thisWeek = getWeekStart(new Date());
-            const nextWeek = new Date(thisWeek);
-            nextWeek.setDate(nextWeek.getDate() + 7);
+            // Determine smart default week based on planner view
+            const todayWeek = getWeekStart(new Date());
+            let defaultWeek;
+            if (currentPlannerView === 'week') {
+                // Default to the currently viewed week, but not in the past
+                defaultWeek = currentWeekStart.getTime() >= todayWeek.getTime() ? currentWeekStart : todayWeek;
+            } else {
+                // Month view: default to the first Monday of the viewed month, clamped to current week
+                const firstDay = new Date(currentMonth.getFullYear(), currentMonth.getMonth(), 1);
+                const firstMonday = getWeekStart(firstDay);
+                defaultWeek = firstMonday.getTime() >= todayWeek.getTime() ? firstMonday : todayWeek;
+            }
+
+            // Build a list of weeks from today up to 12 weeks ahead
+            const weeks = [];
+            for (let i = 0; i < 12; i++) {
+                const w = new Date(todayWeek);
+                w.setDate(w.getDate() + i * 7);
+                weeks.push(w);
+            }
+            // Extend the list if the default week falls beyond the 12-week window
+            const defaultKey = formatDate(defaultWeek);
+            if (!weeks.some(w => formatDate(w) === defaultKey)) {
+                const extra = new Date(weeks[weeks.length - 1]);
+                while (formatDate(extra) !== defaultKey) {
+                    extra.setDate(extra.getDate() + 7);
+                    weeks.push(new Date(extra));
+                }
+            }
+
             const weekSelect = document.getElementById('suggest-week-select');
-            weekSelect.innerHTML = `
-                <option value="${formatDate(thisWeek)}">This week (from ${formatDisplayDate(thisWeek)})</option>
-                <option value="${formatDate(nextWeek)}">Next week (from ${formatDisplayDate(nextWeek)})</option>
-            `;
+            weekSelect.innerHTML = weeks.map(w => {
+                const weekEnd = new Date(w);
+                weekEnd.setDate(weekEnd.getDate() + 6);
+                const label = `${formatDisplayDate(w)} – ${formatDisplayDate(weekEnd)}`;
+                const val = formatDate(w);
+                const selected = val === defaultKey ? ' selected' : '';
+                return `<option value="${val}"${selected}>${label}</option>`;
+            }).join('');
 
             document.getElementById('suggest-recipe-modal').classList.add('active');
         }
