@@ -5398,6 +5398,7 @@ oregano"></textarea>
         // =====================
         
         let recipes = [];
+        let recipeMap = new Map();
         let mealPlan = {};
         let shoppingHave = {};
         let recentlyCheckedKey = null;
@@ -5748,6 +5749,7 @@ oregano"></textarea>
                     snapshot.forEach((doc) => {
                         recipes.push({ id: doc.id, ...doc.data() });
                     });
+                    recipeMap = new Map(recipes.map(r => [r.id, r]));
                     renderRecipes();
                     renderPlanner();
                     renderShoppingList();
@@ -5902,6 +5904,7 @@ oregano"></textarea>
             if (unsubscribeSuggestions) { unsubscribeSuggestions(); unsubscribeSuggestions = null; }
 
             recipes = [];
+            recipeMap = new Map();
             mealPlan = {};
             shoppingHave = {};
             adhocItems = [];
@@ -6054,7 +6057,7 @@ oregano"></textarea>
         function formatWeekDisplay(weekStart) {
             const weekEnd = new Date(weekStart);
             weekEnd.setDate(weekEnd.getDate() + 6);
-            return `${formatDisplayDate(weekStart)} - ${formatDisplayDate(weekEnd)}`;
+            return `${formatDisplayDate(weekStart)} – ${formatDisplayDate(weekEnd)}`;
         }
 
         function getDayName(date) {
@@ -6505,7 +6508,7 @@ oregano"></textarea>
         window.saveRecipe = saveRecipe;
 
         function viewRecipe(id) {
-            const recipe = recipes.find(r => r.id === id);
+            const recipe = recipeMap.get(id);
             if (!recipe) return;
             
             currentViewingRecipeId = id;
@@ -6562,7 +6565,7 @@ oregano"></textarea>
         let addToPlanRecipeId = null;
 
         function addRecipeToPlan(recipeId) {
-            const recipe = recipes.find(r => r.id === recipeId);
+            const recipe = recipeMap.get(recipeId);
             if (!recipe) return;
             addToPlanRecipeId = recipeId;
             document.getElementById('add-to-plan-recipe-name').textContent = recipe.name;
@@ -6601,7 +6604,7 @@ oregano"></textarea>
         window.confirmAddToPlan = confirmAddToPlan;
 
         function editCurrentRecipe() {
-            const recipe = recipes.find(r => r.id === currentViewingRecipeId);
+            const recipe = recipeMap.get(currentViewingRecipeId);
             if (!recipe) return;
             
             closeViewRecipeModal();
@@ -6675,10 +6678,15 @@ oregano"></textarea>
 
         // --- Linked meal helpers ---
         // stored as linked:YYYY-MM-DD_mealKey; skipped by shopping list
+        const LINKED_MEAL_PREFIX = 'linked:';
+
+        function isLinkedMeal(id) {
+            return !!(id && id.startsWith(LINKED_MEAL_PREFIX));
+        }
 
         function parseLinkedMeal(recipeId) {
-            if (recipeId === undefined || recipeId === null || recipeId.startsWith('linked:') === false) return null;
-            const target = recipeId.slice(7);
+            if (!isLinkedMeal(recipeId)) return null;
+            const target = recipeId.slice(LINKED_MEAL_PREFIX.length);
             return { targetDateStr: target.slice(0, 10), targetMealKey: target.slice(11) };
         }
 
@@ -6686,8 +6694,15 @@ oregano"></textarea>
             const p = parseLinkedMeal(recipeId);
             if (p === null) return null;
             const targetRecipeId = mealPlan[p.targetDateStr] && mealPlan[p.targetDateStr][p.targetMealKey];
-            if (targetRecipeId === undefined || targetRecipeId === null || targetRecipeId.startsWith('linked:')) return null;
-            return recipes.find(function(r) { return r.id === targetRecipeId; }) || null;
+            if (!targetRecipeId || isLinkedMeal(targetRecipeId)) return null;
+            return recipeMap.get(targetRecipeId) || null;
+        }
+
+        // Returns display name for any recipeId (linked or regular), or null if not found.
+        function getMealDisplay(recipeId) {
+            if (!recipeId) return null;
+            if (isLinkedMeal(recipeId)) return getLinkedDisplayText(recipeId);
+            return recipeMap.get(recipeId)?.name ?? null;
         }
 
         function getLinkedDisplayText(recipeId) {
@@ -6735,18 +6750,18 @@ oregano"></textarea>
                                 const mealKey = meal.toLowerCase().replace(/[^a-z0-9]/g, '_');
                                 // Check multiple possible key formats for backwards compatibility
                                 const recipeId = dayMeals[mealKey] || dayMeals[meal] || dayMeals[meal.toLowerCase()];
-                                const isLinked = recipeId ? recipeId.startsWith('linked:') : false;
-                                const recipe = (!isLinked && recipeId) ? recipes.find(r => r.id === recipeId) : null;
-                                const hasEntry = isLinked || !!recipe;
+                                const linked = isLinkedMeal(recipeId);
+                                const display = getMealDisplay(recipeId);
+                                const hasEntry = !!display;
 
                                 return `
-                                    <div class="meal-slot${hasEntry ? (isLinked ? ' meal-slot-linked' : '') : ' meal-empty'}">
+                                    <div class="meal-slot${hasEntry ? (linked ? ' meal-slot-linked' : '') : ' meal-empty'}">
                                         <div>
                                             <div class="meal-slot-label">${escapeHtml(meal)}</div>
-                                            ${isLinked
-                                                ? `<div class="meal-slot-linked-name">${escapeHtml(getLinkedDisplayText(recipeId))}</div>`
-                                                : recipe
-                                                    ? `<div class="meal-slot-name">${escapeHtml(recipe.name)}</div>`
+                                            ${linked
+                                                ? `<div class="meal-slot-linked-name">${escapeHtml(display)}</div>`
+                                                : display
+                                                    ? `<div class="meal-slot-name">${escapeHtml(display)}</div>`
                                                     : `<div class="meal-slot-empty">Not planned</div>`
                                             }
                                         </div>
@@ -6790,13 +6805,24 @@ oregano"></textarea>
             const cards = Array.from(grid.querySelectorAll('.day-card'));
             if (cards.length === 0) return;
             const mealCount = getMealTypes().length;
+
+            // Collect slot groups
+            const slotGroups = [];
             for (let i = 0; i < mealCount; i++) {
                 const slots = cards.map(card => card.querySelectorAll('.meal-slot')[i]).filter(Boolean);
-                if (slots.length === 0) continue;
-                slots.forEach(s => s.style.minHeight = '');
-                const maxH = Math.max(...slots.map(s => s.offsetHeight));
-                if (maxH > 0) slots.forEach(s => s.style.minHeight = maxH + 'px');
+                if (slots.length > 0) slotGroups.push(slots);
             }
+
+            // Pass 1: reset all minHeights (batch writes)
+            slotGroups.forEach(slots => slots.forEach(s => s.style.minHeight = ''));
+
+            // Pass 2: read all natural heights (single reflow, then only reads)
+            const maxHeights = slotGroups.map(slots => Math.max(...slots.map(s => s.offsetHeight)));
+
+            // Pass 3: apply all heights (batch writes)
+            slotGroups.forEach((slots, i) => {
+                if (maxHeights[i] > 0) slots.forEach(s => s.style.minHeight = maxHeights[i] + 'px');
+            });
         }
 
         // =====================
@@ -6932,9 +6958,7 @@ oregano"></textarea>
 
             const weekSelect = document.getElementById('suggest-week-select');
             weekSelect.innerHTML = weeks.map(w => {
-                const weekEnd = new Date(w);
-                weekEnd.setDate(weekEnd.getDate() + 6);
-                const label = `${formatDisplayDate(w)} – ${formatDisplayDate(weekEnd)}`;
+                const label = formatWeekDisplay(w);
                 const val = formatDate(w);
                 const selected = val === defaultKey ? ' selected' : '';
                 return `<option value="${val}"${selected}>${label}</option>`;
@@ -6954,7 +6978,7 @@ oregano"></textarea>
             const weekStart = document.getElementById('suggest-week-select').value;
             if (!recipeId) { showSyncStatus('error', 'Select a recipe'); return; }
 
-            const recipe = recipes.find(r => r.id === recipeId);
+            const recipe = recipeMap.get(recipeId);
             if (!recipe) return;
 
             const suggestionData = {
@@ -7147,13 +7171,9 @@ oregano"></textarea>
                     const mealKey = mealType.toLowerCase().replace(/[^a-z0-9]/g, '_');
                     const recipeId = dayMeals[mealKey] || dayMeals[mealType] || dayMeals[mealType.toLowerCase()];
                     if (recipeId) {
-                        if (recipeId.startsWith('linked:')) {
-                            meals.push({ type: mealKey, label: mealType, name: getLinkedDisplayText(recipeId), isLinked: true });
-                        } else {
-                            const recipe = recipes.find(r => r.id === recipeId);
-                            if (recipe) {
-                                meals.push({ type: mealKey, label: mealType, name: recipe.name });
-                            }
+                        const display = getMealDisplay(recipeId);
+                        if (display) {
+                            meals.push({ type: mealKey, label: mealType, name: display, isLinked: isLinkedMeal(recipeId) });
                         }
                     }
                 });
@@ -7320,7 +7340,7 @@ oregano"></textarea>
             const date = document.getElementById('link-target-date').value;
             const meal = document.getElementById('link-target-meal').value;
             if (!date || !meal) return;
-            const linkedId = 'linked:' + date + '_' + meal;
+            const linkedId = LINKED_MEAL_PREFIX + date + '_' + meal;
             await selectRecipeForMeal(linkedId);
         }
         window.confirmLinkMeal = confirmLinkMeal;
@@ -7394,7 +7414,7 @@ oregano"></textarea>
                     const recipeId = dayMeals[mealKey];
                     if (!recipeId) continue;
                     
-                    const recipe = recipes.find(r => r.id === recipeId);
+                    const recipe = recipeMap.get(recipeId);
                     if (!recipe || recipe.titleOnly || !recipe.ingredients) continue;
                     
                     recipe.ingredients.forEach(ing => {
@@ -7715,7 +7735,7 @@ oregano"></textarea>
                     const recipeId = dayMeals[mealKey];
                     if (!recipeId) continue;
                     
-                    const recipe = recipes.find(r => r.id === recipeId);
+                    const recipe = recipeMap.get(recipeId);
                     if (!recipe || recipe.titleOnly || !recipe.ingredients) continue;
                     
                     recipe.ingredients.forEach(ing => {
@@ -7908,12 +7928,11 @@ oregano"></textarea>
                 getMealTypes().forEach(meal => {
                     const mealKey = meal.toLowerCase().replace(/[^a-z0-9]/g, '_');
                     const recipeId = dayMeals[mealKey] || dayMeals[meal] || dayMeals[meal.toLowerCase()];
-                    const isLinked = recipeId && recipeId.startsWith('linked:');
-                    const recipe = (!isLinked && recipeId) ? recipes.find(r => r.id === recipeId) : null;
+                    const display = getMealDisplay(recipeId);
 
                     html += `<div class="print-meal-slot">`;
                     html += `<div class="print-meal-label">${escapeHtml(meal)}</div>`;
-                    html += `<div class="print-meal-name">${isLinked ? escapeHtml(getLinkedDisplayText(recipeId)) : recipe ? escapeHtml(recipe.name) : '—'}</div>`;
+                    html += `<div class="print-meal-name">${display ? escapeHtml(display) : '—'}</div>`;
                     html += `</div>`;
                 });
 
@@ -7957,12 +7976,9 @@ oregano"></textarea>
                 getMealTypes().forEach(meal => {
                     const mealKey = meal.toLowerCase().replace(/[^a-z0-9]/g, '_');
                     const recipeId = dayMeals[mealKey] || dayMeals[meal] || dayMeals[meal.toLowerCase()];
-                    const isLinked = recipeId && recipeId.startsWith('linked:');
-                    const recipe = (!isLinked && recipeId) ? recipes.find(r => r.id === recipeId) : null;
-                    if (isLinked) {
-                        html += `<div class="print-month-meal"><span class="print-month-meal-label">${escapeHtml(meal[0])}</span> ${escapeHtml(getLinkedDisplayText(recipeId))}</div>`;
-                    } else if (recipe) {
-                        html += `<div class="print-month-meal"><span class="print-month-meal-label">${escapeHtml(meal[0])}</span> ${escapeHtml(recipe.name)}</div>`;
+                    const display = getMealDisplay(recipeId);
+                    if (display) {
+                        html += `<div class="print-month-meal"><span class="print-month-meal-label">${escapeHtml(meal[0])}</span> ${escapeHtml(display)}</div>`;
                     }
                 });
 
@@ -8019,7 +8035,7 @@ oregano"></textarea>
                     const recipeId = dayMeals[mealKey];
                     if (!recipeId) continue;
                     
-                    const recipe = recipes.find(r => r.id === recipeId);
+                    const recipe = recipeMap.get(recipeId);
                     if (!recipe || recipe.titleOnly || !recipe.ingredients) continue;
                     
                     recipe.ingredients.forEach(ing => {
@@ -9607,9 +9623,9 @@ oregano"></textarea>
         async function shareRecipe() {
             if (!currentViewingRecipeId || !currentUser) return;
             
-            const recipe = recipes.find(r => r.id === currentViewingRecipeId);
+            const recipe = recipeMap.get(currentViewingRecipeId);
             if (!recipe) return;
-            
+
             showSyncStatus('syncing', 'Creating share link...');
             
             try {
@@ -11180,6 +11196,7 @@ oregano"></textarea>
 
         let _plannerEqualizeTimer = null;
         window.addEventListener('resize', () => {
+            if (!document.getElementById('planner-view')?.classList.contains('active')) return;
             clearTimeout(_plannerEqualizeTimer);
             _plannerEqualizeTimer = setTimeout(equalizePlannerRows, 150);
         });

@@ -251,6 +251,16 @@ New brand colour variables also added (not yet widely used): `--color-tomato`, `
 - Skips on ≤500px viewports (single-column mobile layout where row alignment is irrelevant)
 - No HTML/CSS changes required; purely JS post-render measurement
 
+#### ✅ Phase 16 — Code simplification & performance cleanup
+
+- **`LINKED_MEAL_PREFIX` constant:** `'linked:'` magic string extracted to a named constant; all 6 inline usages replaced
+- **`isLinkedMeal(id)` helper:** one-line predicate (`id.startsWith(LINKED_MEAL_PREFIX)`) replaces 4 inlined checks across render/print functions
+- **`getMealDisplay(recipeId)` helper:** unified resolver returning a display name for any recipeId (linked or regular), or `null`; collapses the `isLinked + recipe.find` pattern that repeated in week render, month render, week print, and month print
+- **`recipeMap`:** `Map<id, recipe>` declared alongside `recipes[]`; rebuilt in the Firestore recipes `onSnapshot` listener and cleared on data-mode switch; all 13 `recipes.find(r => r.id === ...)` calls replaced with `recipeMap.get(id)` — O(1) instead of O(n)
+- **`formatWeekDisplay()` fix:** helper now uses en-dash `–` consistently; week picker in `openSuggestRecipeModal()` now calls `formatWeekDisplay(w)` instead of inlining the same 3-line logic with an inconsistent separator
+- **`equalizePlannerRows()` layout-thrash fix:** refactored from interleaved reset/read/write per loop iteration into three clean passes (all resets → all reads → all writes), eliminating one forced reflow per meal category
+- **Resize handler guard:** debounced `equalizePlannerRows` call now skips scheduling when `#planner-view` is not `.active`, avoiding unnecessary layout work on other views
+
 #### 🔜 Future Phase — Meal plan recipe selector redesign
 
 Replace the plain text list in `#select-recipe-modal` with a 2-column card grid using recipe avatars (colour + emoji via `recipeAvatarColor()` / `recipeAvatarEmoji()`), category badge, and search — consistent with the Recipes page. Function to modify: `renderRecipeSelectList()`. Three options: (A) card grid with avatars (**recommended**), (B) category-grouped list, (C) filter chips + grid.
