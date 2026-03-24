@@ -261,6 +261,18 @@ New brand colour variables also added (not yet widely used): `--color-tomato`, `
 - **`equalizePlannerRows()` layout-thrash fix:** refactored from interleaved reset/read/write per loop iteration into three clean passes (all resets → all reads → all writes), eliminating one forced reflow per meal category
 - **Resize handler guard:** debounced `equalizePlannerRows` call now skips scheduling when `#planner-view` is not `.active`, avoiding unnecessary layout work on other views
 
+#### ✅ Phase 17 — Security hardening
+
+- **XSS: onclick event-attribute injection eliminated** — All 31 `onclick="fn('${data}')"` patterns replaced with `data-action` / `data-*` attributes. A single global delegated click listener (`dispatchAction`) reads these and calls the appropriate function. Delegated `keypress` and `change` listeners handle add-aisle inputs and dictionary checkboxes/selects respectively. The only remaining inline `onclick` values use system-generated `dateStr` (YYYY-MM-DD) or numeric indices — never user-controlled strings.
+- **Input validation on date/meal fields** — `confirmAddToPlan()` and `confirmLinkMeal()` now validate that `date` matches `/^\d{4}-\d{2}-\d{2}$/` and that `meal` is one of the known meal type keys before writing to Firestore.
+- **`isValidSharePayload()` hardened** — Added `validRecipe()` and `validIngredient()` helpers; validates ingredient object shape, category array contents, name/notes length limits, and blocks `imageUrl` values that don't start with `https://` (prevents `javascript:` / `data:` URI injection).
+- **`checkForJoin()` URL trust fixed** — `hid` URL param is now validated against `/^[A-Za-z0-9_-]{1,128}$/`; the trusted household ID is derived from the invite document's Firestore path (`inviteSnap.ref.parent.parent.id`) rather than the URL.
+- **Single-use invite tokens** — On successful join, the invite document is deleted in the same `writeBatch` as the member write, preventing token replay.
+- **`removeMember()` last-owner guard** — Blocks removing a member with `owner` role when they are the only owner.
+- **`switchDataMode()` live membership check** — When switching to household mode, re-fetches the household document and verifies the current user is still a member; resets household state if access was revoked.
+- **Content Security Policy** — `<meta http-equiv="Content-Security-Policy">` added to `<head>`; restricts `script-src` to `'self'` and `gstatic.com`, `connect-src` to Firebase endpoints, blocks `frame-src` and `object-src`, sets `base-uri 'self'`.
+- **Input `maxlength` caps** — `maxlength="300"` on recipe name, shop name, aisle name inputs; `maxlength="10000"` on recipe notes; `maxlength="300"` on shopping add-item input.
+
 #### 🔜 Future Phase — Meal plan recipe selector redesign
 
 Replace the plain text list in `#select-recipe-modal` with a 2-column card grid using recipe avatars (colour + emoji via `recipeAvatarColor()` / `recipeAvatarEmoji()`), category badge, and search — consistent with the Recipes page. Function to modify: `renderRecipeSelectList()`. Three options: (A) card grid with avatars (**recommended**), (B) category-grouped list, (C) filter chips + grid.

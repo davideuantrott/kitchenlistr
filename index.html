@@ -15,6 +15,19 @@
     <link rel="manifest" href="manifest.json">
     <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'><rect width='512' height='512' rx='96' fill='%234FB286'/><text x='256' y='340' font-size='280' text-anchor='middle' fill='white'>🍽</text></svg>">
     
+    <!-- Content Security Policy: restrict sources to prevent XSS and supply-chain attacks -->
+    <meta http-equiv="Content-Security-Policy" content="
+        default-src 'self';
+        script-src 'self' 'unsafe-inline' https://www.gstatic.com;
+        style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
+        font-src https://fonts.gstatic.com;
+        img-src 'self' data: https:;
+        connect-src 'self' https://*.googleapis.com https://*.firebaseio.com https://firestore.googleapis.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com;
+        frame-src 'none';
+        object-src 'none';
+        base-uri 'self';
+    ">
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,700;0,9..144,900;1,9..144,300&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&family=Caveat:wght@400;600&display=swap" rel="stylesheet">
@@ -4317,7 +4330,7 @@
                     </div>
                     <div class="add-item-row">
                         <div class="add-item-input-wrapper">
-                            <input type="text" class="add-item-input" id="add-item-input" placeholder="e.g., Kitchen roll, Bin bags…" onkeypress="handleAddItemKeypress(event)" oninput="showAdHocAutocomplete(this)" onblur="hideAdHocAutocomplete(this)" autocomplete="off">
+                            <input type="text" class="add-item-input" id="add-item-input" maxlength="300" placeholder="e.g., Kitchen roll, Bin bags…" onkeypress="handleAddItemKeypress(event)" oninput="showAdHocAutocomplete(this)" onblur="hideAdHocAutocomplete(this)" autocomplete="off">
                         </div>
                         <button class="btn btn-primary btn-small" onclick="addAdHocItem()">Add</button>
                     </div>
@@ -4549,7 +4562,7 @@
                     
                     <div class="form-group">
                         <label class="form-label" for="recipe-name">Recipe Name *</label>
-                        <input type="text" class="form-input" id="recipe-name" required placeholder="e.g., Spaghetti Bolognese">
+                        <input type="text" class="form-input" id="recipe-name" required maxlength="300" placeholder="e.g., Spaghetti Bolognese">
                     </div>
 
                     <div class="form-group" id="recipe-category-group" style="display:none;">
@@ -4618,7 +4631,7 @@ oregano"></textarea>
                     
                     <div class="form-group">
                         <label class="form-label" for="recipe-notes">Notes (optional)</label>
-                        <textarea class="form-textarea" id="recipe-notes" placeholder="Cooking instructions, tips, or variations..."></textarea>
+                        <textarea class="form-textarea" id="recipe-notes" maxlength="10000" placeholder="Cooking instructions, tips, or variations..."></textarea>
                     </div>
                 </form>
             </div>
@@ -4777,7 +4790,7 @@ oregano"></textarea>
                     
                     <div class="form-group">
                         <label class="form-label" for="shop-name">Shop Name *</label>
-                        <input type="text" class="form-input" id="shop-name" required placeholder="e.g., Tesco Extra Purley">
+                        <input type="text" class="form-input" id="shop-name" required maxlength="300" placeholder="e.g., Tesco Extra Purley">
                     </div>
                     
                     <div class="form-group">
@@ -5720,9 +5733,28 @@ oregano"></textarea>
             householdBtn.textContent = currentHouseholdName || 'Household';
         }
 
-        // Switches between personal and household data contexts and restarts listeners
+        // Switches between personal and household data contexts and restarts listeners.
+        // Re-verifies live household membership before switching to avoid stale state.
         async function switchDataMode(mode) {
             if (mode === currentDataMode) return;
+            if (mode === 'household' && currentHouseholdId && currentUser) {
+                try {
+                    const snap = await getDoc(doc(db, "households", currentHouseholdId));
+                    if (!snap.exists() || !snap.data().members?.[currentUser.uid]) {
+                        // Membership revoked — reset household state
+                        currentHouseholdId = null;
+                        currentHouseholdName = null;
+                        currentHouseholdRole = null;
+                        localStorage.removeItem('dataMode');
+                        updateContextSwitcher();
+                        showSyncStatus('error', 'Household access revoked');
+                        return;
+                    }
+                } catch (e) {
+                    console.error('Membership check failed:', e);
+                    return;
+                }
+            }
             currentDataMode = mode;
             localStorage.setItem('dataMode', mode);
             currentShopId = null; // reset so the correct default shop is picked
@@ -6205,13 +6237,13 @@ oregano"></textarea>
                     ? `<span>${recipeCats.map(escapeHtml).join(' · ')}<\/span> · <span>${ingCount}<\/span>`
                     : ingCount;
                 return `
-                <div class="recipe-card" style="--anim-order:${i}" onclick="viewRecipe('${recipe.id}')">
+                <div class="recipe-card" style="--anim-order:${i}" data-action="viewRecipe" data-id="${recipe.id}">
                     <div class="recipe-card-avatar" style="background:${recipe.imageUrl ? '#f0f0f0' : color}">${avatarContent}</div>
                     <div class="recipe-card-body">
                         ${recipe.titleOnly ? '<span class="recipe-card-badge">Title Only</span>' : ''}
                         <h3 class="recipe-card-title">${escapeHtml(recipe.name)}</h3>
                         <p class="recipe-card-meta">${metaLine}</p>
-                        <button class="recipe-card-add-plan-btn" onclick="event.stopPropagation(); addRecipeToPlan('${recipe.id}')" title="Add to meal plan">+ Add to Plan</button>
+                        <button class="recipe-card-add-plan-btn" data-action="addRecipeToPlan" data-id="${recipe.id}" title="Add to meal plan">+ Add to Plan</button>
                     </div>
                 </div>`;
             }).join('');
@@ -6595,6 +6627,9 @@ oregano"></textarea>
             const date = document.getElementById('add-to-plan-date').value;
             const meal = document.getElementById('add-to-plan-meal').value;
             if (!date || !meal) return;
+            if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) return;
+            const validMeals = getMealTypes().map(m => m.toLowerCase().replace(/[^a-z0-9]/g, '_'));
+            if (!validMeals.includes(meal)) return;
             if (!mealPlan[date]) mealPlan[date] = {};
             mealPlan[date][meal] = addToPlanRecipeId;
             closeAddToPlanModal();
@@ -6766,11 +6801,11 @@ oregano"></textarea>
                                             }
                                         </div>
                                         <div class="meal-slot-actions">
-                                            <button class="meal-slot-btn" onclick="openSelectRecipeModal('${dateStr}', '${escapeHtml(mealKey)}')" title="Add/Change">
+                                            <button class="meal-slot-btn" data-action="openSelectRecipeModal" data-date="${dateStr}" data-meal="${mealKey}" title="Add/Change">
                                                 ${hasEntry ? '✏️' : '➕'}
                                             </button>
                                             ${hasEntry ? `
-                                                <button class="meal-slot-btn remove" onclick="removeMeal('${dateStr}', '${escapeHtml(mealKey)}')" title="Remove">
+                                                <button class="meal-slot-btn remove" data-action="removeMeal" data-date="${dateStr}" data-meal="${mealKey}" title="Remove">
                                                     ✕
                                                 </button>
                                             ` : ''}
@@ -6854,7 +6889,7 @@ oregano"></textarea>
             const tabsEl = document.getElementById('suggestions-week-tabs');
             const tabDefs = [['this', 'This Week'], ['next', 'Next Week'], ['all', 'All']];
             tabsEl.innerHTML = tabDefs.map(([key, label]) =>
-                `<button class="suggestions-tab${suggestionsFilter === key ? ' active' : ''}" onclick="setSuggestionsFilter('${key}')">${label}</button>`
+                `<button class="suggestions-tab${suggestionsFilter === key ? ' active' : ''}" data-action="setSuggestionsFilter" data-filter="${key}">${label}</button>`
             ).join('');
 
             // Filter suggestions by week
@@ -6894,11 +6929,11 @@ oregano"></textarea>
                             <div class="suggestion-meta">Suggested by ${escapeHtml(s.suggestedByEmail || 'unknown')} &middot; ${weekLabel}</div>
                         </div>
                         <div class="suggestion-actions">
-                            <button class="suggestion-vote-btn${hasVoted ? ' voted' : ''}" onclick="voteSuggestion('${s.id}')" title="${hasVoted ? 'Remove vote' : 'Vote for this'}">
+                            <button class="suggestion-vote-btn${hasVoted ? ' voted' : ''}" data-action="voteSuggestion" data-id="${s.id}" title="${hasVoted ? 'Remove vote' : 'Vote for this'}">
                                 👍 <span class="suggestion-vote-count">${voteCount}</span>
                             </button>
-                            ${canManage ? `<button class="btn btn-primary btn-small" onclick="openAssignSuggestionModal('${s.id}')" title="Add to meal plan">Add to Plan</button>` : ''}
-                            ${canDelete ? `<button class="btn btn-secondary btn-small suggestion-delete-btn" onclick="removeSuggestion('${s.id}')" title="Remove suggestion">✕</button>` : ''}
+                            ${canManage ? `<button class="btn btn-primary btn-small" data-action="openAssignSuggestionModal" data-id="${s.id}" title="Add to meal plan">Add to Plan</button>` : ''}
+                            ${canDelete ? `<button class="btn btn-secondary btn-small suggestion-delete-btn" data-action="removeSuggestion" data-id="${s.id}" title="Remove suggestion">✕</button>` : ''}
                         </div>
                     </div>
                 `;
@@ -7296,7 +7331,7 @@ oregano"></textarea>
             }
             
             list.innerHTML = filtered.map(recipe => `
-                <div class="recipe-select-item" onclick="selectRecipeForMeal('${recipe.id}')">
+                <div class="recipe-select-item" data-action="selectRecipeForMeal" data-id="${recipe.id}">
                     <strong>${escapeHtml(recipe.name)}</strong>
                     ${recipe.titleOnly ? ' <span class="text-muted">(title only)</span>' : ''}
                 </div>
@@ -7340,6 +7375,9 @@ oregano"></textarea>
             const date = document.getElementById('link-target-date').value;
             const meal = document.getElementById('link-target-meal').value;
             if (!date || !meal) return;
+            if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) return;
+            const validMeals = getMealTypes().map(m => m.toLowerCase().replace(/[^a-z0-9]/g, '_'));
+            if (!validMeals.includes(meal)) return;
             const linkedId = LINKED_MEAL_PREFIX + date + '_' + meal;
             await selectRecipeForMeal(linkedId);
         }
@@ -7602,7 +7640,6 @@ oregano"></textarea>
         window.renderShoppingList = renderShoppingList;
 
         function renderShoppingItem(ing, have, sortMethod = 'alpha') {
-            const escapedKey = ing.key.replace(/'/g, "\\'").replace(/"/g, '&quot;');
             const isAdhoc = ing.isAdhoc;
             const adhocClass = isAdhoc ? 'adhoc' : '';
             const springClass = (have && ing.key === recentlyCheckedKey) ? 'spring-check' : '';
@@ -7617,19 +7654,19 @@ oregano"></textarea>
 
             // Show set aisle button if sorting by aisle and item has no aisle
             const showSetAisle = sortMethod === 'aisle' && !ing.aisle && currentShopId && shops.find(s => s.id === currentShopId)?.aisles?.length > 0;
-            const escapedText = escapeHtml(ing.text).replace(/'/g, "\\'");
 
             return `
-                <div class="shopping-item ${have ? 'have' : ''} ${adhocClass} ${springClass}" data-key="${ing.key.replace(/"/g, '&quot;')}" style="--anim-order:${animOrder}${hideChecked && have ? ';display:none' : ''}">
+                <div class="shopping-item ${have ? 'have' : ''} ${adhocClass} ${springClass}" data-key="${escapeHtml(ing.key)}" style="--anim-order:${animOrder}${hideChecked && have ? ';display:none' : ''}">
                     <input type="checkbox"
                            ${have ? 'checked' : ''}
-                           onchange="toggleShoppingItem('${escapedKey}', this.checked)">
+                           data-shopping-key="${escapeHtml(ing.key)}"
+                           onchange="toggleShoppingItem(this.dataset.shoppingKey, this.checked)">
                     <div class="shopping-item-text">
                         ${escapeHtml(ing.text)}
                         <div class="shopping-item-recipe">${contextHtml}</div>
                     </div>
-                    ${showSetAisle ? `<button class="set-aisle-btn" onclick="showAisleSelector('${escapedText}', this)">Set aisle</button>` : ''}
-                    ${isAdhoc ? `<button class="shopping-item-remove" onclick="removeAdhocItem('${ing.adhocId}')" title="Remove item">✕</button>` : ''}
+                    ${showSetAisle ? `<button class="set-aisle-btn" data-action="showAisleSelector" data-ingredient="${escapeHtml(ing.text)}">Set aisle</button>` : ''}
+                    ${isAdhoc ? `<button class="shopping-item-remove" data-action="removeAdhocItem" data-adhoc-id="${escapeHtml(ing.adhocId)}" title="Remove item">✕</button>` : ''}
                 </div>
             `;
         }
@@ -8502,37 +8539,37 @@ oregano"></textarea>
                             ${shop.isDefault ? '<span class="shop-default-badge">Default</span>' : ''}
                         </div>
                         <div class="shop-actions">
-                            <button class="shop-collapse-btn" onclick="toggleAisleCollapse('${shop.id}')" title="${isCollapsed ? 'Show aisles' : 'Hide aisles'}">${isCollapsed ? '▶ Aisles' : '▼ Aisles'}</button>
-                            <button class="share-shop-btn" onclick="shareShop('${shop.id}')">Share Shop</button>
-                            ${!shop.isDefault ? `<button class="shop-action-btn" onclick="setDefaultShop('${shop.id}')" title="Set as default">⭐</button>` : ''}
-                            <button class="shop-action-btn" onclick="editShop('${shop.id}')" title="Edit name">✏️</button>
-                            <button class="shop-action-btn danger" onclick="deleteShop('${shop.id}')" title="Delete shop">🗑️</button>
+                            <button class="shop-collapse-btn" data-action="toggleAisleCollapse" data-shop-id="${shop.id}" title="${isCollapsed ? 'Show aisles' : 'Hide aisles'}">${isCollapsed ? '▶ Aisles' : '▼ Aisles'}</button>
+                            <button class="share-shop-btn" data-action="shareShop" data-shop-id="${shop.id}">Share Shop</button>
+                            ${!shop.isDefault ? `<button class="shop-action-btn" data-action="setDefaultShop" data-shop-id="${shop.id}" title="Set as default">⭐</button>` : ''}
+                            <button class="shop-action-btn" data-action="editShop" data-shop-id="${shop.id}" title="Edit name">✏️</button>
+                            <button class="shop-action-btn danger" data-action="deleteShop" data-shop-id="${shop.id}" title="Delete shop">🗑️</button>
                         </div>
                     </div>
                     <div class="aisle-list" ${isCollapsed ? 'style="display: none;"' : ''}>
                         ${(shop.aisles || []).map((aisle, index) => {
                             const color = aisleInitialColor(aisle.name);
                             const icon = aisle.emoji
-                                ? `<button class="aisle-emoji-btn" onclick="openEmojiPicker(this, (e) => setAisleEmoji('${shop.id}', ${index}, e))" title="Change emoji" type="button">${aisle.emoji}</button>`
-                                : `<button class="aisle-emoji-btn" onclick="openEmojiPicker(this, (e) => setAisleEmoji('${shop.id}', ${index}, e))" title="Add emoji" type="button" style="color:var(--text-secondary);font-size:0.85rem;">+🍽️</button>`;
+                                ? `<button class="aisle-emoji-btn" data-action="openAisleEmojiPicker" data-shop-id="${shop.id}" data-aisle-index="${index}" title="Change emoji" type="button">${aisle.emoji}</button>`
+                                : `<button class="aisle-emoji-btn" data-action="openAisleEmojiPicker" data-shop-id="${shop.id}" data-aisle-index="${index}" title="Add emoji" type="button" style="color:var(--text-secondary);font-size:0.85rem;">+🍽️</button>`;
                             return `
                             <div class="aisle-item">
                                 <span class="aisle-order">${index + 1}</span>
                                 ${icon}
                                 <span class="aisle-name">${escapeHtml(aisle.name)}</span>
                                 <div class="aisle-move-btns">
-                                    <button class="aisle-move-btn" onclick="moveAisle('${shop.id}', ${index}, -1)" ${index === 0 ? 'disabled' : ''}>▲</button>
-                                    <button class="aisle-move-btn" onclick="moveAisle('${shop.id}', ${index}, 1)" ${index === shop.aisles.length - 1 ? 'disabled' : ''}>▼</button>
+                                    <button class="aisle-move-btn" data-action="moveAisle" data-shop-id="${shop.id}" data-aisle-index="${index}" data-direction="-1" ${index === 0 ? 'disabled' : ''}>▲</button>
+                                    <button class="aisle-move-btn" data-action="moveAisle" data-shop-id="${shop.id}" data-aisle-index="${index}" data-direction="1" ${index === shop.aisles.length - 1 ? 'disabled' : ''}>▼</button>
                                 </div>
-                                <button class="aisle-delete-btn" onclick="deleteAisle('${shop.id}', ${index})" title="Delete aisle">✕</button>
+                                <button class="aisle-delete-btn" data-action="deleteAisle" data-shop-id="${shop.id}" data-aisle-index="${index}" title="Delete aisle">✕</button>
                             </div>
                         `}).join('') || '<p class="text-muted" style="padding: 0.5rem;">No aisles yet. Add your first aisle below.</p>'}
                         <div class="add-aisle-row">
                             <button class="aisle-emoji-btn" id="add-aisle-emoji-${shop.id}" type="button"
-                                onclick="openEmojiPicker(this, (e) => { this.textContent = e; this.dataset.emoji = e; })"
+                                data-action="openAddAisleEmojiPicker"
                                 title="Pick emoji" data-emoji="">🍽️</button>
-                            <input type="text" class="add-aisle-input" id="add-aisle-${shop.id}" placeholder="New aisle name…" onkeypress="handleAddAisleKeypress(event, '${shop.id}')">
-                            <button class="btn btn-primary btn-small" onclick="addAisle('${shop.id}')">Add</button>
+                            <input type="text" class="add-aisle-input" id="add-aisle-${shop.id}" data-shop-id="${shop.id}" maxlength="300" placeholder="New aisle name…">
+                            <button class="btn btn-primary btn-small" data-action="addAisle" data-shop-id="${shop.id}">Add</button>
                         </div>
                     </div>
                 </div>
@@ -9147,7 +9184,7 @@ oregano"></textarea>
             dropdown.id = 'aisle-selector-dropdown';
             
             dropdown.innerHTML = shop.aisles.map(aisle => `
-                <div class="aisle-select-option" onclick="selectAisleForIngredient('${escapeHtml(ingredientText).replace(/'/g, "\\'")}', '${escapeHtml(aisle.name).replace(/'/g, "\\'")}')">
+                <div class="aisle-select-option" data-action="selectAisleForIngredient" data-ingredient="${escapeHtml(ingredientText)}" data-aisle="${escapeHtml(aisle.name)}">
                     ${escapeHtml(aisle.name)}
                 </div>
             `).join('');
@@ -9257,8 +9294,8 @@ oregano"></textarea>
             
             // Render shop tabs
             tabsContainer.innerHTML = shops.map(shop => `
-                <button class="dictionary-shop-tab ${shop.id === dictionaryShopId ? 'active' : ''}" 
-                        onclick="switchDictionaryShop('${shop.id}')">
+                <button class="dictionary-shop-tab ${shop.id === dictionaryShopId ? 'active' : ''}"
+                        data-action="switchDictionaryShop" data-shop-id="${shop.id}">
                     ${escapeHtml(shop.name)}
                 </button>
             `).join('');
@@ -9324,18 +9361,17 @@ oregano"></textarea>
             tableBody.innerHTML = allIngredients.map(ing => {
                 const aisle = getIngredientAisle(ing, dictionaryShopId);
                 const isSelected = selectedIngredients.has(ing);
-                const escapedIng = escapeHtml(ing).replace(/'/g, "\\'");
-                
+
                 return `
                     <tr>
                         <td>
-                            <input type="checkbox" 
-                                   ${isSelected ? 'checked' : ''} 
-                                   onchange="toggleIngredientSelection('${escapedIng}', this.checked)">
+                            <input type="checkbox" class="dictionary-ingredient-checkbox"
+                                   data-ingredient="${escapeHtml(ing)}"
+                                   ${isSelected ? 'checked' : ''}>
                         </td>
                         <td class="dictionary-ingredient">${escapeHtml(ing)}</td>
                         <td>
-                            <select class="dictionary-aisle-select" onchange="updateIngredientAisle('${escapedIng}', this.value)">
+                            <select class="dictionary-aisle-select" data-ingredient="${escapeHtml(ing)}">
                                 <option value="" ${!aisle ? 'selected' : ''}>Uncategorised</option>
                                 ${shopAisles.map(a => `
                                     <option value="${escapeHtml(a.name)}" ${aisle === a.name ? 'selected' : ''}>
@@ -9345,7 +9381,7 @@ oregano"></textarea>
                             </select>
                         </td>
                         <td>
-                            ${aisle ? `<button class="dictionary-remove-btn" onclick="removeIngredientAisle('${escapedIng}')" title="Remove aisle assignment">✕</button>` : ''}
+                            ${aisle ? `<button class="dictionary-remove-btn" data-action="removeIngredientAisle" data-ingredient="${escapeHtml(ing)}" title="Remove aisle assignment">✕</button>` : ''}
                         </td>
                     </tr>
                 `;
@@ -9842,24 +9878,51 @@ oregano"></textarea>
         function isValidSharePayload(data) {
             if (!data || typeof data !== 'object') return false;
             if (typeof data.type !== 'string') return false;
+
+            function validIngredient(ing) {
+                if (!ing || typeof ing !== 'object') return false;
+                if (typeof ing.name !== 'string' || !ing.name.trim() || ing.name.length > 300) return false;
+                if (ing.quantity !== undefined && typeof ing.quantity !== 'string' && typeof ing.quantity !== 'number') return false;
+                return true;
+            }
+
+            function validRecipe(r) {
+                if (!r || typeof r !== 'object') return false;
+                if (typeof r.name !== 'string' || !r.name.trim() || r.name.length > 300) return false;
+                if (r.notes !== undefined && (typeof r.notes !== 'string' || r.notes.length > 10000)) return false;
+                if (r.imageUrl !== undefined) {
+                    if (typeof r.imageUrl !== 'string') return false;
+                    // Block javascript: and data: URIs
+                    if (r.imageUrl && !/^https:\/\//i.test(r.imageUrl)) return false;
+                    if (r.imageUrl.length > 2000) return false;
+                }
+                if (r.ingredients !== undefined) {
+                    if (!Array.isArray(r.ingredients)) return false;
+                    if (r.ingredients.length > 200) return false;
+                    if (!r.ingredients.every(validIngredient)) return false;
+                }
+                if (r.categories !== undefined) {
+                    if (!Array.isArray(r.categories)) return false;
+                    if (r.categories.length > 20) return false;
+                    if (!r.categories.every(c => typeof c === 'string' && c.length <= 100)) return false;
+                }
+                return true;
+            }
+
             if (data.type === 'recipe') {
                 if (!data.data || typeof data.data !== 'object') return false;
-                if (typeof data.data.name !== 'string' || !data.data.name.trim()) return false;
-                if (data.data.ingredients !== undefined && !Array.isArray(data.data.ingredients)) return false;
-                if (Array.isArray(data.data.ingredients) && data.data.ingredients.length > 200) return false;
+                return validRecipe(data.data);
             } else if (data.type === 'recipes_bulk') {
                 if (!data.data || typeof data.data !== 'object') return false;
                 if (!Array.isArray(data.data.recipes)) return false;
                 if (data.data.recipes.length > 500) return false;
-                for (const r of data.data.recipes) {
-                    if (typeof r.name !== 'string' || !r.name.trim()) return false;
-                    if (r.ingredients !== undefined && !Array.isArray(r.ingredients)) return false;
-                }
+                return data.data.recipes.every(validRecipe);
             } else if (data.type === 'shop') {
                 if (!data.data || typeof data.data !== 'object') return false;
-                if (typeof data.data.name !== 'string' || !data.data.name.trim()) return false;
+                if (typeof data.data.name !== 'string' || !data.data.name.trim() || data.data.name.length > 300) return false;
                 if (!Array.isArray(data.data.aisles)) return false;
                 if (data.data.aisles.length > 200) return false;
+                if (!data.data.aisles.every(a => a && typeof a === 'object' && typeof a.name === 'string' && a.name.length <= 300)) return false;
             } else {
                 return false;
             }
@@ -10011,14 +10074,12 @@ oregano"></textarea>
             
             list.innerHTML = ingredientNames.map(name => {
                 const recipeCount = usage[name].length;
-                const escapedName = escapeHtml(name).replace(/'/g, "\\'");
-                
                 return `
                     <div class="ingredient-manager-item">
                         <span class="ingredient-manager-name">${escapeHtml(name)}</span>
                         <span class="ingredient-manager-count">${recipeCount} recipe${recipeCount !== 1 ? 's' : ''}</span>
                         <div class="ingredient-manager-actions">
-                            <button class="ingredient-manager-btn" onclick="openEditIngredientModal('${escapedName}')">Edit</button>
+                            <button class="ingredient-manager-btn" data-action="openEditIngredientModal" data-ingredient="${escapeHtml(name)}">Edit</button>
                         </div>
                     </div>
                 `;
@@ -10332,7 +10393,7 @@ oregano"></textarea>
                         <div class="member-avatar">${escapeHtml((info.email || '?').charAt(0).toUpperCase())}</div>
                         <div class="member-email">${escapeHtml(info.email || uid)}${isSelf ? ' (you)' : ''}</div>
                         <span class="member-role-badge ${info.role}">${escapeHtml(info.role)}</span>
-                        ${canRemove ? `<button class="member-remove-btn" onclick="removeMember('${uid}')">Remove</button>` : ''}
+                        ${canRemove ? `<button class="member-remove-btn" data-action="removeMember" data-uid="${uid}">Remove</button>` : ''}
                     </div>`;
                 }).join('');
             } catch (e) {
@@ -10493,11 +10554,13 @@ oregano"></textarea>
             const hid   = params.get('hid');
             if (!token || !hid) return;
 
-            // Clear the URL params immediately
+            // Validate hid format (Firestore IDs are alphanumeric, no path separators)
+            if (!/^[A-Za-z0-9_-]{1,128}$/.test(hid)) return;
+
+            // Clear the URL params immediately (removes token from history)
             window.history.replaceState({}, document.title, window.location.pathname);
 
             if (currentHouseholdId === hid) {
-                // Already a member of this household
                 showSyncStatus('success', 'You\'re already in this household!');
                 return;
             }
@@ -10508,7 +10571,8 @@ oregano"></textarea>
             }
 
             try {
-                const inviteSnap = await getDoc(doc(db, "households", hid, "invites", token));
+                const inviteRef = doc(db, "households", hid, "invites", token);
+                const inviteSnap = await getDoc(inviteRef);
                 if (!inviteSnap.exists()) {
                     alert('This invite link is invalid or has already been used.');
                     return;
@@ -10519,7 +10583,11 @@ oregano"></textarea>
                     return;
                 }
 
-                const householdSnap = await getDoc(doc(db, "households", hid));
+                // Derive hid from the invite document itself, not the URL, to prevent path manipulation.
+                // The invite lives under households/{hid}/invites/{token} — use the hid from that path.
+                const trustedHid = inviteSnap.ref.parent.parent.id;
+
+                const householdSnap = await getDoc(doc(db, "households", trustedHid));
                 if (!householdSnap.exists()) {
                     alert('Household not found.');
                     return;
@@ -10528,25 +10596,29 @@ oregano"></textarea>
 
                 if (!confirm(`Join "${householdName}"? You will keep your personal data and can switch between personal and household views at any time.`)) return;
 
-                // Add user to household members
-                await updateDoc(doc(db, "households", hid), {
+                // Add user to household members and delete the invite atomically (single-use)
+                const batch = writeBatch(db);
+                batch.update(doc(db, "households", trustedHid), {
                     [`members.${currentUser.uid}`]: {
                         email: currentUser.email,
                         role: 'member',
                         joinedAt: new Date().toISOString()
                     }
                 });
+                // Delete invite so it cannot be reused (single-use)
+                batch.delete(inviteRef);
+                await batch.commit();
 
                 // Update user profile
                 const existingProfile = await getDoc(doc(db, "users", currentUser.uid, "settings", "profile"));
                 await setDoc(doc(db, "users", currentUser.uid, "settings", "profile"), {
                     ...(existingProfile.exists() ? existingProfile.data() : {}),
-                    householdId: hid,
+                    householdId: trustedHid,
                     householdName,
                     householdRole: 'member'
                 });
 
-                currentHouseholdId   = hid;
+                currentHouseholdId   = trustedHid;
                 currentHouseholdName = householdName;
                 currentHouseholdRole = 'member';
                 updateContextSwitcher();
@@ -10601,11 +10673,19 @@ oregano"></textarea>
             if (!currentHouseholdId) return;
             if (!confirm('Remove this member from the household?')) return;
             try {
-                // Firestore doesn't support deleting a map key with updateDoc directly,
-                // so we fetch the current members, remove the key, then setDoc.
                 const snap = await getDoc(doc(db, "households", currentHouseholdId));
                 if (!snap.exists()) return;
                 const members = { ...snap.data().members };
+
+                // Block removing the last owner — household would be unmanageable
+                if (members[uid]?.role === 'owner') {
+                    const ownerCount = Object.values(members).filter(m => m.role === 'owner').length;
+                    if (ownerCount <= 1) {
+                        alert('Cannot remove the last owner. Transfer ownership to another member first.');
+                        return;
+                    }
+                }
+
                 delete members[uid];
                 await updateDoc(doc(db, "households", currentHouseholdId), { members });
 
@@ -11189,6 +11269,73 @@ oregano"></textarea>
                     });
             });
         }
+
+        // =====================
+        // Global Action Dispatcher
+        // Replaces inline onclick="fn('${data}')" to eliminate XSS via event-attribute injection.
+        // Buttons/divs use data-action + data-* params; this single listener dispatches them.
+        // =====================
+
+        document.addEventListener('click', function dispatchAction(e) {
+            const el = e.target.closest('[data-action]');
+            if (!el) return;
+            const action = el.dataset.action;
+            switch (action) {
+                // Recipes
+                case 'viewRecipe':              viewRecipe(el.dataset.id); break;
+                case 'addRecipeToPlan':         e.stopPropagation(); addRecipeToPlan(el.dataset.id); break;
+                // Planner
+                case 'openSelectRecipeModal':   openSelectRecipeModal(el.dataset.date, el.dataset.meal); break;
+                case 'removeMeal':              removeMeal(el.dataset.date, el.dataset.meal); break;
+                // Suggestions
+                case 'setSuggestionsFilter':    setSuggestionsFilter(el.dataset.filter); break;
+                case 'voteSuggestion':          voteSuggestion(el.dataset.id); break;
+                case 'openAssignSuggestionModal': openAssignSuggestionModal(el.dataset.id); break;
+                case 'removeSuggestion':        removeSuggestion(el.dataset.id); break;
+                // Recipe select modal
+                case 'selectRecipeForMeal':     selectRecipeForMeal(el.dataset.id); break;
+                // Shopping
+                case 'showAisleSelector':       showAisleSelector(el.dataset.ingredient, el); break;
+                case 'removeAdhocItem':         removeAdhocItem(el.dataset.adhocId); break;
+                // Shops / aisles settings
+                case 'toggleAisleCollapse':     toggleAisleCollapse(el.dataset.shopId); break;
+                case 'shareShop':               shareShop(el.dataset.shopId); break;
+                case 'setDefaultShop':          setDefaultShop(el.dataset.shopId); break;
+                case 'editShop':                editShop(el.dataset.shopId); break;
+                case 'deleteShop':              deleteShop(el.dataset.shopId); break;
+                case 'openAisleEmojiPicker':    openEmojiPicker(el, (emoji) => setAisleEmoji(el.dataset.shopId, parseInt(el.dataset.aisleIndex, 10), emoji)); break;
+                case 'openAddAisleEmojiPicker': openEmojiPicker(el, (emoji) => { el.textContent = emoji; el.dataset.emoji = emoji; }); break;
+                case 'moveAisle':               moveAisle(el.dataset.shopId, parseInt(el.dataset.aisleIndex, 10), parseInt(el.dataset.direction, 10)); break;
+                case 'deleteAisle':             deleteAisle(el.dataset.shopId, parseInt(el.dataset.aisleIndex, 10)); break;
+                case 'addAisle':                addAisle(el.dataset.shopId); break;
+                // Aisle selector dropdown
+                case 'selectAisleForIngredient': selectAisleForIngredient(el.dataset.ingredient, el.dataset.aisle); break;
+                // Dictionary
+                case 'switchDictionaryShop':    switchDictionaryShop(el.dataset.shopId); break;
+                case 'removeIngredientAisle':   removeIngredientAisle(el.dataset.ingredient); break;
+                // Ingredient manager
+                case 'openEditIngredientModal': openEditIngredientModal(el.dataset.ingredient); break;
+                // Household
+                case 'removeMember':            removeMember(el.dataset.uid); break;
+            }
+        });
+
+        // Delegated keypress for add-aisle input rows (replaces onkeypress="...('${shopId}')")
+        document.addEventListener('keypress', function(e) {
+            if (e.target.matches('.add-aisle-input[data-shop-id]')) {
+                handleAddAisleKeypress(e, e.target.dataset.shopId);
+            }
+        });
+
+        // Delegated change for dictionary table (replaces onchange="...('${escapedIng}', ...)")
+        document.addEventListener('change', function(e) {
+            if (e.target.matches('.dictionary-ingredient-checkbox[data-ingredient]')) {
+                toggleIngredientSelection(e.target.dataset.ingredient, e.target.checked);
+            }
+            if (e.target.matches('.dictionary-aisle-select[data-ingredient]')) {
+                updateIngredientAisle(e.target.dataset.ingredient, e.target.value);
+            }
+        });
 
         // =====================
         // Initialize
