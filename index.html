@@ -3665,6 +3665,47 @@
             margin: 0;
         }
 
+        .import-bookmarklet-divider {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin: 1.25rem 0 0.75rem;
+            color: var(--text-secondary);
+            font-size: 0.8rem;
+        }
+
+        .import-bookmarklet-divider::before,
+        .import-bookmarklet-divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: var(--border-light);
+        }
+
+        .import-bookmarklet-desc {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin: 0 0 0.5rem;
+        }
+
+        .import-bookmarklet-row {
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+            margin-bottom: 0.4rem;
+        }
+
+        .bookmarklet-drag-btn {
+            cursor: grab;
+        }
+
+        .import-bookmarklet-hint {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            font-style: italic;
+            margin: 0;
+        }
+
         /* Share button in cards */
         .share-btn {
             background: none;
@@ -5364,6 +5405,15 @@ oregano"></textarea>
                     <ul id="recipe-url-ingredient-list"></ul>
                     <p class="import-instructions-note">Cooking instructions are not imported — KitchenListr stores ingredients for shopping lists.</p>
                 </div>
+                <div class="import-bookmarklet-divider"><span>or use the bookmarklet</span></div>
+                <div class="import-bookmarklet-section">
+                    <p class="import-bookmarklet-desc">Install once, then click it on any recipe page to import directly — no third-party proxy needed.</p>
+                    <div class="import-bookmarklet-row">
+                        <a id="recipe-bookmarklet-link" href="#" class="btn btn-secondary bookmarklet-drag-btn" title="Drag this to your bookmarks bar">🔖 Import to KitchenListr</a>
+                        <button class="btn btn-secondary" id="recipe-bookmarklet-copy-btn" onclick="copyBookmarklet()">Copy</button>
+                    </div>
+                    <p class="import-bookmarklet-hint">Drag the button to your bookmarks bar, or click Copy to add it manually.</p>
+                </div>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" onclick="closeRecipeUrlImportModal()">Cancel</button>
@@ -5737,6 +5787,7 @@ oregano"></textarea>
                 // Check for a household join link or a recipe/shop import link
                 setTimeout(() => checkForJoin(), 300);
                 setTimeout(() => checkForImport(), 500);
+                setTimeout(() => checkForRecipeImport(), 600);
 
                 // Show welcome modal for new users
                 setTimeout(() => checkShowWelcome(), 800);
@@ -9986,6 +10037,12 @@ oregano"></textarea>
             document.getElementById('recipe-url-preview').style.display = 'none';
             document.getElementById('recipe-url-confirm-btn').disabled = true;
             document.getElementById('recipe-url-fetch-btn').disabled = false;
+
+            // Generate bookmarklet href pointing at this app's URL
+            const appUrl = window.location.origin + window.location.pathname;
+            const bmCode = `(function(){var s=document.querySelectorAll('script[type="application/ld+json"]'),r=null;for(var i=0;i<s.length;i++){try{var d=JSON.parse(s[i].textContent);if(d['@type']==='Recipe'){r=d;break;}if(Array.isArray(d)){var f=d.find(function(n){return n['@type']==='Recipe';});if(f){r=f;break;}}if(d['@graph']&&Array.isArray(d['@graph'])){var f=d['@graph'].find(function(n){return n['@type']==='Recipe';});if(f){r=f;break;}}}catch(e){}}if(!r){alert('No recipe data found on this page.');return;}var p=JSON.stringify({name:r.name||'',recipeIngredient:r.recipeIngredient||[],description:r.description||'',image:r.image||''});window.location.href='${appUrl}?recipe-import='+encodeURIComponent(btoa(unescape(encodeURIComponent(p))));})();`;
+            document.getElementById('recipe-bookmarklet-link').href = 'javascript:' + bmCode;
+
             document.getElementById('recipe-url-import-modal').classList.add('active');
             setTimeout(() => document.getElementById('recipe-url-input').focus(), 100);
         }
@@ -10155,6 +10212,36 @@ oregano"></textarea>
             showView('recipes');
         }
         window.confirmUrlRecipeImport = confirmUrlRecipeImport;
+
+        function copyBookmarklet() {
+            const href = document.getElementById('recipe-bookmarklet-link').href;
+            const btn = document.getElementById('recipe-bookmarklet-copy-btn');
+            const orig = btn.textContent;
+            const write = navigator.clipboard
+                ? navigator.clipboard.writeText(href)
+                : Promise.resolve(document.execCommand('copy', true, href));
+            write.then(() => {
+                btn.textContent = 'Copied!';
+                setTimeout(() => { btn.textContent = orig; }, 1500);
+            }).catch(() => {});
+        }
+        window.copyBookmarklet = copyBookmarklet;
+
+        function checkForRecipeImport() {
+            const params = new URLSearchParams(window.location.search);
+            const data = params.get('recipe-import');
+            if (!data) return;
+            window.history.replaceState({}, document.title, window.location.pathname);
+            try {
+                const json = JSON.parse(decodeURIComponent(escape(atob(data))));
+                openRecipeUrlImportModal();
+                _pendingUrlRecipe = buildRecipeFromSchema(json);
+                showRecipeUrlPreview(_pendingUrlRecipe);
+                document.getElementById('recipe-url-confirm-btn').disabled = false;
+            } catch (e) {
+                console.error('Failed to parse recipe-import param', e);
+            }
+        }
 
         function isValidSharePayload(data) {
             if (!data || typeof data !== 'object') return false;

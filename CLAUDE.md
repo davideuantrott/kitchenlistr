@@ -276,8 +276,10 @@ New brand colour variables also added (not yet widely used): `--color-tomato`, `
 #### ✅ Phase 18 — Import recipe from URL
 
 - **"Import from URL" button** added to Recipes page header
-- **New modal** `#recipe-url-import-modal`: URL input → Fetch → ingredient preview → confirm
+- **New modal** `#recipe-url-import-modal`: URL input → Fetch → ingredient preview → confirm; also contains bookmarklet install section
 - **CORS proxy fetch:** page HTML fetched via `https://api.allorigins.win/get?url=<encoded>` (free proxy); CSP `connect-src` updated to allow it
+- **Bookmarklet:** dynamically generated `javascript:` href set on `#recipe-bookmarklet-link` when the modal opens (URL is self-referencing so it works regardless of hosting location); user drags it to bookmarks bar or copies it; when clicked on a recipe site it extracts JSON-LD and redirects back to KitchenListr with `?recipe-import=<base64>`
+- **`checkForRecipeImport()`:** called at auth time (600ms offset); reads `?recipe-import=` param, base64-decodes it, runs through `buildRecipeFromSchema()`, opens modal straight to preview
 - **JSON-LD parser** `parseJsonLdForRecipe()`: uses `DOMParser` (sandboxed) to find `<script type="application/ld+json">` tags; handles direct `@type:"Recipe"` object, `@graph` array, and top-level array patterns
 - **Ingredient parser** `parseSchemaIngredient()`: splits schema.org strings like `"150g chorizo, diced"` → `{ quantity: "150g", name: "chorizo, diced" }`; falls back to full string as name if no numeric prefix
 - **`buildRecipeFromSchema()`:** maps schema fields → KitchenListr recipe (`name`, `ingredients`, `notes` from `description`, `imageUrl` from `image`); enforces existing length/count limits; only stores `https://` image URLs
