@@ -22,7 +22,7 @@
         style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
         font-src https://fonts.gstatic.com;
         img-src 'self' data: https:;
-        connect-src 'self' https://*.googleapis.com https://*.firebaseio.com https://firestore.googleapis.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com;
+        connect-src 'self' https://*.googleapis.com https://*.firebaseio.com https://firestore.googleapis.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://api.allorigins.win;
         frame-src 'none';
         object-src 'none';
         base-uri 'self';
@@ -3603,6 +3603,68 @@
             color: #1E40AF;
         }
 
+        /* Recipe URL import modal */
+        .import-proxy-note {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            background: var(--bg-cream);
+            border: 1px solid var(--border-light);
+            border-radius: var(--radius-sm);
+            padding: 0.5rem 0.75rem;
+            margin-bottom: 1rem;
+        }
+
+        .recipe-url-input-row {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .recipe-url-input-row input {
+            flex: 1;
+            min-width: 0;
+        }
+
+        #recipe-url-preview h3 {
+            font-family: var(--font-heading);
+            font-size: 1.1rem;
+            margin: 0.75rem 0 0.25rem;
+        }
+
+        #recipe-url-preview .preview-meta {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin-bottom: 0.5rem;
+        }
+
+        #recipe-url-ingredient-list {
+            font-size: 0.9rem;
+            max-height: 180px;
+            overflow-y: auto;
+            background: var(--bg-cream);
+            border: 1px solid var(--border-light);
+            border-radius: var(--radius-sm);
+            padding: 0.4rem 0.75rem;
+            margin: 0 0 0.5rem;
+        }
+
+        #recipe-url-ingredient-list li {
+            padding: 0.2rem 0;
+            border-bottom: 1px dotted var(--border-light);
+            list-style: none;
+        }
+
+        #recipe-url-ingredient-list li:last-child {
+            border-bottom: none;
+        }
+
+        .import-instructions-note {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            font-style: italic;
+            margin: 0;
+        }
+
         /* Share button in cards */
         .share-btn {
             background: none;
@@ -4175,6 +4237,9 @@
                     <div>
                         <button class="btn btn-secondary" onclick="shareBulkRecipes()">
                             Share Recipes
+                        </button>
+                        <button class="btn btn-secondary" onclick="openRecipeUrlImportModal()">
+                            Import from URL
                         </button>
                         <button class="btn btn-primary" onclick="openAddRecipeModal()">
                             + Add Recipe
@@ -5271,6 +5336,38 @@ oregano"></textarea>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" onclick="closeImportModal()">Cancel</button>
                 <button type="button" class="btn btn-primary" id="import-confirm-btn" onclick="confirmImport()" style="display: none;">Add to My Account</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recipe URL Import Modal -->
+    <div class="modal-overlay" id="recipe-url-import-modal" role="dialog" aria-modal="true" aria-labelledby="recipe-url-import-title">
+        <div class="modal" style="max-width: 520px;">
+            <div class="modal-header">
+                <h2 class="modal-title" id="recipe-url-import-title">Import Recipe from URL</h2>
+                <button class="modal-close" onclick="closeRecipeUrlImportModal()" aria-label="Close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p class="import-proxy-note">🔒 The URL is fetched via <strong>allorigins.win</strong>, a third-party CORS proxy. Only use URLs you're comfortable sharing with that service.</p>
+                <div class="recipe-url-input-row">
+                    <input type="url" id="recipe-url-input" class="form-input" placeholder="https://www.bbc.co.uk/food/recipes/..." maxlength="2000" autocomplete="off">
+                    <button class="btn btn-primary" id="recipe-url-fetch-btn" onclick="fetchRecipeFromUrl()">Fetch</button>
+                </div>
+                <div id="recipe-url-error" style="display:none; color:#DC3545; font-size:0.9rem; margin-bottom:0.75rem;"></div>
+                <div id="recipe-url-loading" style="display:none; text-align:center; padding:1.5rem 0;">
+                    <div class="loading-spinner" style="position:static; width:36px; height:36px; margin:0 auto 0.5rem;"></div>
+                    <p style="font-size:0.9rem; color:var(--text-secondary);">Fetching recipe…</p>
+                </div>
+                <div id="recipe-url-preview" style="display:none;">
+                    <h3 id="recipe-url-preview-name"></h3>
+                    <p class="preview-meta" id="recipe-url-preview-meta"></p>
+                    <ul id="recipe-url-ingredient-list"></ul>
+                    <p class="import-instructions-note">Cooking instructions are not imported — KitchenListr stores ingredients for shopping lists.</p>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="closeRecipeUrlImportModal()">Cancel</button>
+                <button type="button" class="btn btn-primary" id="recipe-url-confirm-btn" onclick="confirmUrlRecipeImport()" disabled>Add to Recipes</button>
             </div>
         </div>
     </div>
@@ -9874,6 +9971,190 @@ oregano"></textarea>
             pendingImportData = null;
         }
         window.closeImportModal = closeImportModal;
+
+        // =====================
+        // Recipe URL Import (via CORS proxy)
+        // =====================
+
+        let _pendingUrlRecipe = null;
+
+        function openRecipeUrlImportModal() {
+            _pendingUrlRecipe = null;
+            document.getElementById('recipe-url-input').value = '';
+            document.getElementById('recipe-url-error').style.display = 'none';
+            document.getElementById('recipe-url-loading').style.display = 'none';
+            document.getElementById('recipe-url-preview').style.display = 'none';
+            document.getElementById('recipe-url-confirm-btn').disabled = true;
+            document.getElementById('recipe-url-fetch-btn').disabled = false;
+            document.getElementById('recipe-url-import-modal').classList.add('active');
+            setTimeout(() => document.getElementById('recipe-url-input').focus(), 100);
+        }
+        window.openRecipeUrlImportModal = openRecipeUrlImportModal;
+
+        function closeRecipeUrlImportModal() {
+            document.getElementById('recipe-url-import-modal').classList.remove('active');
+            _pendingUrlRecipe = null;
+        }
+        window.closeRecipeUrlImportModal = closeRecipeUrlImportModal;
+
+        async function fetchRecipeFromUrl() {
+            const urlInput = document.getElementById('recipe-url-input');
+            const url = urlInput.value.trim();
+            const errorEl = document.getElementById('recipe-url-error');
+            const loadingEl = document.getElementById('recipe-url-loading');
+            const previewEl = document.getElementById('recipe-url-preview');
+            const fetchBtn = document.getElementById('recipe-url-fetch-btn');
+            const confirmBtn = document.getElementById('recipe-url-confirm-btn');
+
+            errorEl.style.display = 'none';
+            previewEl.style.display = 'none';
+            confirmBtn.disabled = true;
+            _pendingUrlRecipe = null;
+
+            if (!url.startsWith('http://') && !url.startsWith('https://')) {
+                errorEl.textContent = 'Please enter a full URL starting with https://';
+                errorEl.style.display = 'block';
+                return;
+            }
+
+            fetchBtn.disabled = true;
+            loadingEl.style.display = 'block';
+
+            try {
+                const proxyUrl = 'https://api.allorigins.win/get?url=' + encodeURIComponent(url);
+                const res = await fetch(proxyUrl, { signal: AbortSignal.timeout(15000) });
+                if (!res.ok) throw new Error('Proxy request failed');
+                const data = await res.json();
+                if (!data.status || data.status.http_code !== 200) {
+                    throw new Error('Could not fetch the page (HTTP ' + (data.status?.http_code || 'error') + ')');
+                }
+
+                const schemaRecipe = parseJsonLdForRecipe(data.contents);
+                if (!schemaRecipe) {
+                    throw new Error('No recipe data found on this page. The site may not support structured recipe data.');
+                }
+
+                _pendingUrlRecipe = buildRecipeFromSchema(schemaRecipe);
+                showRecipeUrlPreview(_pendingUrlRecipe);
+                confirmBtn.disabled = false;
+            } catch (err) {
+                const msg = err.name === 'TimeoutError'
+                    ? 'Request timed out. Please try again.'
+                    : (err.message || 'Could not fetch recipe. Please check the URL and try again.');
+                errorEl.textContent = '⚠️ ' + msg;
+                errorEl.style.display = 'block';
+            } finally {
+                loadingEl.style.display = 'none';
+                fetchBtn.disabled = false;
+            }
+        }
+        window.fetchRecipeFromUrl = fetchRecipeFromUrl;
+
+        function parseJsonLdForRecipe(htmlString) {
+            let doc;
+            try {
+                doc = new DOMParser().parseFromString(htmlString, 'text/html');
+            } catch (e) {
+                return null;
+            }
+            const scripts = doc.querySelectorAll('script[type="application/ld+json"]');
+            for (const script of scripts) {
+                try {
+                    const parsed = JSON.parse(script.textContent);
+                    if (parsed['@type'] === 'Recipe') return parsed;
+                    if (Array.isArray(parsed)) {
+                        const found = parsed.find(n => n['@type'] === 'Recipe');
+                        if (found) return found;
+                    }
+                    if (parsed['@graph'] && Array.isArray(parsed['@graph'])) {
+                        const found = parsed['@graph'].find(n => n['@type'] === 'Recipe');
+                        if (found) return found;
+                    }
+                } catch (e) { /* skip malformed JSON-LD */ }
+            }
+            return null;
+        }
+
+        function parseSchemaIngredient(str) {
+            if (typeof str !== 'string') return { quantity: '', name: String(str) };
+            const m = str.match(/^([\d¼½¾⅓⅔⅛⅜⅝⅞]+[\d\s/.]*(?:g|kg|ml|l|oz|lbs?|tbsps?|tsps?|cups?|jars?|cans?|tins?|bunches?|cloves?|handfuls?|sprigs?|pieces?|pinches?|portions?)?\.?\s+)(.*)/i);
+            if (m) {
+                return { quantity: m[1].trim(), name: m[2].trim() };
+            }
+            return { quantity: '', name: str };
+        }
+
+        function buildRecipeFromSchema(schema) {
+            const name = (typeof schema.name === 'string' ? schema.name : '').slice(0, 300).trim() || 'Imported Recipe';
+
+            const rawIngredients = Array.isArray(schema.recipeIngredient) ? schema.recipeIngredient : [];
+            const ingredients = rawIngredients
+                .filter(s => typeof s === 'string' && s.trim())
+                .slice(0, 200)
+                .map(s => parseSchemaIngredient(s.trim()));
+
+            const notes = (typeof schema.description === 'string' ? schema.description : '').slice(0, 10000).trim();
+
+            let imageUrl = '';
+            if (Array.isArray(schema.image)) {
+                const firstStr = schema.image.find(i => typeof i === 'string' && i.startsWith('https://'));
+                const firstObj = schema.image.find(i => i && typeof i.url === 'string' && i.url.startsWith('https://'));
+                imageUrl = firstStr || (firstObj ? firstObj.url : '');
+            } else if (typeof schema.image === 'string' && schema.image.startsWith('https://')) {
+                imageUrl = schema.image;
+            } else if (schema.image && typeof schema.image.url === 'string' && schema.image.url.startsWith('https://')) {
+                imageUrl = schema.image.url;
+            }
+
+            return { name, ingredients, notes, imageUrl };
+        }
+
+        function showRecipeUrlPreview(recipe) {
+            document.getElementById('recipe-url-preview-name').textContent = recipe.name;
+            const count = recipe.ingredients.length;
+            document.getElementById('recipe-url-preview-meta').textContent =
+                count === 1 ? '1 ingredient' : count + ' ingredients';
+
+            const ul = document.getElementById('recipe-url-ingredient-list');
+            ul.innerHTML = '';
+            const shown = recipe.ingredients.slice(0, 20);
+            for (const ing of shown) {
+                const li = document.createElement('li');
+                li.textContent = ing.quantity ? ing.quantity + ' ' + ing.name : ing.name;
+                ul.appendChild(li);
+            }
+            if (count > 20) {
+                const li = document.createElement('li');
+                li.style.cssText = 'color:var(--text-secondary); font-style:italic;';
+                li.textContent = '…and ' + (count - 20) + ' more';
+                ul.appendChild(li);
+            }
+            document.getElementById('recipe-url-preview').style.display = 'block';
+        }
+
+        async function confirmUrlRecipeImport() {
+            if (!_pendingUrlRecipe || !currentUser) return;
+            const confirmBtn = document.getElementById('recipe-url-confirm-btn');
+            confirmBtn.disabled = true;
+            confirmBtn.textContent = 'Adding…';
+
+            const recipe = {
+                id: generateId(),
+                name: _pendingUrlRecipe.name,
+                titleOnly: false,
+                ingredients: _pendingUrlRecipe.ingredients,
+                notes: _pendingUrlRecipe.notes,
+                imageUrl: _pendingUrlRecipe.imageUrl,
+                emoji: '',
+                categories: [],
+                category: ''
+            };
+
+            await saveRecipeToFirebase(recipe);
+            closeRecipeUrlImportModal();
+            showView('recipes');
+        }
+        window.confirmUrlRecipeImport = confirmUrlRecipeImport;
 
         function isValidSharePayload(data) {
             if (!data || typeof data !== 'object') return false;

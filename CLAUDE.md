@@ -273,6 +273,17 @@ New brand colour variables also added (not yet widely used): `--color-tomato`, `
 - **Content Security Policy** — `<meta http-equiv="Content-Security-Policy">` added to `<head>`; restricts `script-src` to `'self'` and `gstatic.com`, `connect-src` to Firebase endpoints, blocks `frame-src` and `object-src`, sets `base-uri 'self'`.
 - **Input `maxlength` caps** — `maxlength="300"` on recipe name, shop name, aisle name inputs; `maxlength="10000"` on recipe notes; `maxlength="300"` on shopping add-item input.
 
+#### ✅ Phase 18 — Import recipe from URL
+
+- **"Import from URL" button** added to Recipes page header
+- **New modal** `#recipe-url-import-modal`: URL input → Fetch → ingredient preview → confirm
+- **CORS proxy fetch:** page HTML fetched via `https://api.allorigins.win/get?url=<encoded>` (free proxy); CSP `connect-src` updated to allow it
+- **JSON-LD parser** `parseJsonLdForRecipe()`: uses `DOMParser` (sandboxed) to find `<script type="application/ld+json">` tags; handles direct `@type:"Recipe"` object, `@graph` array, and top-level array patterns
+- **Ingredient parser** `parseSchemaIngredient()`: splits schema.org strings like `"150g chorizo, diced"` → `{ quantity: "150g", name: "chorizo, diced" }`; falls back to full string as name if no numeric prefix
+- **`buildRecipeFromSchema()`:** maps schema fields → KitchenListr recipe (`name`, `ingredients`, `notes` from `description`, `imageUrl` from `image`); enforces existing length/count limits; only stores `https://` image URLs
+- **`confirmUrlRecipeImport()`:** saves via existing `saveRecipeToFirebase()`, navigates to Recipes view
+- Works with any site publishing `schema.org/Recipe` JSON-LD (BBC Food, BoldBeanCo, most major recipe sites)
+
 #### 🔜 Future Phase — Meal plan recipe selector redesign
 
 Replace the plain text list in `#select-recipe-modal` with a 2-column card grid using recipe avatars (colour + emoji via `recipeAvatarColor()` / `recipeAvatarEmoji()`), category badge, and search — consistent with the Recipes page. Function to modify: `renderRecipeSelectList()`. Three options: (A) card grid with avatars (**recommended**), (B) category-grouped list, (C) filter chips + grid.
