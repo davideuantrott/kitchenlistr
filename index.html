@@ -7455,6 +7455,25 @@ oregano"></textarea>
             document.getElementById('quick-recipe-name').value = '';
             document.getElementById('quick-recipe-title-only').checked = false;
 
+            // Reset the link form every time the modal opens to avoid stale state
+            // from a previous link operation (which could point to the wrong slot).
+            const linkForm = document.getElementById('link-meal-form');
+            linkForm.style.display = 'none';
+            // If the slot already holds a linked meal, pre-fill the form so the
+            // user can see and edit the current target rather than starting blind.
+            const currentValue = mealPlan[date] && mealPlan[date][meal];
+            const parsed = currentValue ? parseLinkedMeal(currentValue) : null;
+            document.getElementById('link-target-date').value = parsed ? parsed.targetDateStr : '';
+            // Populate meal select if not already done, then set the current value.
+            const sel = document.getElementById('link-target-meal');
+            if (!sel.options.length) {
+                getMealTypes().forEach(m => {
+                    const key = m.toLowerCase().replace(/[^a-z0-9]/g, '_');
+                    sel.add(new Option(m, key));
+                });
+            }
+            sel.value = parsed ? parsed.targetMealKey : sel.options[0]?.value ?? '';
+
             renderRecipeSelectList();
             document.getElementById('select-recipe-modal').classList.add('active');
         }
@@ -7508,13 +7527,6 @@ oregano"></textarea>
 
         function toggleLinkForm() {
             const f = document.getElementById('link-meal-form');
-            const sel = document.getElementById('link-target-meal');
-            if (!sel.options.length) {
-                getMealTypes().forEach(m => {
-                    const key = m.toLowerCase().replace(/[^a-z0-9]/g, '_');
-                    sel.add(new Option(m, key));
-                });
-            }
             f.style.display = f.style.display === 'none' ? 'block' : 'none';
         }
         window.toggleLinkForm = toggleLinkForm;

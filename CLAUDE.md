@@ -286,6 +286,11 @@ New brand colour variables also added (not yet widely used): `--color-tomato`, `
 - **`confirmUrlRecipeImport()`:** saves via existing `saveRecipeToFirebase()`, navigates to Recipes view
 - Works with any site publishing `schema.org/Recipe` JSON-LD (BBC Food, BoldBeanCo, most major recipe sites)
 
+#### ✅ Phase 19 — Linked meal stale-form bug fix
+
+- **Root cause:** `openSelectRecipeModal` never reset the `#link-meal-form`, so after linking one slot the form stayed visible and pre-filled. Opening the modal for a *different* slot (e.g. the dinner slot itself) left the link form open; accidentally clicking "Link" wrote `linked:X_dinner` into the dinner slot, creating a self-referential loop. `getLinkedRecipe` detects the chain and returns `null`, which renders as "removed meal" for both dinner and kids_dinner.
+- **Fix:** `openSelectRecipeModal` now always hides `#link-meal-form` and resets its inputs. If the slot being opened already holds a `linked:` value, the form is pre-filled with the current target date/meal so users can see and edit the existing link. The meal `<select>` population (previously lazy-init in `toggleLinkForm`) was moved into `openSelectRecipeModal` so `toggleLinkForm` is now a one-liner toggle.
+
 #### 🔜 Future Phase — Meal plan recipe selector redesign
 
 Replace the plain text list in `#select-recipe-modal` with a 2-column card grid using recipe avatars (colour + emoji via `recipeAvatarColor()` / `recipeAvatarEmoji()`), category badge, and search — consistent with the Recipes page. Function to modify: `renderRecipeSelectList()`. Three options: (A) card grid with avatars (**recommended**), (B) category-grouped list, (C) filter chips + grid.
