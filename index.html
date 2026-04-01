@@ -1666,6 +1666,46 @@
             color: white;
         }
 
+        .same-day-link-section {
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid var(--border-light);
+        }
+
+        .same-day-link-label {
+            font-size: 0.78rem;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            margin-bottom: 0.5rem;
+        }
+
+        .same-day-link-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.6rem 0.75rem;
+            border-radius: var(--radius-sm);
+            background: var(--bg-white);
+            border: 1px solid var(--border-light);
+            cursor: pointer;
+            font-size: 0.875rem;
+            margin-bottom: 0.4rem;
+            transition: background 0.15s, border-color 0.15s;
+        }
+
+        .same-day-link-item:hover {
+            background: var(--accent-green-light);
+            border-color: var(--accent-green);
+        }
+
+        .same-day-link-item .link-icon {
+            color: var(--accent-green);
+            font-size: 1rem;
+            flex-shrink: 0;
+            margin-left: 0.5rem;
+        }
+
         /* Empty States */
         .empty-state {
             text-align: center;
@@ -4833,22 +4873,9 @@ oregano"></textarea>
                     <!-- Recipes will be listed here -->
                 </div>
 
-                <div class="link-meal-toggle" style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--border-light);">
-                    <button type="button" class="btn btn-secondary btn-small" onclick="toggleLinkForm()">↩ Link to another day's meal instead</button>
-                </div>
-                <div id="link-meal-form" style="display:none; margin-top: 0.75rem; padding: 1rem; border: 1px solid var(--border-light); border-radius: var(--radius-md); background: var(--bg-cream);">
-                    <div class="form-group" style="margin-bottom: 0.75rem;">
-                        <label class="form-label">Date</label>
-                        <input type="date" class="form-input" id="link-target-date">
-                    </div>
-                    <div class="form-group" style="margin-bottom: 0.75rem;">
-                        <label class="form-label">Meal</label>
-                        <select class="form-input" id="link-target-meal"></select>
-                    </div>
-                    <div style="display: flex; gap: 0.5rem; justify-content: flex-end;">
-                        <button type="button" class="btn btn-secondary btn-small" onclick="toggleLinkForm()">Cancel</button>
-                        <button type="button" class="btn btn-primary btn-small" onclick="confirmLinkMeal()">Link</button>
-                    </div>
+                <div id="same-day-link-section" class="same-day-link-section" style="display:none;">
+                    <p class="same-day-link-label">↩ Same as another meal today?</p>
+                    <div id="same-day-link-list"></div>
                 </div>
             </div>
             <div class="modal-footer">
@@ -7455,24 +7482,7 @@ oregano"></textarea>
             document.getElementById('quick-recipe-name').value = '';
             document.getElementById('quick-recipe-title-only').checked = false;
 
-            // Reset the link form every time the modal opens to avoid stale state
-            // from a previous link operation (which could point to the wrong slot).
-            const linkForm = document.getElementById('link-meal-form');
-            linkForm.style.display = 'none';
-            // If the slot already holds a linked meal, pre-fill the form so the
-            // user can see and edit the current target rather than starting blind.
-            const currentValue = mealPlan[date] && mealPlan[date][meal];
-            const parsed = currentValue ? parseLinkedMeal(currentValue) : null;
-            document.getElementById('link-target-date').value = parsed ? parsed.targetDateStr : '';
-            // Populate meal select if not already done, then set the current value.
-            const sel = document.getElementById('link-target-meal');
-            if (!sel.options.length) {
-                getMealTypes().forEach(m => {
-                    const key = m.toLowerCase().replace(/[^a-z0-9]/g, '_');
-                    sel.add(new Option(m, key));
-                });
-            }
-            sel.value = parsed ? parsed.targetMealKey : sel.options[0]?.value ?? '';
+            renderSameDayLinks(date, meal);
 
             renderRecipeSelectList();
             document.getElementById('select-recipe-modal').classList.add('active');
@@ -7525,23 +7535,37 @@ oregano"></textarea>
         }
         window.selectRecipeForMeal = selectRecipeForMeal;
 
-        function toggleLinkForm() {
-            const f = document.getElementById('link-meal-form');
-            f.style.display = f.style.display === 'none' ? 'block' : 'none';
-        }
-        window.toggleLinkForm = toggleLinkForm;
+        function renderSameDayLinks(date, currentMeal) {
+            const section = document.getElementById('same-day-link-section');
+            const list = document.getElementById('same-day-link-list');
+            const dayMeals = mealPlan[date] || {};
 
-        async function confirmLinkMeal() {
-            const date = document.getElementById('link-target-date').value;
-            const meal = document.getElementById('link-target-meal').value;
-            if (!date || !meal) return;
-            if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) return;
-            const validMeals = getMealTypes().map(m => m.toLowerCase().replace(/[^a-z0-9]/g, '_'));
-            if (!validMeals.includes(meal)) return;
-            const linkedId = LINKED_MEAL_PREFIX + date + '_' + meal;
-            await selectRecipeForMeal(linkedId);
+            const options = getMealTypes()
+                .map(m => ({ label: m, key: m.toLowerCase().replace(/[^a-z0-9]/g, '_') }))
+                .filter(m => {
+                    if (m.key === currentMeal) return false;
+                    const val = dayMeals[m.key] || dayMeals[m.label] || dayMeals[m.label.toLowerCase()];
+                    return val && !isLinkedMeal(val);
+                });
+
+            if (options.length === 0) {
+                section.style.display = 'none';
+                return;
+            }
+
+            list.innerHTML = options.map(m => {
+                const val = dayMeals[m.key] || dayMeals[m.label] || dayMeals[m.label.toLowerCase()];
+                const recipe = recipeMap.get(val);
+                const recipeName = recipe ? recipe.name : 'Unknown';
+                const linkedId = LINKED_MEAL_PREFIX + date + '_' + m.key;
+                return `<div class="same-day-link-item" data-action="selectRecipeForMeal" data-id="${escapeHtml(linkedId)}">
+                    <span>${escapeHtml(m.label)} &middot; <strong>${escapeHtml(recipeName)}</strong></span>
+                    <span class="link-icon">↩</span>
+                </div>`;
+            }).join('');
+
+            section.style.display = 'block';
         }
-        window.confirmLinkMeal = confirmLinkMeal;
 
         function toggleQuickAddRecipeForm() {
             const form = document.getElementById('quick-add-recipe-form');

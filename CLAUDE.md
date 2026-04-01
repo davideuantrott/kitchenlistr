@@ -286,10 +286,14 @@ New brand colour variables also added (not yet widely used): `--color-tomato`, `
 - **`confirmUrlRecipeImport()`:** saves via existing `saveRecipeToFirebase()`, navigates to Recipes view
 - Works with any site publishing `schema.org/Recipe` JSON-LD (BBC Food, BoldBeanCo, most major recipe sites)
 
-#### ✅ Phase 19 — Linked meal stale-form bug fix
+#### ✅ Phase 20 — Linked meals redesign (same-day visual picker)
 
-- **Root cause:** `openSelectRecipeModal` never reset the `#link-meal-form`, so after linking one slot the form stayed visible and pre-filled. Opening the modal for a *different* slot (e.g. the dinner slot itself) left the link form open; accidentally clicking "Link" wrote `linked:X_dinner` into the dinner slot, creating a self-referential loop. `getLinkedRecipe` detects the chain and returns `null`, which renders as "removed meal" for both dinner and kids_dinner.
-- **Fix:** `openSelectRecipeModal` now always hides `#link-meal-form` and resets its inputs. If the slot being opened already holds a `linked:` value, the form is pre-filled with the current target date/meal so users can see and edit the existing link. The meal `<select>` population (previously lazy-init in `toggleLinkForm`) was moved into `openSelectRecipeModal` so `toggleLinkForm` is now a one-liner toggle.
+- **Old system removed:** manual date input + meal `<select>` dropdown replaced entirely; `toggleLinkForm()` and `confirmLinkMeal()` deleted; `#link-meal-form` HTML replaced
+- **New UI:** `#same-day-link-section` appears below the recipe list whenever other meal slots on the same day already have recipes; each slot shown as a tappable `.same-day-link-item` card (meal name · recipe name + ↩ icon)
+- **`renderSameDayLinks(date, currentMeal)`:** called from `openSelectRecipeModal`; reads `mealPlan[date]`, filters out the current slot and any slots that are themselves linked (prevents chains); hides the section entirely if no options exist
+- **Linking is one tap:** clicking a card calls `selectRecipeForMeal(LINKED_MEAL_PREFIX + date + '_' + mealKey)` directly via the existing `data-action` delegation — no confirmation step
+- **Data model unchanged:** `linked:YYYY-MM-DD_mealKey` string format, `isLinkedMeal()`, `parseLinkedMeal()`, `getLinkedRecipe()`, `getLinkedDisplayText()` all unchanged; existing linked entries continue to display correctly
+- **Option C deferred:** nearby-day picker (±3 days, grouped by date) logged in `BRAINSTORM-SESSION.md` for a future iteration
 
 #### 🔜 Future Phase — Meal plan recipe selector redesign
 

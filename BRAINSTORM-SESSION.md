@@ -67,6 +67,7 @@ Areas where the current experience is heavier than it should be:
 |---|---|---|
 | Recipe import from URL | Not started | Parse schema.org/Recipe JSON-LD via CORS proxy or Cloudflare Worker |
 | Meal plan recipe selector redesign | Deferred (Phase 13) | Card grid with avatars; see CLAUDE.md Future Phase note |
+| Linked meals — nearby-day picker (Option C) | Deferred | Current same-day visual linking (Option B, Phase 20) covers the main use case. Option C would extend this to show filled meal slots from ±3 days, grouped by date — useful for batch cooking and planned leftovers. Chosen not to implement yet as it adds UI complexity for an edge case. |
 | Recipe image upload | Deferred | Firebase Storage; currently URL-only |
 | Theme system | Removed, to be reintroduced | Needs redesign for Warm Pantry token system |
 | Native iOS/Android app | Not started | Capacitor wrapper recommended |
