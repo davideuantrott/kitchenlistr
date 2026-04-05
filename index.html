@@ -7562,13 +7562,14 @@ oregano"></textarea>
             const list = document.getElementById('same-day-link-list');
 
             // Collect options from today back to 4 days ago
-            const baseDate = new Date(date + 'T00:00:00');
+            const [bY, bM, bD] = date.split('-').map(Number);
+            const baseDate = new Date(bY, bM - 1, bD);
             const groups = [];
 
             for (let daysBack = 0; daysBack <= 4; daysBack++) {
                 const d = new Date(baseDate);
                 d.setDate(d.getDate() - daysBack);
-                const dateStr = d.toISOString().slice(0, 10);
+                const dateStr = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
                 const dayMeals = mealPlan[dateStr] || {};
 
                 const options = getMealTypes()
