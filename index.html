@@ -1680,6 +1680,28 @@
             margin-bottom: 0.5rem;
         }
 
+        .link-day-group {
+            margin-bottom: 0.75rem;
+        }
+
+        .link-day-group:last-child {
+            margin-bottom: 0;
+        }
+
+        .link-day-header {
+            font-size: 0.7rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            margin-bottom: 0.3rem;
+            padding: 0 0.1rem;
+        }
+
+        .link-day-header.is-today {
+            color: var(--accent-green);
+        }
+
         .same-day-link-item {
             display: flex;
             align-items: center;
@@ -4874,7 +4896,7 @@ oregano"></textarea>
                 </div>
 
                 <div id="same-day-link-section" class="same-day-link-section" style="display:none;">
-                    <p class="same-day-link-label">↩ Same as another meal today?</p>
+                    <p class="same-day-link-label">↩ Link to leftovers or a repeated meal</p>
                     <div id="same-day-link-list"></div>
                 </div>
             </div>
@@ -7538,29 +7560,56 @@ oregano"></textarea>
         function renderSameDayLinks(date, currentMeal) {
             const section = document.getElementById('same-day-link-section');
             const list = document.getElementById('same-day-link-list');
-            const dayMeals = mealPlan[date] || {};
 
-            const options = getMealTypes()
-                .map(m => ({ label: m, key: m.toLowerCase().replace(/[^a-z0-9]/g, '_') }))
-                .filter(m => {
-                    if (m.key === currentMeal) return false;
-                    const val = dayMeals[m.key] || dayMeals[m.label] || dayMeals[m.label.toLowerCase()];
-                    return val && !isLinkedMeal(val);
-                });
+            // Collect options from today back to 4 days ago
+            const baseDate = new Date(date + 'T00:00:00');
+            const groups = [];
 
-            if (options.length === 0) {
+            for (let daysBack = 0; daysBack <= 4; daysBack++) {
+                const d = new Date(baseDate);
+                d.setDate(d.getDate() - daysBack);
+                const dateStr = d.toISOString().slice(0, 10);
+                const dayMeals = mealPlan[dateStr] || {};
+
+                const options = getMealTypes()
+                    .map(m => ({ label: m, key: m.toLowerCase().replace(/[^a-z0-9]/g, '_') }))
+                    .filter(m => {
+                        if (daysBack === 0 && m.key === currentMeal) return false;
+                        const val = dayMeals[m.key] || dayMeals[m.label] || dayMeals[m.label.toLowerCase()];
+                        return val && !isLinkedMeal(val);
+                    });
+
+                if (options.length > 0) {
+                    groups.push({ dateStr, daysBack, d, options, dayMeals });
+                }
+            }
+
+            if (groups.length === 0) {
                 section.style.display = 'none';
                 return;
             }
 
-            list.innerHTML = options.map(m => {
-                const val = dayMeals[m.key] || dayMeals[m.label] || dayMeals[m.label.toLowerCase()];
-                const recipe = recipeMap.get(val);
-                const recipeName = recipe ? recipe.name : 'Unknown';
-                const linkedId = LINKED_MEAL_PREFIX + date + '_' + m.key;
-                return `<div class="same-day-link-item" data-action="selectRecipeForMeal" data-id="${escapeHtml(linkedId)}">
-                    <span>${escapeHtml(m.label)} &middot; <strong>${escapeHtml(recipeName)}</strong></span>
-                    <span class="link-icon">↩</span>
+            function dayLabel(daysBack, d) {
+                if (daysBack === 0) return 'Today';
+                if (daysBack === 1) return 'Yesterday';
+                return d.toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'short' });
+            }
+
+            list.innerHTML = groups.map(({ dateStr, daysBack, d, options, dayMeals }) => {
+                const headerClass = daysBack === 0 ? 'link-day-header is-today' : 'link-day-header';
+                const items = options.map(m => {
+                    const val = dayMeals[m.key] || dayMeals[m.label] || dayMeals[m.label.toLowerCase()];
+                    const recipe = recipeMap.get(val);
+                    const recipeName = recipe ? recipe.name : 'Unknown';
+                    const linkedId = LINKED_MEAL_PREFIX + dateStr + '_' + m.key;
+                    return `<div class="same-day-link-item" data-action="selectRecipeForMeal" data-id="${escapeHtml(linkedId)}">
+                        <span>${escapeHtml(m.label)} &middot; <strong>${escapeHtml(recipeName)}</strong></span>
+                        <span class="link-icon">↩</span>
+                    </div>`;
+                }).join('');
+                return `<div class="link-day-group">
+                    <p class="${headerClass}">${escapeHtml(dayLabel(daysBack, d))}</p>
+                    ${items}
                 </div>`;
             }).join('');
 
