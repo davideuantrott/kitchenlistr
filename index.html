@@ -1468,8 +1468,7 @@
         }
 
         .day-card.past {
-            opacity: 0.45;
-            pointer-events: none;
+            opacity: 0.55;
         }
 
         .day-card.past .day-header {
@@ -8567,6 +8566,8 @@ oregano"></textarea>
         // =====================
 
         function shouldIncludeDateInRange(date) {
+            // Past dates are never included in the shopping list
+            if (date < getToday()) return false;
             // If no range set, include from today onwards
             if (!shoppingDateFrom && !shoppingDateTo) {
                 return date >= getToday();

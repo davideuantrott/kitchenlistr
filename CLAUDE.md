@@ -294,6 +294,13 @@ New brand colour variables also added (not yet widely used): `--color-tomato`, `
 - **Linking is one tap:** clicking a card calls `selectRecipeForMeal(LINKED_MEAL_PREFIX + dateStr + '_' + mealKey)` directly via the existing `data-action` delegation — no confirmation step
 - **Data model unchanged:** `linked:YYYY-MM-DD_mealKey` string format, `isLinkedMeal()`, `parseLinkedMeal()`, `getLinkedRecipe()`, `getLinkedDisplayText()` all unchanged; existing linked entries continue to display correctly
 
+#### ✅ Phase 21 — Retrospective meal plan entries (past dates)
+
+- **Past day cards unblocked:** Removed `pointer-events: none` from `.day-card.past` CSS rule; opacity bumped from `0.45` to `0.55`. Past day cards are now fully interactive so meals can be added/edited retroactively, while remaining visually dimmed to distinguish them from current/future days.
+- **Shopping list hard floor:** `shouldIncludeDateInRange()` now returns `false` immediately for any date before today, regardless of the user-selected date range. Prevents retrospectively-added past meals from ever appearing in the shopping list (even when the "All" preset or a custom past `dateFrom` is in use).
+- **Linked meals flow unchanged:** The existing 4-day lookback in `renderSameDayLinks()` means a meal logged for yesterday (or up to 4 days ago) will automatically appear as a linkable option when planning future meals.
+- **No data model changes:** Past meal entries use the same Firestore structure as any other meal plan entry.
+
 #### 🔜 Future Phase — Meal plan recipe selector redesign
 
 Replace the plain text list in `#select-recipe-modal` with a 2-column card grid using recipe avatars (colour + emoji via `recipeAvatarColor()` / `recipeAvatarEmoji()`), category badge, and search — consistent with the Recipes page. Function to modify: `renderRecipeSelectList()`. Three options: (A) card grid with avatars (**recommended**), (B) category-grouped list, (C) filter chips + grid.
