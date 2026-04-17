@@ -310,6 +310,16 @@ New brand colour variables also added (not yet widely used): `--color-tomato`, `
 - **Search unchanged:** `filterRecipeSelect()` / `renderRecipeSelectList()` still filters in real-time by name
 - **Linked meals section unchanged:** `#same-day-link-section` still appears below the grid
 
+#### ✅ Phase 23 — Visual meal plan print with thumbnails
+
+- **"Visual layout" checkbox** added to the planner print modal below the week/month radio; only applies to week view
+- **`generateWeekPrintHtml(visualMode)`:** accepts a boolean flag; when `true` renders a new visual layout instead of the plain text grid
+- **Visual layout:** custom `print-visual-header` (Fraunces title + week range + printed date, tomato underline rule); 7-column `print-week-visual` grid; each meal slot shows a colour-coded avatar strip (`recipeAvatarColor()` pastel bg + `recipeAvatarEmoji()` emoji, or `<img>` when `imageUrl` is set) with the recipe name below; linked meals render as italic "↩ Name · Day" with no avatar; empty slots are minimal placeholders
+- **Landscape A4 auto-set:** `printMealPlan()` injects `<style id="print-landscape-override">` into `<head>` with `@page { size: A4 landscape; margin: 10mm; }` when visual mode is active; removed after `window.print()` completes
+- **Standard "Meal Plan" header and date line hidden** in visual mode via `body.printing-planner.print-visual .print-header, #print-planner-date { display: none }` — the visual header embedded in the print body takes their place
+- **Plain mode unchanged:** unchecking the box (or printing month view) uses the original layout exactly as before
+- **Bug fix:** autocomplete no longer hides an exact-match ingredient — removed `&& name !== value` filter that suppressed suggestions when the typed text matched a stored ingredient name exactly
+
 #### ✅ Phase 11 — Emoji picker overhaul
 
 - **Full emoji set:** `FOOD_EMOJI` (~80 food-only) replaced with `ALL_EMOJI` — ~400 emoji across 8 categories: Smileys, People, Animals, Food & Drink, Travel & Places, Activities, Objects, Symbols; each entry has a keyword string for search

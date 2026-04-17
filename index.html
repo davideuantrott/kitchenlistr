@@ -3607,6 +3607,138 @@
                 font-weight: 700;
                 color: #444;
             }
+
+            /* ── Visual week print layout ── */
+
+            /* Hide the standard "Meal Plan" header and date line in visual mode
+               (the visual layout embeds its own header inside the body) */
+            body.printing-planner.print-visual .print-header,
+            body.printing-planner.print-visual #print-planner-date {
+                display: none !important;
+            }
+
+            .print-visual-header {
+                display: flex;
+                justify-content: space-between;
+                align-items: flex-end;
+                margin-bottom: 8pt;
+                padding-bottom: 5pt;
+                border-bottom: 2pt solid #F2654A;
+            }
+
+            .print-visual-title {
+                font-family: 'Fraunces', Georgia, serif;
+                font-size: 18pt;
+                font-weight: 700;
+                color: #1A1A1A;
+                line-height: 1;
+            }
+
+            .print-visual-subtitle {
+                font-size: 8pt;
+                color: #3D3D3D;
+                margin-top: 2pt;
+            }
+
+            .print-week-visual {
+                display: grid;
+                grid-template-columns: repeat(7, 1fr);
+                gap: 5pt;
+                width: 100%;
+            }
+
+            .print-week-visual .print-day-card {
+                border: none;
+                border-radius: 6pt;
+                overflow: hidden;
+                box-shadow: 0 1pt 4pt rgba(0,0,0,0.14);
+                page-break-inside: avoid;
+                font-size: 7pt;
+            }
+
+            .print-week-visual .print-day-header {
+                background: #1A1A1A;
+                color: #FFFFFF;
+                text-align: center;
+                padding: 4pt 2pt;
+                font-weight: 700;
+                font-size: 7.5pt;
+                letter-spacing: 0.5pt;
+                border-bottom: none;
+            }
+
+            .print-week-visual .print-day-header .print-day-date {
+                font-weight: 400;
+                font-size: 6pt;
+                color: #BBBBBB;
+                letter-spacing: 0;
+            }
+
+            .print-week-visual .print-meal-slot {
+                padding: 4pt 3pt;
+                border-bottom: 0.5pt solid #E8E4DC;
+            }
+
+            .print-week-visual .print-meal-slot:last-of-type {
+                border-bottom: none;
+            }
+
+            .print-week-visual .print-meal-label {
+                font-size: 5.5pt;
+                text-transform: uppercase;
+                color: #F2654A;
+                letter-spacing: 0.4pt;
+                margin-bottom: 2pt;
+                font-weight: 600;
+            }
+
+            .print-visual-avatar {
+                width: 100%;
+                height: 40pt;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 18pt;
+                border-radius: 3pt;
+                margin-bottom: 3pt;
+                overflow: hidden;
+            }
+
+            .print-visual-avatar img {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+            }
+
+            .print-visual-name {
+                font-size: 6.5pt;
+                font-weight: 600;
+                text-align: center;
+                color: #1A1A1A;
+                line-height: 1.25;
+                word-break: break-word;
+            }
+
+            .print-visual-linked {
+                font-size: 6pt;
+                color: #3D3D3D;
+                font-style: italic;
+                text-align: center;
+                padding: 4pt 2pt;
+                line-height: 1.3;
+            }
+
+            .print-visual-empty {
+                height: 6pt;
+            }
+
+            .print-week-visual .print-day-note {
+                padding: 3pt 4pt;
+                font-size: 6pt;
+                color: #555;
+                font-style: italic;
+                border-top: 0.5pt solid #E8E4DC;
+            }
         }
         
         .print-header, .print-date, .print-shopping-content, .print-planner-content {
@@ -5601,7 +5733,13 @@ oregano"></textarea>
                         </label>
                     </div>
                 </div>
-                <p class="text-muted" style="font-size: 0.85rem; margin-top: 0.75rem;">💡 Choose <strong>Landscape</strong> orientation in your browser's print dialog for the best result — especially for the week view. Select "Save as PDF" to email or share the plan.</p>
+                <div class="print-option-row" style="margin-top: 0.75rem; padding-top: 0.75rem; border-top: 1px solid var(--border-light);">
+                    <label class="form-checkbox">
+                        <input type="checkbox" id="print-visual-mode">
+                        <span><strong>Visual layout</strong> — includes recipe thumbnails, auto landscape (week view only)</span>
+                    </label>
+                </div>
+                <p class="text-muted" style="font-size: 0.85rem; margin-top: 0.75rem;">💡 For the plain layout, choose <strong>Landscape</strong> in your browser's print dialog. The visual layout sets landscape automatically. Select "Save as PDF" to email or share the plan.</p>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" onclick="closePlannerPrintModal()">Cancel</button>
@@ -6602,8 +6740,8 @@ oregano"></textarea>
             if (value.length < 2) return;
             
             const allNames = getAllIngredientNames();
-            const matches = allNames.filter(name => 
-                name.includes(value) && name !== value
+            const matches = allNames.filter(name =>
+                name.includes(value)
             ).slice(0, 8);
             
             if (matches.length === 0) return;
@@ -8226,12 +8364,14 @@ oregano"></textarea>
 
         function printMealPlan() {
             const view = document.querySelector('input[name="planner-print-view"]:checked')?.value || 'week';
+            const visualMode = view === 'week' && (document.getElementById('print-visual-mode')?.checked ?? false);
             const printBody = document.getElementById('print-planner-body');
             const printDateEl = document.getElementById('print-planner-date');
 
             if (view === 'week') {
-                printDateEl.textContent = formatWeekDisplay(currentWeekStart) + ' • Printed ' + new Date().toLocaleDateString('en-GB');
-                printBody.innerHTML = generateWeekPrintHtml();
+                // Visual mode embeds its own header; plain mode uses the standard date line
+                printDateEl.textContent = visualMode ? '' : formatWeekDisplay(currentWeekStart) + ' • Printed ' + new Date().toLocaleDateString('en-GB');
+                printBody.innerHTML = generateWeekPrintHtml(visualMode);
             } else {
                 const monthName = currentMonth.toLocaleDateString('en-GB', { month: 'long', year: 'numeric' });
                 printDateEl.textContent = monthName + ' • Printed ' + new Date().toLocaleDateString('en-GB');
@@ -8242,15 +8382,91 @@ oregano"></textarea>
 
             document.body.classList.add('printing-planner');
             document.body.classList.remove('printing-shopping');
+            if (visualMode) document.body.classList.add('print-visual');
+
+            // Inject landscape @page override for visual mode
+            if (visualMode) {
+                const style = document.createElement('style');
+                style.id = 'print-landscape-override';
+                style.textContent = '@page { size: A4 landscape; margin: 10mm; }';
+                document.head.appendChild(style);
+            }
 
             setTimeout(() => {
                 window.print();
-                setTimeout(() => document.body.classList.remove('printing-planner'), 500);
+                setTimeout(() => {
+                    document.body.classList.remove('printing-planner', 'print-visual');
+                    document.getElementById('print-landscape-override')?.remove();
+                }, 500);
             }, 100);
         }
         window.printMealPlan = printMealPlan;
 
-        function generateWeekPrintHtml() {
+        function generateWeekPrintHtml(visualMode) {
+            if (visualMode) {
+                const weekLabel = formatWeekDisplay(currentWeekStart);
+                let html = `<div class="print-visual-header">
+                    <div>
+                        <div class="print-visual-title">Meal Plan</div>
+                        <div class="print-visual-subtitle">${escapeHtml(weekLabel)}</div>
+                    </div>
+                    <div class="print-visual-subtitle">Printed ${new Date().toLocaleDateString('en-GB')}</div>
+                </div>`;
+
+                html += '<div class="print-week-grid print-week-visual">';
+
+                for (let i = 0; i < 7; i++) {
+                    const date = new Date(currentWeekStart);
+                    date.setDate(date.getDate() + i);
+                    const dateStr = formatDate(date);
+                    const dayMeals = mealPlan[dateStr] || {};
+                    const note = dayNotes[dateStr] || '';
+                    const dayName = getDayName(date).toUpperCase().substring(0, 3);
+                    const dayNum = date.getDate();
+                    const monthStr = date.toLocaleDateString('en-GB', { month: 'short' });
+
+                    html += `<div class="print-day-card">`;
+                    html += `<div class="print-day-header">${dayName}<div class="print-day-date">${dayNum} ${monthStr}</div></div>`;
+
+                    getMealTypes().forEach(meal => {
+                        const mealKey = meal.toLowerCase().replace(/[^a-z0-9]/g, '_');
+                        const recipeId = dayMeals[mealKey] || dayMeals[meal] || dayMeals[meal.toLowerCase()];
+
+                        html += `<div class="print-meal-slot">`;
+                        html += `<div class="print-meal-label">${escapeHtml(meal)}</div>`;
+
+                        if (recipeId && isLinkedMeal(recipeId)) {
+                            html += `<div class="print-visual-linked">${escapeHtml(getLinkedDisplayText(recipeId))}</div>`;
+                        } else if (recipeId) {
+                            const recipe = recipeMap.get(recipeId);
+                            if (recipe) {
+                                const avatarContent = recipe.imageUrl
+                                    ? `<img src="${escapeHtml(recipe.imageUrl)}" alt="">`
+                                    : escapeHtml(recipe.emoji || recipeAvatarEmoji(recipe.name));
+                                html += `<div class="print-visual-avatar" style="background:${escapeHtml(recipeAvatarColor(recipe.name))}">${avatarContent}</div>`;
+                                html += `<div class="print-visual-name">${escapeHtml(recipe.name)}</div>`;
+                            } else {
+                                html += `<div class="print-visual-empty"></div>`;
+                            }
+                        } else {
+                            html += `<div class="print-visual-empty"></div>`;
+                        }
+
+                        html += `</div>`;
+                    });
+
+                    if (note) {
+                        html += `<div class="print-day-note">📝 ${escapeHtml(note)}</div>`;
+                    }
+
+                    html += `</div>`;
+                }
+
+                html += '</div>';
+                return html;
+            }
+
+            // Standard (plain text) layout
             let html = '<div class="print-week-grid">';
 
             for (let i = 0; i < 7; i++) {
