@@ -3621,8 +3621,8 @@
                 display: flex;
                 justify-content: space-between;
                 align-items: flex-end;
-                margin-bottom: 8pt;
-                padding-bottom: 5pt;
+                margin-bottom: 6pt;
+                padding-bottom: 4pt;
                 border-bottom: 2pt solid #F2654A;
             }
 
@@ -3645,6 +3645,7 @@
                 grid-template-columns: repeat(7, 1fr);
                 gap: 5pt;
                 width: 100%;
+                height: 490pt;
             }
 
             .print-week-visual .print-day-card {
@@ -3654,6 +3655,8 @@
                 box-shadow: 0 1pt 4pt rgba(0,0,0,0.14);
                 page-break-inside: avoid;
                 font-size: 7pt;
+                display: flex;
+                flex-direction: column;
             }
 
             .print-week-visual .print-day-header {
@@ -3677,6 +3680,9 @@
             .print-week-visual .print-meal-slot {
                 padding: 4pt 3pt;
                 border-bottom: 0.5pt solid #E8E4DC;
+                flex: 1;
+                display: flex;
+                flex-direction: column;
             }
 
             .print-week-visual .print-meal-slot:last-of-type {
@@ -3694,20 +3700,36 @@
 
             .print-visual-avatar {
                 width: 100%;
-                height: 40pt;
+                flex: 1;
+                min-height: 55pt;
                 display: flex;
                 align-items: center;
                 justify-content: center;
-                font-size: 18pt;
+                font-size: 22pt;
                 border-radius: 3pt;
                 margin-bottom: 3pt;
                 overflow: hidden;
+                position: relative;
             }
 
             .print-visual-avatar img {
                 width: 100%;
                 height: 100%;
                 object-fit: cover;
+            }
+
+            .print-visual-linked-badge {
+                position: absolute;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                background: rgba(0,0,0,0.52);
+                color: #FFFFFF;
+                font-size: 6pt;
+                text-align: center;
+                padding: 2pt 2pt;
+                letter-spacing: 0.2pt;
+                font-style: italic;
             }
 
             .print-visual-name {
@@ -8436,7 +8458,16 @@ oregano"></textarea>
                         html += `<div class="print-meal-label">${escapeHtml(meal)}</div>`;
 
                         if (recipeId && isLinkedMeal(recipeId)) {
-                            html += `<div class="print-visual-linked">${escapeHtml(getLinkedDisplayText(recipeId))}</div>`;
+                            const linkedRecipe = getLinkedRecipe(recipeId);
+                            if (linkedRecipe) {
+                                const avatarContent = linkedRecipe.imageUrl
+                                    ? `<img src="${escapeHtml(linkedRecipe.imageUrl)}" alt="">`
+                                    : escapeHtml(linkedRecipe.emoji || recipeAvatarEmoji(linkedRecipe.name));
+                                html += `<div class="print-visual-avatar" style="background:${escapeHtml(recipeAvatarColor(linkedRecipe.name))}">${avatarContent}<div class="print-visual-linked-badge">↩ leftovers</div></div>`;
+                                html += `<div class="print-visual-name" style="font-style:italic;color:#555">${escapeHtml(getLinkedDisplayText(recipeId))}</div>`;
+                            } else {
+                                html += `<div class="print-visual-linked">${escapeHtml(getLinkedDisplayText(recipeId))}</div>`;
+                            }
                         } else if (recipeId) {
                             const recipe = recipeMap.get(recipeId);
                             if (recipe) {
