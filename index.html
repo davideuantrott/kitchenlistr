@@ -1639,30 +1639,81 @@
 
         /* Recipe Select in Modal */
         .recipe-select-list {
-            max-height: 300px;
+            max-height: 55vh;
             overflow-y: auto;
-            border: 1px solid var(--border-light);
-            border-radius: var(--radius-sm);
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 0.5rem;
+            padding: 0.25rem 0;
         }
 
-        .recipe-select-item {
-            padding: 0.75rem 1rem;
+        .recipe-select-list .empty-state {
+            grid-column: 1 / -1;
+        }
+
+        .recipe-select-card {
+            border-radius: var(--radius-md);
+            background: var(--bg-white);
+            border: 1.5px solid var(--border-light);
             cursor: pointer;
-            border-bottom: 1px solid var(--border-light);
-            transition: background 0.15s ease;
+            overflow: hidden;
+            transition: box-shadow 0.15s ease, border-color 0.15s ease;
         }
 
-        .recipe-select-item:last-child {
-            border-bottom: none;
+        .recipe-select-card:hover {
+            border-color: var(--accent-green);
+            box-shadow: 0 4px 12px var(--accent-glow-soft);
         }
 
-        .recipe-select-item:hover {
+        .recipe-select-card-avatar {
+            height: 52px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.6rem;
+            flex-shrink: 0;
+        }
+
+        .recipe-select-card-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .recipe-select-card-body {
+            padding: 0.5rem 0.6rem 0.6rem;
+        }
+
+        .recipe-select-card-name {
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            font-size: 0.82rem;
+            font-weight: 600;
+            line-height: 1.3;
+            color: var(--text-primary);
+        }
+
+        .recipe-select-card-meta {
+            margin-top: 0.3rem;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.25rem;
+        }
+
+        .recipe-select-card-badge {
+            font-size: 0.65rem;
+            padding: 0.1rem 0.4rem;
+            border-radius: var(--radius-pill);
             background: var(--accent-green-light);
+            color: var(--accent-green-dark);
+            font-weight: 600;
         }
 
-        .recipe-select-item.selected {
-            background: var(--accent-green);
-            color: white;
+        .recipe-select-card-badge.title-only {
+            background: var(--bg-cream);
+            color: var(--text-secondary);
         }
 
         .same-day-link-section {
@@ -7518,22 +7569,39 @@ oregano"></textarea>
         function renderRecipeSelectList() {
             const searchTerm = document.getElementById('select-recipe-search').value.toLowerCase();
             const list = document.getElementById('recipe-select-list');
-            
-            const filtered = recipes.filter(r => 
+
+            const filtered = recipes.filter(r =>
                 r.name.toLowerCase().includes(searchTerm)
             );
-            
+
             if (filtered.length === 0) {
                 list.innerHTML = '<div class="empty-state"><p>No recipes found. Add some recipes first!</p></div>';
                 return;
             }
-            
-            list.innerHTML = filtered.map(recipe => `
-                <div class="recipe-select-item" data-action="selectRecipeForMeal" data-id="${recipe.id}">
-                    <strong>${escapeHtml(recipe.name)}</strong>
-                    ${recipe.titleOnly ? ' <span class="text-muted">(title only)</span>' : ''}
-                </div>
-            `).join('');
+
+            list.innerHTML = filtered.map(recipe => {
+                const color = recipeAvatarColor(recipe.name);
+                const emoji = recipe.emoji || recipeAvatarEmoji(recipe.name);
+                const avatarContent = recipe.imageUrl
+                    ? `<img src="${escapeHtml(recipe.imageUrl)}" alt="" loading="lazy">`
+                    : emoji;
+                const avatarBg = recipe.imageUrl ? '#f0f0f0' : color;
+                const cats = recipe.categories?.length ? recipe.categories : (recipe.category ? [recipe.category] : []);
+                const categoryBadge = cats.length
+                    ? `<span class="recipe-select-card-badge">${escapeHtml(cats[0])}</span>`
+                    : '';
+                const titleOnlyBadge = recipe.titleOnly
+                    ? `<span class="recipe-select-card-badge title-only">Title only</span>`
+                    : '';
+                return `
+                <div class="recipe-select-card" data-action="selectRecipeForMeal" data-id="${recipe.id}">
+                    <div class="recipe-select-card-avatar" style="background:${avatarBg}">${avatarContent}</div>
+                    <div class="recipe-select-card-body">
+                        <span class="recipe-select-card-name">${escapeHtml(recipe.name)}</span>
+                        ${(categoryBadge || titleOnlyBadge) ? `<div class="recipe-select-card-meta">${categoryBadge}${titleOnlyBadge}</div>` : ''}
+                    </div>
+                </div>`;
+            }).join('');
         }
         window.renderRecipeSelectList = renderRecipeSelectList;
 

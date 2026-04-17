@@ -301,9 +301,14 @@ New brand colour variables also added (not yet widely used): `--color-tomato`, `
 - **Linked meals flow unchanged:** The existing 4-day lookback in `renderSameDayLinks()` means a meal logged for yesterday (or up to 4 days ago) will automatically appear as a linkable option when planning future meals.
 - **No data model changes:** Past meal entries use the same Firestore structure as any other meal plan entry.
 
-#### 🔜 Future Phase — Meal plan recipe selector redesign
+#### ✅ Phase 22 — Meal plan recipe selector redesign
 
-Replace the plain text list in `#select-recipe-modal` with a 2-column card grid using recipe avatars (colour + emoji via `recipeAvatarColor()` / `recipeAvatarEmoji()`), category badge, and search — consistent with the Recipes page. Function to modify: `renderRecipeSelectList()`. Three options: (A) card grid with avatars (**recommended**), (B) category-grouped list, (C) filter chips + grid.
+- **Card grid replaces text list:** `#select-recipe-modal` now shows a 2-column responsive card grid instead of a plain text list
+- **Avatar strip:** each card has a 52px colour-coded avatar strip (pastel bg from `recipeAvatarColor()` + emoji from `recipeAvatarEmoji()`); shows `imageUrl` photo when set
+- **Category badge + title-only badge:** first category shown as a pill below the recipe name; "Title only" shown as a muted pill when applicable
+- **CSS:** `.recipe-select-card`, `.recipe-select-card-avatar`, `.recipe-select-card-body`, `.recipe-select-card-name`, `.recipe-select-card-meta`, `.recipe-select-card-badge` added; old `.recipe-select-item` styles replaced; `max-height` expanded to `55vh`
+- **Search unchanged:** `filterRecipeSelect()` / `renderRecipeSelectList()` still filters in real-time by name
+- **Linked meals section unchanged:** `#same-day-link-section` still appears below the grid
 
 #### ✅ Phase 11 — Emoji picker overhaul
 
