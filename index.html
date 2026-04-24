@@ -3640,76 +3640,63 @@
                 margin-top: 2pt;
             }
 
+            /* Row-based visual print — each element type emitted as 7 siblings
+               so CSS grid auto-rows makes every row the same height across all columns */
             .print-week-visual {
                 display: grid;
                 grid-template-columns: repeat(7, 1fr);
-                gap: 5pt;
+                column-gap: 3pt;
+                row-gap: 0;
                 width: 100%;
-                height: 490pt;
             }
 
-            .print-week-visual .print-day-card {
-                border: none;
-                border-radius: 6pt;
-                overflow: hidden;
-                box-shadow: 0 1pt 4pt rgba(0,0,0,0.14);
-                page-break-inside: avoid;
-                font-size: 7pt;
-                display: flex;
-                flex-direction: column;
-            }
-
-            .print-week-visual .print-day-header {
+            .print-week-visual .pvh-header {
                 background: #1A1A1A;
                 color: #FFFFFF;
                 text-align: center;
-                padding: 4pt 2pt;
+                padding: 5pt 2pt;
                 font-weight: 700;
                 font-size: 7.5pt;
                 letter-spacing: 0.5pt;
-                border-bottom: none;
             }
 
-            .print-week-visual .print-day-header .print-day-date {
+            .print-week-visual .pvh-header .print-day-date {
                 font-weight: 400;
                 font-size: 6pt;
                 color: #BBBBBB;
                 letter-spacing: 0;
             }
 
-            .print-week-visual .print-meal-slot {
-                padding: 4pt 3pt;
-                border-bottom: 0.5pt solid #E8E4DC;
-                flex: 1;
-                display: flex;
-                flex-direction: column;
-            }
-
-            .print-week-visual .print-meal-slot:last-of-type {
-                border-bottom: none;
-            }
-
-            .print-week-visual .print-meal-label {
+            .print-week-visual .pvh-label {
                 font-size: 5.5pt;
                 text-transform: uppercase;
                 color: #F2654A;
                 letter-spacing: 0.4pt;
-                margin-bottom: 2pt;
+                padding: 5pt 3pt 2pt;
                 font-weight: 600;
+                border-top: 1.5pt solid #E8E4DC;
+                background: #F8F8F5;
+            }
+
+            .print-week-visual .pvh-label-first {
+                border-top: none;
+                background: #FFFFFF;
+                padding-top: 4pt;
             }
 
             .print-visual-avatar {
                 width: 100%;
                 height: 90pt;
-                flex: none;
                 display: flex;
                 align-items: center;
                 justify-content: center;
                 font-size: 22pt;
-                border-radius: 3pt;
-                margin-bottom: 3pt;
                 overflow: hidden;
                 position: relative;
+            }
+
+            .print-visual-avatar.pvh-empty {
+                background: #F2F0EB;
             }
 
             .print-visual-avatar img {
@@ -3739,27 +3726,17 @@
                 color: #1A1A1A;
                 line-height: 1.25;
                 word-break: break-word;
+                padding: 2pt 3pt 4pt;
             }
 
-            .print-visual-linked {
-                font-size: 6pt;
-                color: #3D3D3D;
-                font-style: italic;
-                text-align: center;
-                padding: 4pt 2pt;
-                line-height: 1.3;
-            }
-
-            .print-visual-empty {
-                height: 6pt;
-            }
-
-            .print-week-visual .print-day-note {
-                padding: 3pt 4pt;
+            .print-week-visual .pvh-note {
                 font-size: 6pt;
                 color: #555;
                 font-style: italic;
+                padding: 3pt 3pt;
                 border-top: 0.5pt solid #E8E4DC;
+                background: #F8F8F5;
+                min-height: 14pt;
             }
         }
         
@@ -8435,28 +8412,47 @@ oregano"></textarea>
                     <div class="print-visual-subtitle">Printed ${new Date().toLocaleDateString('en-GB')}</div>
                 </div>`;
 
-                html += '<div class="print-week-grid print-week-visual">';
-
+                // Collect all 7 days upfront so we can emit row-by-row.
+                // Each element type (header/label/avatar/name/note) is emitted
+                // as 7 siblings in the grid, so CSS grid auto-rows makes every
+                // row the same height across all columns automatically.
+                const days = [];
                 for (let i = 0; i < 7; i++) {
                     const date = new Date(currentWeekStart);
                     date.setDate(date.getDate() + i);
                     const dateStr = formatDate(date);
-                    const dayMeals = mealPlan[dateStr] || {};
-                    const note = dayNotes[dateStr] || '';
-                    const dayName = getDayName(date).toUpperCase().substring(0, 3);
-                    const dayNum = date.getDate();
-                    const monthStr = date.toLocaleDateString('en-GB', { month: 'short' });
+                    days.push({
+                        dateStr,
+                        dayMeals: mealPlan[dateStr] || {},
+                        note: dayNotes[dateStr] || '',
+                        dayName: getDayName(date).toUpperCase().substring(0, 3),
+                        dayNum: date.getDate(),
+                        monthStr: date.toLocaleDateString('en-GB', { month: 'short' })
+                    });
+                }
 
-                    html += `<div class="print-day-card">`;
-                    html += `<div class="print-day-header">${dayName}<div class="print-day-date">${dayNum} ${monthStr}</div></div>`;
+                const mealTypes = getMealTypes();
 
-                    getMealTypes().forEach(meal => {
-                        const mealKey = meal.toLowerCase().replace(/[^a-z0-9]/g, '_');
-                        const recipeId = dayMeals[mealKey] || dayMeals[meal] || dayMeals[meal.toLowerCase()];
+                html += '<div class="print-week-grid print-week-visual">';
 
-                        html += `<div class="print-meal-slot">`;
-                        html += `<div class="print-meal-label">${escapeHtml(meal)}</div>`;
+                // Header row
+                days.forEach(d => {
+                    html += `<div class="pvh-header">${d.dayName}<div class="print-day-date">${d.dayNum} ${d.monthStr}</div></div>`;
+                });
 
+                // For each meal category: label row, avatar row, name row
+                mealTypes.forEach((meal, mealIndex) => {
+                    const mealKey = meal.toLowerCase().replace(/[^a-z0-9]/g, '_');
+                    const labelClass = mealIndex === 0 ? 'pvh-label pvh-label-first' : 'pvh-label';
+
+                    // Label row
+                    days.forEach(() => {
+                        html += `<div class="${labelClass}">${escapeHtml(meal)}</div>`;
+                    });
+
+                    // Avatar row
+                    days.forEach(d => {
+                        const recipeId = d.dayMeals[mealKey] || d.dayMeals[meal] || d.dayMeals[meal.toLowerCase()];
                         if (recipeId && isLinkedMeal(recipeId)) {
                             const linkedRecipe = getLinkedRecipe(recipeId);
                             if (linkedRecipe) {
@@ -8464,9 +8460,8 @@ oregano"></textarea>
                                     ? `<img src="${escapeHtml(linkedRecipe.imageUrl)}" alt="">`
                                     : escapeHtml(linkedRecipe.emoji || recipeAvatarEmoji(linkedRecipe.name));
                                 html += `<div class="print-visual-avatar" style="background:${escapeHtml(recipeAvatarColor(linkedRecipe.name))}">${avatarContent}<div class="print-visual-linked-badge">↩ leftovers</div></div>`;
-                                html += `<div class="print-visual-name" style="font-style:italic;color:#555">${escapeHtml(getLinkedDisplayText(recipeId))}</div>`;
                             } else {
-                                html += `<div class="print-visual-linked">${escapeHtml(getLinkedDisplayText(recipeId))}</div>`;
+                                html += `<div class="print-visual-avatar pvh-empty"></div>`;
                             }
                         } else if (recipeId) {
                             const recipe = recipeMap.get(recipeId);
@@ -8475,22 +8470,39 @@ oregano"></textarea>
                                     ? `<img src="${escapeHtml(recipe.imageUrl)}" alt="">`
                                     : escapeHtml(recipe.emoji || recipeAvatarEmoji(recipe.name));
                                 html += `<div class="print-visual-avatar" style="background:${escapeHtml(recipeAvatarColor(recipe.name))}">${avatarContent}</div>`;
-                                html += `<div class="print-visual-name">${escapeHtml(recipe.name)}</div>`;
                             } else {
-                                html += `<div class="print-visual-empty"></div>`;
+                                html += `<div class="print-visual-avatar pvh-empty"></div>`;
                             }
                         } else {
-                            html += `<div class="print-visual-empty"></div>`;
+                            html += `<div class="print-visual-avatar pvh-empty"></div>`;
                         }
-
-                        html += `</div>`;
                     });
 
-                    if (note) {
-                        html += `<div class="print-day-note">📝 ${escapeHtml(note)}</div>`;
-                    }
+                    // Name row
+                    days.forEach(d => {
+                        const recipeId = d.dayMeals[mealKey] || d.dayMeals[meal] || d.dayMeals[meal.toLowerCase()];
+                        if (recipeId && isLinkedMeal(recipeId)) {
+                            const linkedRecipe = getLinkedRecipe(recipeId);
+                            if (linkedRecipe) {
+                                html += `<div class="print-visual-name" style="font-style:italic;color:#555">${escapeHtml(getLinkedDisplayText(recipeId))}</div>`;
+                            } else {
+                                html += `<div class="print-visual-name" style="color:#aaa;font-style:italic">${escapeHtml(getLinkedDisplayText(recipeId))}</div>`;
+                            }
+                        } else if (recipeId) {
+                            const recipe = recipeMap.get(recipeId);
+                            html += `<div class="print-visual-name">${recipe ? escapeHtml(recipe.name) : ''}</div>`;
+                        } else {
+                            html += `<div class="print-visual-name"></div>`;
+                        }
+                    });
+                });
 
-                    html += `</div>`;
+                // Note row — always 7 cells so columns stay aligned
+                const hasAnyNote = days.some(d => d.note);
+                if (hasAnyNote) {
+                    days.forEach(d => {
+                        html += `<div class="pvh-note">${d.note ? '📝 ' + escapeHtml(d.note) : ''}</div>`;
+                    });
                 }
 
                 html += '</div>';
