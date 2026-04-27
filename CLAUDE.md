@@ -321,7 +321,7 @@ New brand colour variables also added (not yet widely used): `--color-tomato`, `
 - **Standard "Meal Plan" header and date line hidden** in visual mode via `body.printing-planner.print-visual .print-header, #print-planner-date { display: none }` — the visual header embedded in the print body takes their place
 - **Plain mode unchanged:** unchecking the box (or printing month view) uses the original layout exactly as before
 - **Bug fix:** autocomplete no longer hides an exact-match ingredient — removed `&& name !== value` filter that suppressed suggestions when the typed text matched a stored ingredient name exactly
-- **Uniform thumbnail height:** `.print-visual-avatar` changed from `flex: 1; min-height: 55pt` to `height: 90pt; flex: none` — fixes thumbnails rendering at different heights when some day cards contain notes (notes reduce available flex space, causing avatars in those columns to be shorter)
+- **Uniform thumbnail height (row-based grid restructure):** HTML generation rebuilt from column-by-column (one flex card per day) to row-by-row (all 7 day headers first, then per meal category: all 7 labels → all 7 avatars → all 7 names, then all 7 note cells). Because every element in a row is a direct sibling in the CSS grid, `grid auto-rows` makes them identical height across all columns — day notes and varying text no longer affect adjacent columns. Thumbnail height is `150pt` (`.print-visual-avatar`); empty slots use `.pvh-empty` class with a neutral cream background.
 
 #### ✅ Phase 11 — Emoji picker overhaul
 
