@@ -13,7 +13,12 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <meta name="apple-mobile-web-app-title" content="KitchenListr">
     <link rel="manifest" href="manifest.json">
-    <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'><rect width='512' height='512' rx='96' fill='%234FB286'/><text x='256' y='340' font-size='280' text-anchor='middle' fill='white'>🍽</text></svg>">
+    <link rel="apple-touch-icon" sizes="180x180" href="icons/ios/180.png">
+    <link rel="apple-touch-icon" sizes="167x167" href="icons/ios/167.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="icons/ios/152.png">
+    <link rel="apple-touch-icon" sizes="120x120" href="icons/ios/120.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="icons/ios/32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="icons/ios/16.png">
     
     <!-- Content Security Policy: restrict sources to prevent XSS and supply-chain attacks -->
     <meta http-equiv="Content-Security-Policy" content="
@@ -1322,6 +1327,31 @@
             border-color: var(--accent-green);
             color: var(--accent-green);
             background: var(--accent-green-light);
+        }
+
+        /* Two-week view divider between week 1 and week 2 */
+        .two-week-divider {
+            grid-column: 1 / -1;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.25rem 0;
+        }
+        .two-week-divider::before,
+        .two-week-divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: var(--border-light);
+        }
+        .two-week-divider-label {
+            font-family: var(--font-body);
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            white-space: nowrap;
         }
 
         /* Meal Planner Grid */
@@ -4559,6 +4589,7 @@
                 <!-- View Toggle -->
                 <div class="view-toggle">
                     <button class="view-toggle-btn active" id="week-view-btn" onclick="showPlannerView('week')">Week</button>
+                    <button class="view-toggle-btn" id="twoweek-view-btn" onclick="showPlannerView('twoweek')">2 Weeks</button>
                     <button class="view-toggle-btn" id="month-view-btn" onclick="showPlannerView('month')">Month</button>
                 </div>
                 
@@ -5834,7 +5865,7 @@ oregano"></textarea>
         let currentWeekStart = getWeekStart(new Date());
         let currentViewingRecipeId = null;
         let currentMonth = new Date();
-        let currentPlannerView = 'week'; // 'week' or 'month'
+        let currentPlannerView = 'week'; // 'week', 'twoweek', or 'month'
         let shoppingDateFrom = null;
         let shoppingDateTo = null;
         
@@ -7140,13 +7171,31 @@ oregano"></textarea>
         }
 
         function renderPlanner() {
-            document.getElementById('week-display').textContent = formatWeekDisplay(currentWeekStart);
-            
+            const isTwoWeek = currentPlannerView === 'twoweek';
+            const dayCount = isTwoWeek ? 14 : 7;
+
+            if (isTwoWeek) {
+                const week2Start = new Date(currentWeekStart);
+                week2Start.setDate(week2Start.getDate() + 7);
+                const week2End = new Date(week2Start);
+                week2End.setDate(week2End.getDate() + 6);
+                document.getElementById('week-display').textContent =
+                    `${formatDisplayDate(currentWeekStart)} – ${formatDisplayDate(week2End)}`;
+            } else {
+                document.getElementById('week-display').textContent = formatWeekDisplay(currentWeekStart);
+            }
+
             const container = document.getElementById('planner-week');
             const today = getToday();
             let html = '';
-            
-            for (let i = 0; i < 7; i++) {
+
+            for (let i = 0; i < dayCount; i++) {
+                if (isTwoWeek && i === 7) {
+                    const week2Start = new Date(currentWeekStart);
+                    week2Start.setDate(week2Start.getDate() + 7);
+                    html += `<div class="two-week-divider"><span class="two-week-divider-label">${formatWeekDisplay(week2Start)}</span></div>`;
+                }
+
                 const date = new Date(currentWeekStart);
                 date.setDate(date.getDate() + i);
                 const dateStr = formatDate(date);
@@ -7348,7 +7397,7 @@ oregano"></textarea>
             // Determine smart default week based on planner view
             const todayWeek = getWeekStart(new Date());
             let defaultWeek;
-            if (currentPlannerView === 'week') {
+            if (currentPlannerView === 'week' || currentPlannerView === 'twoweek') {
                 // Default to the currently viewed week, but not in the past
                 defaultWeek = currentWeekStart.getTime() >= todayWeek.getTime() ? currentWeekStart : todayWeek;
             } else {
@@ -7523,14 +7572,17 @@ oregano"></textarea>
 
         function showPlannerView(view) {
             currentPlannerView = view;
-            
+
             document.getElementById('week-view-btn').classList.toggle('active', view === 'week');
+            document.getElementById('twoweek-view-btn').classList.toggle('active', view === 'twoweek');
             document.getElementById('month-view-btn').classList.toggle('active', view === 'month');
-            document.getElementById('week-view-container').style.display = view === 'week' ? 'block' : 'none';
+            document.getElementById('week-view-container').style.display = (view === 'week' || view === 'twoweek') ? 'block' : 'none';
             document.getElementById('month-view-container').style.display = view === 'month' ? 'block' : 'none';
-            
+
             if (view === 'month') {
                 renderMonthView();
+            } else {
+                renderPlanner();
             }
         }
         window.showPlannerView = showPlannerView;
@@ -7630,8 +7682,9 @@ oregano"></textarea>
             const strip = document.getElementById('week-strip');
             if (!strip) return;
             const today = getToday();
+            const dayCount = currentPlannerView === 'twoweek' ? 14 : 7;
             let html = '';
-            for (let i = 0; i < 7; i++) {
+            for (let i = 0; i < dayCount; i++) {
                 const date = new Date(currentWeekStart);
                 date.setDate(date.getDate() + i);
                 const dateStr = formatDate(date);

@@ -323,6 +323,25 @@ New brand colour variables also added (not yet widely used): `--color-tomato`, `
 - **Bug fix:** autocomplete no longer hides an exact-match ingredient — removed `&& name !== value` filter that suppressed suggestions when the typed text matched a stored ingredient name exactly
 - **Uniform thumbnail height (row-based grid restructure):** HTML generation rebuilt from column-by-column (one flex card per day) to row-by-row (all 7 day headers first, then per meal category: all 7 labels → all 7 avatars → all 7 names, then all 7 note cells). Because every element in a row is a direct sibling in the CSS grid, `grid auto-rows` makes them identical height across all columns — day notes and varying text no longer affect adjacent columns. Thumbnail height is `150pt` (`.print-visual-avatar`); empty slots use `.pvh-empty` class with a neutral cream background.
 
+#### ✅ Phase 24 — PWA icons
+
+- **Real PNG icons installed:** `icons/android/` (48–512px), `icons/ios/` (16–1024px), `icons/windows/` (various tile sizes) added to repo
+- **manifest.json updated:** `icons` array replaced — was data: URI SVG placeholders, now points to `icons/android/launchericon-{size}.png` for 48, 72, 96, 144, 192 (any + maskable), 512 (any + maskable)
+- **apple-touch-icon links:** `<link rel="apple-touch-icon">` in `<head>` replaced with file-backed PNG links for 180, 167, 152, 120px; `<link rel="icon">` added for 32px and 16px
+- **sw.js bumped to `kitchenlistr-v5`:** key icon files (192px android, 512px android, 180px ios) added to `PRECACHE_ASSETS`
+- **Note on installed PWA icon updates:** Android/Chrome may update the home screen icon within a day or two; iOS Safari bakes the icon in at install time — users must uninstall and reinstall to get the new icon
+
+#### ✅ Phase 25 — Two-week planner view
+
+- **"2 Weeks" toggle button** added to the planner view-toggle row between "Week" and "Month"
+- **`currentPlannerView`** now accepts `'week'`, `'twoweek'`, or `'month'`
+- **`showPlannerView('twoweek')`** shows the week-view-container (reuses the same nav/strip/grid) and calls `renderPlanner()`
+- **`renderPlanner()`** detects `isTwoWeek` and renders 14 day cards instead of 7; week-display header shows the full 14-day range (e.g. "13 Apr – 26 Apr"); a `.two-week-divider` separator element (styled with flanking rule lines and the second week's date range as a label) is injected at the grid-column-spanning position between the 7th and 8th card
+- **`renderWeekStrip()`** renders 14 day pills in twoweek mode (strip is scrollable so all fit)
+- **Week navigation:** `changeWeek(±1)` moves the window by 7 days in all modes, so the two-week view slides one week at a time — useful for comparing the current week against the next
+- **`equalizePlannerRows()`** unchanged: it queries all `.day-card` in the grid, so it naturally equalises meal-slot heights across all 14 cards in a 7-column grid (both visual rows share the same row heights)
+- **`openSuggestRecipeModal()`** treats `twoweek` same as `week` for the smart default-week logic
+
 #### ✅ Phase 11 — Emoji picker overhaul
 
 - **Full emoji set:** `FOOD_EMOJI` (~80 food-only) replaced with `ALL_EMOJI` — ~400 emoji across 8 categories: Smileys, People, Animals, Food & Drink, Travel & Places, Activities, Objects, Symbols; each entry has a keyword string for search
@@ -339,7 +358,7 @@ What was removed: `[data-theme]` CSS blocks, Theme Selector UI CSS, Appearance s
 When reintroducing themes, each theme block should override: `--bg-cream`, `--bg-white`, `--text-primary`, `--text-secondary`, `--accent-green`, `--accent-green-light`, `--accent-green-dark`, `--accent-mint`, `--border-light`, `--border-medium`, `--shadow-*`, `--accent-glow-soft`, `--accent-glow-mid`, `--accent-glow-strong`, `--font-heading`, `--font-body`. The `--color-*` pastel variables and `--radius-*` values should remain fixed.
 
 ### Deploy checklist
-1. Increment `CACHE_NAME` in `sw.js` when deploying significant changes (currently `kitchenlistr-v3`)
+1. Increment `CACHE_NAME` in `sw.js` when deploying significant changes (currently `kitchenlistr-v5`)
 2. Commit and push to `main` — GitHub Pages deploys automatically
 
 ---

@@ -1,5 +1,5 @@
 // KitchenListr Service Worker
-const CACHE_NAME = 'kitchenlistr-v4';
+const CACHE_NAME = 'kitchenlistr-v5';
 const OFFLINE_URL = '/kitchenlistr/offline.html';
 
 // Assets to cache immediately on install
@@ -7,6 +7,9 @@ const PRECACHE_ASSETS = [
   '/kitchenlistr/',
   '/kitchenlistr/index.html',
   '/kitchenlistr/manifest.json',
+  '/kitchenlistr/icons/android/launchericon-192x192.png',
+  '/kitchenlistr/icons/android/launchericon-512x512.png',
+  '/kitchenlistr/icons/ios/180.png',
   'https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,700;0,9..144,900;1,9..144,300&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&family=Caveat:wght@400;600&display=swap'
 ];
 
