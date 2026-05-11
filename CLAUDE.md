@@ -342,6 +342,15 @@ New brand colour variables also added (not yet widely used): `--color-tomato`, `
 - **`equalizePlannerRows()`** unchanged: it queries all `.day-card` in the grid, so it naturally equalises meal-slot heights across all 14 cards in a 7-column grid (both visual rows share the same row heights)
 - **`openSuggestRecipeModal()`** treats `twoweek` same as `week` for the smart default-week logic
 
+#### ✅ Phase 26 — Shopping list UTC/local date fix
+
+- **Root cause:** `new Date("YYYY-MM-DD")` parses date strings as UTC midnight, but `getToday()` and `shoppingDateFrom`/`shoppingDateTo` use local midnight. For UTC−N users (Americas) today's dateStr resolved to "yesterday" local time and was blocked by the `date < getToday()` hard floor in `shouldIncludeDateInRange`. For UTC+N users (BST etc.) the dateStr parsed to 1am+ local, exceeding a `shoppingDateTo` set to local midnight, so today was excluded from range checks too.
+- **`formatDate()` fixed:** switched from `date.toISOString().split('T')[0]` (UTC) to `getFullYear/getMonth/getDate()` (local), so the date picker inputs always show the correct local date.
+- **`parseDateStr(str)` added:** helper that parses `"YYYY-MM-DD"` as local midnight via `new Date(y, m-1, d)` — same pattern established in Phase 20 for `renderSameDayLinks`.
+- **Shopping list loops:** replaced `new Date(dateStr)` with `parseDateStr(dateStr)` in `renderShoppingList()`, `printShoppingList()`, and `getShoppingListData()`.
+- **`onDateRangeChange()`:** switched from `new Date(inputValue)` to `parseDateStr(inputValue)` so `shoppingDateFrom`/`shoppingDateTo` remain consistent local midnight dates when the user edits the pickers manually.
+- **`jumpToDate()` (planner):** same `parseDateStr` fix applied for consistency.
+
 #### ✅ Phase 11 — Emoji picker overhaul
 
 - **Full emoji set:** `FOOD_EMOJI` (~80 food-only) replaced with `ALL_EMOJI` — ~400 emoji across 8 categories: Smileys, People, Animals, Food & Drink, Travel & Places, Activities, Objects, Symbols; each entry has a keyword string for search
