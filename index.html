@@ -6490,7 +6490,16 @@ oregano"></textarea>
         }
 
         function formatDate(date) {
-            return date.toISOString().split('T')[0];
+            const y = date.getFullYear();
+            const m = String(date.getMonth() + 1).padStart(2, '0');
+            const d = String(date.getDate()).padStart(2, '0');
+            return `${y}-${m}-${d}`;
+        }
+
+        // Parse a "YYYY-MM-DD" string as local midnight (not UTC midnight)
+        function parseDateStr(str) {
+            const [y, m, d] = str.split('-').map(Number);
+            return new Date(y, m - 1, d);
         }
 
         function formatDisplayDate(date) {
@@ -7670,7 +7679,7 @@ oregano"></textarea>
 
         function jumpToDate(dateStr) {
             // Switch to week view and navigate to the week containing this date
-            const date = new Date(dateStr);
+            const date = parseDateStr(dateStr);
             currentWeekStart = getWeekStart(date);
             showPlannerView('week');
             renderPlanner();
@@ -7929,8 +7938,8 @@ oregano"></textarea>
             
             // Loop through all dates in the mealPlan
             Object.keys(mealPlan).forEach(dateStr => {
-                const date = new Date(dateStr);
-                
+                const date = parseDateStr(dateStr);
+
                 // Apply date range filter
                 if (!shouldIncludeDateInRange(date)) return;
                 
@@ -8252,20 +8261,20 @@ oregano"></textarea>
             const items = [];
             
             Object.keys(mealPlan).forEach(dateStr => {
-                const date = new Date(dateStr);
+                const date = parseDateStr(dateStr);
                 if (!shouldIncludeDateInRange(date)) return;
-                
+
                 const dayName = getDayName(date);
                 const dayMeals = mealPlan[dateStr] || {};
-                
+
                 // Iterate over actual meals in the plan
                 for (const mealKey in dayMeals) {
                     const recipeId = dayMeals[mealKey];
                     if (!recipeId) continue;
-                    
+
                     const recipe = recipeMap.get(recipeId);
                     if (!recipe || recipe.titleOnly || !recipe.ingredients) continue;
-                    
+
                     recipe.ingredients.forEach(ing => {
                         // Handle both old string format and new object format
                         let ingredientName, displayText;
@@ -8278,7 +8287,7 @@ oregano"></textarea>
                         } else {
                             return;
                         }
-                        
+
                         const uniqueKey = `${dateStr}_${mealKey}_${recipe.id}_${ingredientName.toLowerCase()}`;
                         
                         // Skip if already have (when hideChecked is true)
@@ -8672,8 +8681,8 @@ oregano"></textarea>
             
             // Add recipe ingredients from all meal plan dates
             Object.keys(mealPlan).forEach(dateStr => {
-                const date = new Date(dateStr);
-                
+                const date = parseDateStr(dateStr);
+
                 // Apply date range filter
                 if (!shouldIncludeDateInRange(date)) return;
                 
@@ -8989,8 +8998,8 @@ oregano"></textarea>
             const fromInput = document.getElementById('date-from');
             const toInput = document.getElementById('date-to');
             
-            shoppingDateFrom = fromInput.value ? new Date(fromInput.value) : null;
-            shoppingDateTo = toInput.value ? new Date(toInput.value) : null;
+            shoppingDateFrom = fromInput.value ? parseDateStr(fromInput.value) : null;
+            shoppingDateTo = toInput.value ? parseDateStr(toInput.value) : null;
             
             // Clear active preset buttons
             document.querySelectorAll('.date-preset-btn').forEach(btn => {
