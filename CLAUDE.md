@@ -342,6 +342,25 @@ New brand colour variables also added (not yet widely used): `--color-tomato`, `
 - **`equalizePlannerRows()`** unchanged: it queries all `.day-card` in the grid, so it naturally equalises meal-slot heights across all 14 cards in a 7-column grid (both visual rows share the same row heights)
 - **`openSuggestRecipeModal()`** treats `twoweek` same as `week` for the smart default-week logic
 
+#### ✅ Phase 26 — Recipe source URL (clickable link)
+
+- **`sourceUrl` field added to recipe data model:** saved to Firestore alongside `imageUrl`; empty string for recipes without a link — fully backward-compatible
+- **Recipe edit/add form:** new "Recipe link (optional)" URL input (`#recipe-source-url`) below the Image URL field; `openAddRecipeModal()` clears it on open; `editCurrentRecipe()` populates it; `saveRecipe()` reads it and includes it in the recipe object
+- **Recipe view modal:** if `recipe.sourceUrl` is set, a "View instructions →" link (`.recipe-source-link`, tomato-coloured) is appended to the view body and opens the URL in a new tab
+- **URL import flow updated:** `fetchRecipeFromUrl()` now sets `_pendingUrlRecipe.sourceUrl = url` (the fetched page URL); the bookmarklet payload gains `url: window.location.href`; `checkForRecipeImport()` reads `json.url` and validates it (`https://`, ≤2000 chars) before setting it as `sourceUrl`; `confirmUrlRecipeImport()` includes `sourceUrl` when saving
+- **`isValidSharePayload()` → `validRecipe()`:** `sourceUrl` validated the same way as `imageUrl` (must be `https://` if set, ≤2000 chars)
+
+#### ✅ Phase 27 — Visual thumbnail planner view (desktop)
+
+- **"Visual" toggle button** added to the planner view-toggle row; hidden on screens <768px via `@media (max-width: 767px) { #visual-view-btn { display: none !important } }`
+- **`currentPlannerView`** now accepts `'week'`, `'twoweek'`, `'month'`, or `'visual'`
+- **`showPlannerView('visual')`** shows `week-view-container` (reuses nav/strip/grid) and calls `renderPlanner()`
+- **`renderVisualPlanner(container, today)`:** new function; renders a `.planner-week-visual` 7-column CSS grid; row 1 = day headers (`.pvw-header`, today = tomato, past = dimmed); subsequent rows = one row per meal type; each cell (`.pvw-cell`) shows: meal label → colour-coded avatar (pastel bg + emoji or `<img>`) → recipe name (truncated, ellipsis); empty slots get `.pvw-empty` dashed border; linked meals show a `↩` badge over the avatar; clicking any cell opens the existing recipe selector modal via `data-action="openSelectRecipeModal"`
+- **`renderPlanner()`** detects `isVisual`, calls `renderVisualPlanner()` then `renderWeekStrip()` and returns early
+- **`equalizePlannerRows()`** returns immediately when `currentPlannerView === 'visual'` — CSS grid handles row heights natively
+- **`openSuggestRecipeModal()`** treats `'visual'` same as `'week'` for the smart default-week logic
+- **`sw.js` bumped to `kitchenlistr-v6`**
+
 #### ✅ Phase 11 — Emoji picker overhaul
 
 - **Full emoji set:** `FOOD_EMOJI` (~80 food-only) replaced with `ALL_EMOJI` — ~400 emoji across 8 categories: Smileys, People, Animals, Food & Drink, Travel & Places, Activities, Objects, Symbols; each entry has a keyword string for search
@@ -358,7 +377,7 @@ What was removed: `[data-theme]` CSS blocks, Theme Selector UI CSS, Appearance s
 When reintroducing themes, each theme block should override: `--bg-cream`, `--bg-white`, `--text-primary`, `--text-secondary`, `--accent-green`, `--accent-green-light`, `--accent-green-dark`, `--accent-mint`, `--border-light`, `--border-medium`, `--shadow-*`, `--accent-glow-soft`, `--accent-glow-mid`, `--accent-glow-strong`, `--font-heading`, `--font-body`. The `--color-*` pastel variables and `--radius-*` values should remain fixed.
 
 ### Deploy checklist
-1. Increment `CACHE_NAME` in `sw.js` when deploying significant changes (currently `kitchenlistr-v5`)
+1. Increment `CACHE_NAME` in `sw.js` when deploying significant changes (currently `kitchenlistr-v6`)
 2. Commit and push to `main` — GitHub Pages deploys automatically
 
 ---

@@ -932,6 +932,18 @@
             object-fit: cover;
         }
 
+        .recipe-source-link {
+            display: inline-block;
+            margin-top: 1rem;
+            color: var(--accent-green);
+            font-weight: 600;
+            font-size: 0.9rem;
+            text-decoration: none;
+        }
+        .recipe-source-link:hover {
+            text-decoration: underline;
+        }
+
         /* Forms */
         .form-group {
             margin-bottom: 1.25rem;
@@ -1372,6 +1384,135 @@
             .planner-week {
                 grid-template-columns: 1fr;
             }
+        }
+
+        /* Visual Planner View (desktop only) */
+        @media (max-width: 767px) {
+            #visual-view-btn { display: none !important; }
+        }
+
+        .planner-week-visual {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 0.4rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .pvw-header {
+            background: var(--bg-cream);
+            border-radius: var(--radius-sm);
+            padding: 0.4rem 0.25rem;
+            text-align: center;
+        }
+        .pvw-day-name {
+            display: block;
+            font-weight: 600;
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+        }
+        .pvw-day-date {
+            display: block;
+            font-size: 0.65rem;
+            color: var(--text-secondary);
+            opacity: 0.75;
+        }
+        .pvw-header.today .pvw-day-name,
+        .pvw-header.today .pvw-day-date {
+            color: var(--accent-green);
+        }
+        .pvw-header.past .pvw-day-name,
+        .pvw-header.past .pvw-day-date {
+            opacity: 0.55;
+        }
+
+        .pvw-cell {
+            background: var(--bg-white);
+            border-radius: var(--radius-sm);
+            overflow: hidden;
+            cursor: pointer;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+            display: flex;
+            flex-direction: column;
+            transition: box-shadow 0.15s, transform 0.1s;
+        }
+        .pvw-cell:hover {
+            box-shadow: 0 3px 10px rgba(0,0,0,0.12);
+            transform: translateY(-1px);
+        }
+        .pvw-cell.pvw-empty {
+            border: 1.5px dashed var(--border-light);
+            box-shadow: none;
+            background: transparent;
+        }
+        .pvw-cell.pvw-empty:hover {
+            border-color: var(--accent-green);
+            transform: none;
+        }
+        .pvw-cell.past {
+            opacity: 0.55;
+        }
+
+        .pvw-meal-label {
+            font-size: 0.6rem;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            padding: 0.3rem 0.35rem 0;
+            font-family: var(--font-body);
+            font-weight: 600;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .pvw-avatar {
+            width: 100%;
+            flex: 1;
+            min-height: 55px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.6rem;
+            position: relative;
+            overflow: hidden;
+        }
+        .pvw-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .pvw-avatar-empty {
+            background: transparent;
+            color: var(--border-light);
+            font-size: 1.2rem;
+            font-weight: 300;
+        }
+        .pvw-linked-badge {
+            position: absolute;
+            top: 3px;
+            right: 3px;
+            background: rgba(0,0,0,0.45);
+            color: white;
+            font-size: 0.6rem;
+            padding: 1px 4px;
+            border-radius: var(--radius-pill);
+        }
+
+        .pvw-name {
+            font-size: 0.68rem;
+            padding: 0.2rem 0.35rem 0.3rem;
+            text-align: center;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            color: var(--text-primary);
+            font-family: var(--font-body);
+            font-weight: 500;
+            min-height: 1.4em;
+        }
+        .pvw-name-linked {
+            font-style: italic;
+            color: var(--text-secondary);
         }
 
         .day-card {
@@ -4591,6 +4732,7 @@
                     <button class="view-toggle-btn active" id="week-view-btn" onclick="showPlannerView('week')">Week</button>
                     <button class="view-toggle-btn" id="twoweek-view-btn" onclick="showPlannerView('twoweek')">2 Weeks</button>
                     <button class="view-toggle-btn" id="month-view-btn" onclick="showPlannerView('month')">Month</button>
+                    <button class="view-toggle-btn" id="visual-view-btn" onclick="showPlannerView('visual')">Visual</button>
                 </div>
                 
                 <!-- Week View -->
@@ -4966,6 +5108,12 @@
                     <div class="form-group">
                         <label class="form-label" for="recipe-image-url">Image URL (optional)</label>
                         <input type="url" class="form-input" id="recipe-image-url" placeholder="https://example.com/image.jpg">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="recipe-source-url">Recipe link (optional)</label>
+                        <input type="url" class="form-input" id="recipe-source-url" placeholder="https://..." maxlength="2000">
+                        <p class="form-hint">A link to the original recipe or instructions.</p>
                     </div>
 
                     <div class="form-group">
@@ -6406,6 +6554,7 @@ oregano"></textarea>
                     ingredients: recipe.ingredients,
                     notes: recipe.notes,
                     imageUrl: recipe.imageUrl || '',
+                    sourceUrl: recipe.sourceUrl || '',
                     emoji: recipe.emoji || '',
                     categories: cats,
                     category: cats[0] || ''  // keep for backward compat
@@ -6677,6 +6826,7 @@ oregano"></textarea>
             document.getElementById('recipe-title-only').checked = false;
             document.getElementById('bulk-ingredients').value = '';
             document.getElementById('recipe-image-url').value = '';
+            document.getElementById('recipe-source-url').value = '';
             const emojiBtn2 = document.getElementById('recipe-emoji-btn');
             const emojiInput2 = document.getElementById('recipe-emoji');
             if (emojiBtn2) emojiBtn2.textContent = '🍽️';
@@ -6927,6 +7077,7 @@ oregano"></textarea>
             const titleOnly = document.getElementById('recipe-title-only').checked;
             const notes = document.getElementById('recipe-notes').value.trim();
             const imageUrl = document.getElementById('recipe-image-url').value.trim();
+            const sourceUrl = document.getElementById('recipe-source-url').value.trim();
             const emoji = document.getElementById('recipe-emoji')?.value || '';
             const categories = Array.from(
                 document.querySelectorAll('#recipe-categories-chips .recipe-cat-chip.selected')
@@ -6947,8 +7098,8 @@ oregano"></textarea>
                 });
             }
 
-            const recipe = { id, name, titleOnly, ingredients, notes, imageUrl, emoji, categories };
-            
+            const recipe = { id, name, titleOnly, ingredients, notes, imageUrl, sourceUrl, emoji, categories };
+
             await saveRecipeToFirebase(recipe);
             closeRecipeModal();
         }
@@ -6996,7 +7147,11 @@ oregano"></textarea>
             if (recipe.notes) {
                 html += `<h4 class="mt-2 mb-1">Notes</h4><p>${escapeHtml(recipe.notes).replace(/\n/g, '<br>')}</p>`;
             }
-            
+
+            if (recipe.sourceUrl) {
+                html += `<a href="${escapeHtml(recipe.sourceUrl)}" target="_blank" rel="noopener noreferrer" class="recipe-source-link">View instructions →</a>`;
+            }
+
             document.getElementById('view-recipe-body').innerHTML = html;
             document.getElementById('view-recipe-modal').classList.add('active');
         }
@@ -7065,6 +7220,7 @@ oregano"></textarea>
             document.getElementById('recipe-title-only').checked = recipe.titleOnly;
             document.getElementById('recipe-notes').value = recipe.notes || '';
             document.getElementById('recipe-image-url').value = recipe.imageUrl || '';
+            document.getElementById('recipe-source-url').value = recipe.sourceUrl || '';
             // Populate emoji
             const emojiBtn = document.getElementById('recipe-emoji-btn');
             const emojiInput = document.getElementById('recipe-emoji');
@@ -7170,8 +7326,68 @@ oregano"></textarea>
             return mealCategories.length > 0 ? mealCategories : ['Breakfast', 'Lunch', 'Dinner'];
         }
 
+        function renderVisualPlanner(container, today) {
+            const mealTypes = getMealTypes();
+            let html = '<div class="planner-week-visual">';
+
+            // Row 1: day headers
+            for (let i = 0; i < 7; i++) {
+                const date = new Date(currentWeekStart);
+                date.setDate(date.getDate() + i);
+                const isPast = date < today;
+                const isToday = date.getTime() === today.getTime();
+                const cls = isToday ? 'today' : isPast ? 'past' : '';
+                html += `<div class="pvw-header ${cls}">
+                    <span class="pvw-day-name">${getDayName(date)}</span>
+                    <span class="pvw-day-date">${formatDisplayDate(date)}</span>
+                </div>`;
+            }
+
+            // One row per meal type
+            for (const meal of mealTypes) {
+                const mealKey = meal.toLowerCase().replace(/[^a-z0-9]/g, '_');
+                for (let i = 0; i < 7; i++) {
+                    const date = new Date(currentWeekStart);
+                    date.setDate(date.getDate() + i);
+                    const dateStr = formatDate(date);
+                    const isPast = date < today;
+                    const dayMeals = mealPlan[dateStr] || {};
+                    const recipeId = dayMeals[mealKey] || dayMeals[meal] || dayMeals[meal.toLowerCase()];
+                    const linked = isLinkedMeal(recipeId);
+                    const recipe = recipeId && !linked ? recipeMap.get(recipeId) : null;
+                    const linkedRecipe = linked ? getLinkedRecipe(recipeId) : null;
+                    const displayRecipe = recipe || linkedRecipe;
+                    const pastCls = isPast ? ' past' : '';
+
+                    if (displayRecipe) {
+                        const color = recipeAvatarColor(displayRecipe.name);
+                        const emoji = displayRecipe.emoji || recipeAvatarEmoji(displayRecipe.name);
+                        const avatarContent = displayRecipe.imageUrl
+                            ? `<img src="${escapeHtml(displayRecipe.imageUrl)}" alt="" loading="lazy">`
+                            : escapeHtml(emoji);
+                        const avatarBg = displayRecipe.imageUrl ? '#f0f0f0' : color;
+                        html += `<div class="pvw-cell${pastCls}" data-action="openSelectRecipeModal" data-date="${dateStr}" data-meal="${mealKey}">
+                            <div class="pvw-meal-label">${escapeHtml(meal)}</div>
+                            <div class="pvw-avatar" style="background:${avatarBg}">${linked ? '<div class="pvw-linked-badge">↩</div>' : ''}${avatarContent}</div>
+                            <div class="pvw-name${linked ? ' pvw-name-linked' : ''}">${escapeHtml(getMealDisplay(recipeId) || '')}</div>
+                        </div>`;
+                    } else {
+                        html += `<div class="pvw-cell pvw-empty${pastCls}" data-action="openSelectRecipeModal" data-date="${dateStr}" data-meal="${mealKey}">
+                            <div class="pvw-meal-label">${escapeHtml(meal)}</div>
+                            <div class="pvw-avatar pvw-avatar-empty">+</div>
+                            <div class="pvw-name"></div>
+                        </div>`;
+                    }
+                }
+            }
+
+            html += '</div>';
+            container.innerHTML = html;
+        }
+
         function renderPlanner() {
             const isTwoWeek = currentPlannerView === 'twoweek';
+            const isVisual = currentPlannerView === 'visual';
             const dayCount = isTwoWeek ? 14 : 7;
 
             if (isTwoWeek) {
@@ -7187,6 +7403,13 @@ oregano"></textarea>
 
             const container = document.getElementById('planner-week');
             const today = getToday();
+
+            if (isVisual) {
+                renderVisualPlanner(container, today);
+                renderWeekStrip();
+                return;
+            }
+
             let html = '';
 
             for (let i = 0; i < dayCount; i++) {
@@ -7267,6 +7490,7 @@ oregano"></textarea>
         window.renderPlanner = renderPlanner;
 
         function equalizePlannerRows() {
+            if (currentPlannerView === 'visual') return; // CSS grid handles row heights in visual mode
             if (window.innerWidth <= 500) return; // single-column layout – no row alignment needed
             const grid = document.getElementById('planner-week');
             if (!grid) return;
@@ -7397,7 +7621,7 @@ oregano"></textarea>
             // Determine smart default week based on planner view
             const todayWeek = getWeekStart(new Date());
             let defaultWeek;
-            if (currentPlannerView === 'week' || currentPlannerView === 'twoweek') {
+            if (currentPlannerView === 'week' || currentPlannerView === 'twoweek' || currentPlannerView === 'visual') {
                 // Default to the currently viewed week, but not in the past
                 defaultWeek = currentWeekStart.getTime() >= todayWeek.getTime() ? currentWeekStart : todayWeek;
             } else {
@@ -7576,7 +7800,8 @@ oregano"></textarea>
             document.getElementById('week-view-btn').classList.toggle('active', view === 'week');
             document.getElementById('twoweek-view-btn').classList.toggle('active', view === 'twoweek');
             document.getElementById('month-view-btn').classList.toggle('active', view === 'month');
-            document.getElementById('week-view-container').style.display = (view === 'week' || view === 'twoweek') ? 'block' : 'none';
+            document.getElementById('visual-view-btn').classList.toggle('active', view === 'visual');
+            document.getElementById('week-view-container').style.display = (view === 'week' || view === 'twoweek' || view === 'visual') ? 'block' : 'none';
             document.getElementById('month-view-container').style.display = view === 'month' ? 'block' : 'none';
 
             if (view === 'month') {
@@ -10507,7 +10732,7 @@ oregano"></textarea>
 
             // Generate bookmarklet href pointing at this app's URL
             const appUrl = window.location.origin + window.location.pathname;
-            const bmCode = `(function(){var s=document.querySelectorAll('script[type="application/ld+json"]'),r=null;for(var i=0;i<s.length;i++){try{var d=JSON.parse(s[i].textContent);if(d['@type']==='Recipe'){r=d;break;}if(Array.isArray(d)){var f=d.find(function(n){return n['@type']==='Recipe';});if(f){r=f;break;}}if(d['@graph']&&Array.isArray(d['@graph'])){var f=d['@graph'].find(function(n){return n['@type']==='Recipe';});if(f){r=f;break;}}}catch(e){}}if(!r){alert('No recipe data found on this page.');return;}var p=JSON.stringify({name:r.name||'',recipeIngredient:r.recipeIngredient||[],description:r.description||'',image:r.image||''});window.location.href='${appUrl}?recipe-import='+encodeURIComponent(btoa(unescape(encodeURIComponent(p))));})();`;
+            const bmCode = `(function(){var s=document.querySelectorAll('script[type="application/ld+json"]'),r=null;for(var i=0;i<s.length;i++){try{var d=JSON.parse(s[i].textContent);if(d['@type']==='Recipe'){r=d;break;}if(Array.isArray(d)){var f=d.find(function(n){return n['@type']==='Recipe';});if(f){r=f;break;}}if(d['@graph']&&Array.isArray(d['@graph'])){var f=d['@graph'].find(function(n){return n['@type']==='Recipe';});if(f){r=f;break;}}}catch(e){}}if(!r){alert('No recipe data found on this page.');return;}var p=JSON.stringify({name:r.name||'',recipeIngredient:r.recipeIngredient||[],description:r.description||'',image:r.image||'',url:window.location.href});window.location.href='${appUrl}?recipe-import='+encodeURIComponent(btoa(unescape(encodeURIComponent(p))));})();`;
             document.getElementById('recipe-bookmarklet-link').href = 'javascript:' + bmCode;
 
             document.getElementById('recipe-url-import-modal').classList.add('active');
@@ -10559,6 +10784,7 @@ oregano"></textarea>
                 }
 
                 _pendingUrlRecipe = buildRecipeFromSchema(schemaRecipe);
+                _pendingUrlRecipe.sourceUrl = url;
                 showRecipeUrlPreview(_pendingUrlRecipe);
                 confirmBtn.disabled = false;
             } catch (err) {
@@ -10669,6 +10895,7 @@ oregano"></textarea>
                 ingredients: _pendingUrlRecipe.ingredients,
                 notes: _pendingUrlRecipe.notes,
                 imageUrl: _pendingUrlRecipe.imageUrl,
+                sourceUrl: _pendingUrlRecipe.sourceUrl || '',
                 emoji: '',
                 categories: [],
                 category: ''
@@ -10703,6 +10930,9 @@ oregano"></textarea>
                 const json = JSON.parse(decodeURIComponent(escape(atob(data))));
                 openRecipeUrlImportModal();
                 _pendingUrlRecipe = buildRecipeFromSchema(json);
+                if (json.url && typeof json.url === 'string' && /^https:\/\//i.test(json.url) && json.url.length <= 2000) {
+                    _pendingUrlRecipe.sourceUrl = json.url;
+                }
                 showRecipeUrlPreview(_pendingUrlRecipe);
                 document.getElementById('recipe-url-confirm-btn').disabled = false;
             } catch (e) {
@@ -10730,6 +10960,11 @@ oregano"></textarea>
                     // Block javascript: and data: URIs
                     if (r.imageUrl && !/^https:\/\//i.test(r.imageUrl)) return false;
                     if (r.imageUrl.length > 2000) return false;
+                }
+                if (r.sourceUrl !== undefined) {
+                    if (typeof r.sourceUrl !== 'string') return false;
+                    if (r.sourceUrl && !/^https:\/\//i.test(r.sourceUrl)) return false;
+                    if (r.sourceUrl.length > 2000) return false;
                 }
                 if (r.ingredients !== undefined) {
                     if (!Array.isArray(r.ingredients)) return false;
