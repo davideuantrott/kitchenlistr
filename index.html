@@ -8155,9 +8155,9 @@ oregano"></textarea>
             // Loop through all dates in the mealPlan
             Object.keys(mealPlan).forEach(dateStr => {
                 const date = new Date(dateStr);
-                
+
                 // Apply date range filter
-                if (!shouldIncludeDateInRange(date)) return;
+                if (!shouldIncludeDateInRange(dateStr)) return;
                 
                 const dayName = getDayName(date);
                 const dayMeals = mealPlan[dateStr] || {};
@@ -8478,11 +8478,11 @@ oregano"></textarea>
             
             Object.keys(mealPlan).forEach(dateStr => {
                 const date = new Date(dateStr);
-                if (!shouldIncludeDateInRange(date)) return;
-                
+                if (!shouldIncludeDateInRange(dateStr)) return;
+
                 const dayName = getDayName(date);
                 const dayMeals = mealPlan[dateStr] || {};
-                
+
                 // Iterate over actual meals in the plan
                 for (const mealKey in dayMeals) {
                     const recipeId = dayMeals[mealKey];
@@ -8898,9 +8898,9 @@ oregano"></textarea>
             // Add recipe ingredients from all meal plan dates
             Object.keys(mealPlan).forEach(dateStr => {
                 const date = new Date(dateStr);
-                
+
                 // Apply date range filter
-                if (!shouldIncludeDateInRange(date)) return;
+                if (!shouldIncludeDateInRange(dateStr)) return;
                 
                 const dayName = getDayName(date);
                 const dayMeals = mealPlan[dateStr] || {};
@@ -9170,24 +9170,19 @@ oregano"></textarea>
         // Date Filtering Helper
         // =====================
 
-        function shouldIncludeDateInRange(date) {
-            // Past dates are never included in the shopping list
-            if (date < getToday()) return false;
-            // If no range set, include from today onwards
+        function shouldIncludeDateInRange(dateStr) {
+            // Compare YYYY-MM-DD strings directly to avoid UTC/local timezone mismatch.
+            // formatDate() consistently produces the mealPlan keys and shoppingDateFrom/To values.
+            const todayStr = formatDate(getToday());
+            if (dateStr < todayStr) return false;
             if (!shoppingDateFrom && !shoppingDateTo) {
-                return date >= getToday();
+                return dateStr >= todayStr;
             }
-            
-            const dateTime = date.getTime();
-            
-            if (shoppingDateFrom && shoppingDateTo) {
-                return dateTime >= shoppingDateFrom.getTime() && dateTime <= shoppingDateTo.getTime();
-            } else if (shoppingDateFrom) {
-                return dateTime >= shoppingDateFrom.getTime();
-            } else if (shoppingDateTo) {
-                return dateTime <= shoppingDateTo.getTime();
-            }
-            
+            const fromStr = shoppingDateFrom ? formatDate(shoppingDateFrom) : null;
+            const toStr = shoppingDateTo ? formatDate(shoppingDateTo) : null;
+            if (fromStr && toStr) return dateStr >= fromStr && dateStr <= toStr;
+            if (fromStr) return dateStr >= fromStr;
+            if (toStr) return dateStr <= toStr;
             return true;
         }
 

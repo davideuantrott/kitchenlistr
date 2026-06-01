@@ -411,6 +411,11 @@ A formal code review was conducted (see `CODE-REVIEW.md`). The following changes
 - **`manifest.json`:** `theme_color` and `background_color` updated to Warm Pantry tokens (`#F2654A` / `#F5F5F0`).
 - **`offline.html`:** All colours updated to Warm Pantry tokens.
 
+#### ✅ Phase 28 — Shopping list date filter timezone bug fix
+
+- **Root cause:** `formatDate()` uses `.toISOString()` (UTC output), so in UTC+ timezones (e.g. BST, UTC+1) a meal saved for local midnight is stored with a key one day behind (e.g. local June 1 → key `'2026-05-31'`). The shopping list then called `new Date('2026-05-31')` (UTC midnight May 31), which compared against `getToday()` (local midnight June 1) appeared to be in the past — the hard floor returned `false` and today's meal ingredients were silently excluded.
+- **Fix:** `shouldIncludeDateInRange` now accepts a `YYYY-MM-DD` string instead of a `Date` object and compares using string comparison against `formatDate(getToday())` / `formatDate(shoppingDateFrom)` / `formatDate(shoppingDateTo)`. Because `formatDate` is used consistently to generate both the mealPlan keys and the range boundaries, lexicographic string comparison is always timezone-correct. All three call sites (`renderShoppingList`, `printShoppingList`, `getShoppingListData`) updated to pass `dateStr` directly.
+
 ### Known deferred issues (do not attempt without careful planning)
 See `CODE-REVIEW.md` for full rationale on each. Summary:
 - **Debounce re-renders (#5):** Changes render timing across 6+ snapshot listeners; risk of masking fast-path UI bugs.
