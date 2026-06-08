@@ -6639,21 +6639,13 @@ oregano"></textarea>
         }
 
         function formatDate(date) {
-            return date.toISOString().split('T')[0];
-        }
-
-        // Returns a YYYY-MM-DD string using LOCAL date parts (not UTC).
-        // Use this for date inputs so users see the correct local date,
-        // even in UTC+ timezones where formatDate() would give yesterday.
-        function formatLocalDate(date) {
             const y = date.getFullYear();
             const m = String(date.getMonth() + 1).padStart(2, '0');
             const d = String(date.getDate()).padStart(2, '0');
             return `${y}-${m}-${d}`;
         }
 
-        // Parses a YYYY-MM-DD input string as LOCAL midnight, so that
-        // formatDate(parseDateInput(str)) is consistent with mealPlan keys.
+        // Parses a YYYY-MM-DD string as LOCAL midnight, consistent with formatDate().
         function parseDateInput(str) {
             if (!str) return null;
             const [y, m, d] = str.split('-').map(Number);
@@ -7332,7 +7324,7 @@ oregano"></textarea>
         function getLinkedDisplayText(recipeId) {
             const p = parseLinkedMeal(recipeId);
             if (p === null) return '↩ Linked meal';
-            const date = new Date(p.targetDateStr);
+            const date = parseDateInput(p.targetDateStr);
             const dayAbbr = getDayName(date).substring(0, 3);
             const recipe = getLinkedRecipe(recipeId);
             const name = recipe ? recipe.name : 'removed meal';
@@ -7913,7 +7905,7 @@ oregano"></textarea>
 
         function jumpToDate(dateStr) {
             // Switch to week view and navigate to the week containing this date
-            const date = new Date(dateStr);
+            const date = parseDateInput(dateStr);
             currentWeekStart = getWeekStart(date);
             showPlannerView('week');
             renderPlanner();
@@ -8172,7 +8164,7 @@ oregano"></textarea>
             
             // Loop through all dates in the mealPlan
             Object.keys(mealPlan).forEach(dateStr => {
-                const date = new Date(dateStr);
+                const date = parseDateInput(dateStr);
 
                 // Apply date range filter
                 if (!shouldIncludeDateInRange(dateStr)) return;
@@ -8495,7 +8487,7 @@ oregano"></textarea>
             const items = [];
             
             Object.keys(mealPlan).forEach(dateStr => {
-                const date = new Date(dateStr);
+                const date = parseDateInput(dateStr);
                 if (!shouldIncludeDateInRange(dateStr)) return;
 
                 const dayName = getDayName(date);
@@ -8505,10 +8497,10 @@ oregano"></textarea>
                 for (const mealKey in dayMeals) {
                     const recipeId = dayMeals[mealKey];
                     if (!recipeId) continue;
-                    
+
                     const recipe = recipeMap.get(recipeId);
                     if (!recipe || recipe.titleOnly || !recipe.ingredients) continue;
-                    
+
                     recipe.ingredients.forEach(ing => {
                         // Handle both old string format and new object format
                         let ingredientName, displayText;
@@ -8915,19 +8907,19 @@ oregano"></textarea>
             
             // Add recipe ingredients from all meal plan dates
             Object.keys(mealPlan).forEach(dateStr => {
-                const date = new Date(dateStr);
+                const date = parseDateInput(dateStr);
 
                 // Apply date range filter
                 if (!shouldIncludeDateInRange(dateStr)) return;
-                
+
                 const dayName = getDayName(date);
                 const dayMeals = mealPlan[dateStr] || {};
-                
+
                 // Iterate over actual meals in the plan
                 for (const mealKey in dayMeals) {
                     const recipeId = dayMeals[mealKey];
                     if (!recipeId) continue;
-                    
+
                     const recipe = recipeMap.get(recipeId);
                     if (!recipe || recipe.titleOnly || !recipe.ingredients) continue;
                     
@@ -8976,7 +8968,7 @@ oregano"></textarea>
             const items = getShoppingListData();
             const today = getToday();
             // Export only items still needed to buy, excluding past meal dates
-            const needItems = items.filter(i => !i.have && (!i.dateStr || new Date(i.dateStr) >= today));
+            const needItems = items.filter(i => !i.have && (!i.dateStr || parseDateInput(i.dateStr) >= today));
 
             let text = '🍽 SHOPPING LIST\n';
             text += `${formatDisplayDate(shoppingDateFrom)} – ${formatDisplayDate(shoppingDateTo)}\n`;
@@ -9008,7 +9000,7 @@ oregano"></textarea>
             const items = getShoppingListData();
             const today = getToday();
             // Export only items still needed to buy, excluding past meal dates
-            const needItems = items.filter(i => !i.have && (!i.dateStr || new Date(i.dateStr) >= today));
+            const needItems = items.filter(i => !i.have && (!i.dateStr || parseDateInput(i.dateStr) >= today));
 
             // CSV header
             let csv = 'Item,Date,Recipe\n';
@@ -9189,8 +9181,8 @@ oregano"></textarea>
         // =====================
 
         function shouldIncludeDateInRange(dateStr) {
-            // Compare YYYY-MM-DD strings directly to avoid UTC/local timezone mismatch.
-            // formatDate() consistently produces the mealPlan keys and shoppingDateFrom/To values.
+            // Compare YYYY-MM-DD strings directly. formatDate() uses local date parts,
+            // so all mealPlan keys, shoppingDateFrom/To, and todayStr are consistent.
             const todayStr = formatDate(getToday());
             if (dateStr < todayStr) return false;
             if (!shoppingDateFrom && !shoppingDateTo) {
@@ -9212,8 +9204,8 @@ oregano"></textarea>
             shoppingDateFrom = today;
             shoppingDateTo = weekEnd;
 
-            document.getElementById('date-from').value = formatLocalDate(today);
-            document.getElementById('date-to').value = formatLocalDate(weekEnd);
+            document.getElementById('date-from').value = formatDate(today);
+            document.getElementById('date-to').value = formatDate(weekEnd);
 
             // Ensure the 7-day preset button is shown as active on init
             document.querySelectorAll('.date-preset-btn').forEach(btn => {
@@ -9277,8 +9269,8 @@ oregano"></textarea>
             shoppingDateFrom = from;
             shoppingDateTo = to;
             
-            document.getElementById('date-from').value = formatLocalDate(from);
-            document.getElementById('date-to').value = formatLocalDate(to);
+            document.getElementById('date-from').value = formatDate(from);
+            document.getElementById('date-to').value = formatDate(to);
 
             // Update active preset button
             document.querySelectorAll('.date-preset-btn').forEach(btn => {
@@ -9316,8 +9308,8 @@ oregano"></textarea>
 
             const fromInput = document.getElementById('date-from');
             const toInput = document.getElementById('date-to');
-            if (fromInput) fromInput.value = formatLocalDate(shoppingDateFrom);
-            if (toInput) toInput.value = formatLocalDate(shoppingDateTo);
+            if (fromInput) fromInput.value = formatDate(shoppingDateFrom);
+            if (toInput) toInput.value = formatDate(shoppingDateTo);
 
             // Clear preset active state
             document.querySelectorAll('.date-preset-btn').forEach(btn => btn.classList.remove('active'));

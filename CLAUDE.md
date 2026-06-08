@@ -417,6 +417,15 @@ A formal code review was conducted (see `CODE-REVIEW.md`). The following changes
 - **Fix — `shouldIncludeDateInRange`:** now accepts the raw `YYYY-MM-DD` dateStr and does string comparison against `formatDate(getToday())` / `formatDate(shoppingDateFrom/To)`. Since `formatDate` generates both the mealPlan keys and the range boundaries consistently, lexicographic comparison is timezone-correct.
 - **Fix — date input display:** added `formatLocalDate(date)` helper (uses `getFullYear/Month/Date` local parts, not `toISOString`). All three places that write the date inputs (`initDateRangePicker`, `setDatePreset`, `shiftDateRange`) now call `formatLocalDate` so users see the correct local date (e.g. "1 Jun" not "31 May").
 - **Fix — date input parsing:** added `parseDateInput(str)` helper (parses `YYYY-MM-DD` as local midnight via `new Date(y, m-1, d)`). `onDateRangeChange` now uses this so manually typed or shifted dates are stored as local midnight, keeping `formatDate(shoppingDateFrom)` consistent with mealPlan keys.
+- **Note:** Phase 28 was a partial fix — `formatDate` itself still used UTC (`toISOString`), and several `new Date(dateStr)` render calls remained. Fully resolved in Phase 29.
+
+#### ✅ Phase 29 — Full timezone date handling fix
+
+- **Root cause:** `formatDate(date)` used `date.toISOString().split('T')[0]`, which converts to UTC before extracting the date. For UTC+ users (e.g. BST = UTC+1), local midnight June 8 becomes June 7 23:00 UTC → key `"2026-06-07"` instead of `"2026-06-08"`. This caused planner day cards, linked meal labels, shopping list dates, and exports to all be off by one day.
+- **`formatDate` fixed:** now uses `getFullYear/Month/Date` (local parts), identical to the former `formatLocalDate`. `formatLocalDate` removed; its 6 call sites (`initDateRangePicker`, `setDatePreset`, `shiftDateRange`) updated to use `formatDate`.
+- **`new Date(dateStr)` → `parseDateInput(dateStr)`** in all rendering/display contexts: `getLinkedDisplayText` (fixes linked meal showing "Sun" instead of "Mon"), `renderShoppingList`, `printShoppingList`, `getShoppingListData` export filter (×2), `jumpToDate` (fixes month-view click navigating to wrong week).
+- **`shouldIncludeDateInRange` comment updated:** string comparison is now genuinely consistent because both keys and boundaries are local-date formatted.
+- **Data note:** UTC+ users with existing mealPlan entries stored under UTC-shifted keys (one day behind) will see those entries appear one day earlier in the planner after this fix. Re-entering the current week's meals is the practical workaround; a Firestore key-migration helper is deferred.
 
 ### Known deferred issues (do not attempt without careful planning)
 See `CODE-REVIEW.md` for full rationale on each. Summary:
